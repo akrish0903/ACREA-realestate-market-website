@@ -1,0 +1,104 @@
+.screen {
+    min-height: 100vh;
+    flex-direction: row;
+    width: 100%;
+}
+
+.screenLeft {
+    min-width: 40%;
+     min-height: 100vh;
+     overflow: hidden;
+ }
+ 
+ 
+ .screenRight {
+     min-width: 60%;
+     min-height: 100vh;
+ 
+     justify-content: center;
+     align-items: center;
+ }
+
+.screenRightContainer {
+
+    flex-direction: column;
+    align-items: center;
+    gap:2rem;
+}
+
+.screenRightContainerImg {
+    object-fit: contain;
+    justify-content: center;
+    align-items: center;
+    width: 20rem;
+    height: 7rem;
+}
+
+
+
+.screenRightContainerMid {
+    flex-direction: column;
+    align-items: start;
+    gap: 1.5rem;
+}
+
+/* .screenRightContainerMidTopButtons {
+    flex-direction: row;
+    gap: 2rem;
+} */
+
+.screenRightContainerMidForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.screenRightContainerMidForm input {
+    width: 30rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    padding-left: 1.1rem;
+    padding-right: 2.5rem;
+    border: 0.5px black solid;
+    outline: none;
+}
+
+.screenRightContainerMidFormEyeIcon {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    margin-right: 0.5rem;
+    cursor: pointer;
+
+
+}
+
+.screenRightContainerMidFormEyeIcon:hover {
+    opacity: 0.5;
+}
+
+
+.screenRightContainerMidFormForgetPass{
+    /* font-size: smaller; */
+    cursor: pointer;
+}
+
+
+
+
+.screenRightContainerBottom{
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.screenRightContainerBottomButton{
+    border: 3px black solid;
+    border-radius: 2rem;
+    padding-left: 4rem;
+    padding-right: 4rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    outline: none;
+    transition-duration: 5s;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;    
+}
