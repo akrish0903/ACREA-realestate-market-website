@@ -3,9 +3,50 @@ import Styles from "./css/SignUp.module.css";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { Link } from 'react-router-dom';
 import { Config } from '../../config/Config';
+import useApi from '../../utils/useApi';
 
 function SIgnUP() {
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
+
+  const [userObj, setUserObj] = useState({
+    usrFullName: "",
+    usrEmail: "",
+    usrMobileNumber: "",
+    usrPassword: "",
+    usrReptPassword: "",
+    usrType: "",
+  })
+
+  async function signUpHandler(e) {
+    e.preventDefault();
+    if (
+      userObj.usrFullName === "" ||
+      userObj.usrEmail === "" ||
+      userObj.usrMobileNumber === "" ||
+      userObj.usrPassword === "" ||
+      userObj.usrReptPassword === "" ||
+      userObj.usrType === ""
+    ) {
+      alert("Please fill all felids.")
+    } else if (userObj.usrPassword !== userObj.usrReptPassword) {
+      alert("Confirm password is not same as password.")
+    } else {
+      var signUpHandlerApiCalled = await useApi({
+        url: "/signup",
+        method: "POST",
+        data: {
+          usrFullName: userObj.usrFullName,
+          usrEmail: userObj.usrEmail,
+          usrMobileNumber: userObj.usrMobileNumber,
+          usrPassword: userObj.usrPassword,
+          usrType: userObj.usrType,
+        },
+      })
+      console.log("-----res api----->", signUpHandlerApiCalled)
+    }
+  }
+
+
   return (
     <div
       className={Styles.screen}
@@ -16,10 +57,6 @@ function SIgnUP() {
         backgroundSize: "cover"
       }}
     >
-
-
-
-
 
       {/* right */}
       <div
@@ -39,15 +76,33 @@ function SIgnUP() {
           {/* second */}
           <div className={Styles.screenRightContainerMid}>
             <div className={Styles.screenRightContainerMidTopButtons}>
-              <button type="button" className="btn btn-outline-danger">Buyer</button>
-              <button type="button" className="btn btn-outline-danger">Agent/Builder</button>
+              <button type="button" onClick={() => setUserObj({ ...userObj, usrType: "buyer" })} className={`btn ${userObj.usrType === "buyer" ? "btn-danger" : "btn-outline-danger"}`}>Buyer</button>
+              <button type="button" onClick={() => setUserObj({ ...userObj, usrType: "agent" })} className={`btn ${userObj.usrType === "agent" ? "btn-danger" : "btn-outline-danger"}`}>Agent/Builder</button>
             </div>
 
             <form className={Styles.screenRightContainerMidForm}>
-              <input placeholder='Enter your Name' type='text' style={{ fontSize: Config.fontSize.regular }} />
-              <input placeholder='Enter your Email' type='email' style={{ fontSize: Config.fontSize.regular }} />
-              <input placeholder='Enter your Phone Number' type='number' style={{ fontSize: Config.fontSize.regular }} />
-             <div style={{
+              <input
+                placeholder='Enter your Name'
+                type='text'
+                style={{ fontSize: Config.fontSize.regular }}
+                value={userObj.usrFullName}
+                onChange={(e) => { setUserObj({ ...userObj, usrFullName: e.target.value }) }}
+              />
+              <input
+                placeholder='Enter your Email'
+                type='email'
+                style={{ fontSize: Config.fontSize.regular }}
+                value={userObj.usrEmail}
+                onChange={(e) => { setUserObj({ ...userObj, usrEmail: e.target.value }) }}
+              />
+              <input
+                placeholder='Enter your Phone Number'
+                type='number'
+                style={{ fontSize: Config.fontSize.regular }}
+                value={userObj.usrMobileNumber}
+                onChange={(e) => { setUserObj({ ...userObj, usrMobileNumber: e.target.value }) }}
+              />
+              <div style={{
                 flexDirection: "column",
                 alignItems: "end"
               }}>
@@ -55,7 +110,13 @@ function SIgnUP() {
                   alignItems: "center",
                   justifyContent: "right"
                 }}>
-                  <input placeholder='Enter your Password' type='password' style={{ fontSize: Config.fontSize.regular }} />
+                  <input
+                    placeholder='Enter your Password'
+                    type='password'
+                    style={{ fontSize: Config.fontSize.regular }}
+                    value={userObj.usrPassword}
+                    onChange={(e) => { setUserObj({ ...userObj, usrPassword: e.target.value }) }}
+                  />
 
                   <RemoveRedEyeIcon
                     color={Config.color.textColor}
@@ -77,7 +138,13 @@ function SIgnUP() {
                   alignItems: "center",
                   justifyContent: "right"
                 }}>
-                  <input placeholder='Confirm your Password' type='password' style={{ fontSize: Config.fontSize.regular }} />
+                  <input
+                    placeholder='Confirm your Password'
+                    type='password'
+                    style={{ fontSize: Config.fontSize.regular }}
+                    value={userObj.usrReptPassword}
+                    onChange={(e) => { setUserObj({ ...userObj, usrReptPassword: e.target.value }) }}
+                  />
 
                   <RemoveRedEyeIcon
                     color={Config.color.textColor}
@@ -110,7 +177,8 @@ function SIgnUP() {
               }}
               onMouseEnter={() => { setIsHovered(true) }}
               onMouseLeave={() => { setIsHovered(false) }}
-            >Login</button>
+              onClick={signUpHandler}
+            >Sign Up</button>
             <Link to={"/signin"} style={{ textDecoration: "none" }}>
               <p style={{
                 fontSize: Config.fontSize.small,
