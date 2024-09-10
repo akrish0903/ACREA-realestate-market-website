@@ -14,4 +14,17 @@ const MongoDBConnector = async () => {
   }
 };
 
+mongoose.connection.on("connected",()=>{
+  console.log("Connect db event success")
+})
+mongoose.connection.on("error",(err)=>{
+  console.log("Connect db event fail - ",err)
+})
+mongoose.connection.on("disconnected",()=>{
+  console.log("Connect db event disconnected")
+})
+process.on("SIGINT",async ()=>{
+  await mongoose.connection.close();
+  process.exit(0)
+})
 module.exports = MongoDBConnector;
