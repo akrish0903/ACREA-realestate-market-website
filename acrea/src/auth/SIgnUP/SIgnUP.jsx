@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import Styles from "./css/SignUp.module.css";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Config } from '../../config/Config';
 import useApi from '../../utils/useApi';
+import { toast } from 'react-toastify';
 
 function SIgnUP() {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   const [userObj, setUserObj] = useState({
     usrFullName: "",
@@ -31,18 +33,61 @@ function SIgnUP() {
     } else if (userObj.usrPassword !== userObj.usrReptPassword) {
       alert("Confirm password is not same as password.")
     } else {
-      var signUpHandlerApiCalled = await useApi({
-        url: "/signup",
-        method: "POST",
-        data: {
-          usrFullName: userObj.usrFullName,
-          usrEmail: userObj.usrEmail,
-          usrMobileNumber: userObj.usrMobileNumber,
-          usrPassword: userObj.usrPassword,
-          usrType: userObj.usrType,
-        },
-      })
-      console.log("-----res api----->", signUpHandlerApiCalled)
+      try {
+        // toast notification
+        const apiCallPromise = new Promise(async (resolve, reject) => {
+          const apiResponse = await useApi({
+            url: "/signup",
+            method: "POST",
+            data: {
+              usrFullName: userObj.usrFullName,
+              usrEmail: userObj.usrEmail,
+              usrMobileNumber: userObj.usrMobileNumber,
+              usrPassword: userObj.usrPassword,
+              usrType: userObj.usrType,
+            },
+          });
+          if (apiResponse && apiResponse.error) {
+            reject(apiResponse.error.message);
+          } else {
+            resolve(apiResponse);
+          }
+        });
+
+        //showing toast
+        // Use toast.promise with the new wrapped promise
+        await toast.promise(apiCallPromise, {
+          pending: "Signing up new user..!!",
+          success: {
+            render({ toastProps, closeToast, data }) {
+              setUserObj({
+                usrFullName: "",
+                usrEmail: "",
+                usrMobileNumber: "",
+                usrPassword: "",
+                usrReptPassword: "",
+                usrType: "",
+              })
+              setTimeout(() => {
+                navigate("/signin");
+              }, 5000)
+              console.log(data);
+              return "Account created successfully. Redirecting to login page."
+            },
+          },
+          error: {
+            render({ toastProps, closeToast, data }) {
+              return data
+            },
+          },
+        }, {
+          position: 'bottom-right',
+        });
+
+      } catch (error) {
+        console.log("Sign up err ---> ", error)
+      }
+
     }
   }
 
