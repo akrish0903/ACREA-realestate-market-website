@@ -34,7 +34,14 @@ const signupUserAuthController = async (req, res, next) => {
             var savedUserDetails = await newUserSetup.save();
             const accessToken = await jwt_utils(savedUserDetails.id);
             const refreshToken = await jwt_refresh_token(savedUserDetails.id);
-            res.status(201).json({ message: "User registered successfully", token: accessToken, refresh_token: refreshToken });
+            res.status(201).json({
+                message: "User registered successfully", access_token: accessToken, refresh_token: refreshToken, user_details: {
+                    usrFullName: savedUserDetails.usrFullName,
+                    usrEmail: savedUserDetails.usrEmail,
+                    usrMobileNumber: savedUserDetails.usrMobileNumber,
+                    usrType: savedUserDetails.usrType
+                }
+            });
         } catch (err) {
             console.log(err)
             res.status(400).json({ message: "Error registering user", error: err });
@@ -64,7 +71,14 @@ const signinUserAuthController = async (req, res, next) => {
                 // giving token back
                 const accessToken = await jwt_utils(isEmailFound.id);
                 const refreshToken = await jwt_refresh_token(isEmailFound.id);
-                res.status(201).json({ message: "User signed in successfully", token: accessToken, refresh_token: refreshToken });
+                res.status(201).json({
+                    message: "User signed in successfully", access_token: accessToken, refresh_token: refreshToken, user_details: {
+                        usrFullName: isEmailFound.usrFullName,
+                        usrEmail: isEmailFound.usrEmail,
+                        usrMobileNumber: isEmailFound.usrMobileNumber,
+                        usrType: isEmailFound.usrType
+                    }
+                });
             } else {
                 next(httpErrors.Unauthorized("Invalid Email or Password"))
             }
@@ -102,7 +116,7 @@ const refreshTokenUserAuthController = async function (req, res, next) {
 
 
 const logoutUserAuthController = async (req, res, next) => {
-    
+
     try {
         const { user_refresh_token } = req.body;
         if (user_refresh_token) {

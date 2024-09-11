@@ -29,9 +29,13 @@ function SIgnUP() {
       userObj.usrReptPassword === "" ||
       userObj.usrType === ""
     ) {
-      alert("Please fill all felids.")
+      toast.error("Please fill all fields.", {
+        position: 'bottom-right',
+      });
     } else if (userObj.usrPassword !== userObj.usrReptPassword) {
-      alert("Confirm password is not same as password.")
+      toast.error("Confirm password is not same.", {
+        position: 'bottom-right',
+      });
     } else {
       try {
         // toast notification

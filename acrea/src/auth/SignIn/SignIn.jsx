@@ -2,11 +2,100 @@ import React, { useState } from 'react'
 import Styles from "./css/SignIn.module.css";
 import { Config } from '../../config/Config';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import useApi from '../../utils/useApi';
+import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
+import { useDispatch } from 'react-redux';
 function SignIn() {
 
   const [isHovered, setIsHovered] = useState(false)
 
+  const [userObj, setUserObj] = useState({
+    usrEmail: "",
+    usrPassword: "",
+  })
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  async function signInHandler(e) {
+    e.preventDefault();
+    if (
+      userObj.usrEmail === "" || userObj.usrPassword === "") {
+      toast.error("Please fill all fields.", {
+        position: 'bottom-left',
+      });
+    } else {
+      try {
+        // toast notification
+        const apiCallPromise = new Promise(async (resolve, reject) => {
+          const apiResponse = await useApi({
+            url: "/signin",
+            method: "POST",
+            data: {
+              usrEmail: userObj.usrEmail,
+              usrPassword: userObj.usrPassword,
+            },
+          });
+          if (apiResponse && apiResponse.error) {
+            reject(apiResponse.error.message);
+          } else {
+            resolve(apiResponse);
+          }
+        });
+
+        //showing toast
+        // Use toast.promise with the new wrapped promise
+        await toast.promise(apiCallPromise, {
+          pending: "Signing in user..!!",
+          success: {
+            render({ toastProps, closeToast, data }) {
+              console.log(data)
+              // Updating details to class
+              dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrEmail));
+              dispatch(AuthUserDetailsSliceAction.setUsrFullName(data.user_details.usrFullName));
+              dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(data.user_details.usrMobileNumber));
+              dispatch(AuthUserDetailsSliceAction.setUsrType(data.user_details.usrType));
+              dispatch(AuthUserDetailsSliceAction.setAccessToken(data.access_token));
+              dispatch(AuthUserDetailsSliceAction.setRefreshToken(data.refresh_token));
+
+              // seting state back to normal
+              setUserObj({
+                usrEmail: "",
+                usrPassword: ""
+              })
+
+              // logout 
+              setTimeout(() => {
+
+                toast.info("Session Expired", {
+                  position: 'bottom-left',
+                });
+                navigate("/signin");
+              }, 60 * 60 * 1000)
+
+              // Redirecting back to dashboard
+              setTimeout(() => {
+                navigate("/");
+              }, 5000)
+
+              return "Account signed in successfully. Redirecting to dashboard page."
+            },
+          },
+          error: {
+            render({ toastProps, closeToast, data }) {
+              return data
+            },
+          },
+        }, {
+          position: 'bottom-left',
+        });
+
+      } catch (error) {
+        console.log("Sign in err ---> ", error)
+      }
+
+    }
+  }
   return (
 
     <div
@@ -49,7 +138,13 @@ function SignIn() {
             </div> */}
 
             <form className={Styles.screenRightContainerMidForm}>
-              <input placeholder='Enter your Email' type='email' style={{ fontSize: Config.fontSize.regular }} />
+              <input
+                placeholder='Enter your Email'
+                type='email'
+                style={{ fontSize: Config.fontSize.regular }}
+                value={userObj.usrEmail}
+                onChange={(e) => { setUserObj({ ...userObj, usrEmail: e.target.value }) }}
+              />
               <div style={{
                 flexDirection: "column",
                 alignItems: "end"
@@ -58,7 +153,13 @@ function SignIn() {
                   alignItems: "center",
                   justifyContent: "right"
                 }}>
-                  <input placeholder='Enter your Password' type='password' style={{ fontSize: Config.fontSize.regular }} />
+                  <input
+                    placeholder='Enter your Password'
+                    type='password'
+                    style={{ fontSize: Config.fontSize.regular }}
+                    value={userObj.usrPassword}
+                    onChange={(e) => { setUserObj({ ...userObj, usrPassword: e.target.value }) }}
+                  />
 
                   <RemoveRedEyeIcon
                     color={Config.color.textColor}
@@ -80,6 +181,7 @@ function SignIn() {
           <div className={Styles.screenRightContainerBottom}>
             <button
               className={Styles.screenRightContainerBottomButton}
+              onClick={signInHandler}
               style={{
                 fontSize: Config.fontSize.medium,
                 backgroundColor: isHovered ? Config.color.primaryColor1000 : Config.color.background,
@@ -92,7 +194,7 @@ function SignIn() {
               onMouseEnter={() => { setIsHovered(true) }}
               onMouseLeave={() => { setIsHovered(false) }}
             >Login</button>
-            <Link to={"/signup"} style={{textDecoration:"none"}}>
+            <Link to={"/signup"} style={{ textDecoration: "none" }}>
               <p style={{
                 fontSize: Config.fontSize.small,
                 color: Config.color.primaryColor1000,
