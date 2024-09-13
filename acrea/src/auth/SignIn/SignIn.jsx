@@ -169,7 +169,7 @@ function SignIn() {
                   className={Styles.screenRightContainerMidFormForgetPass}
                   style={{
                     fontSize: Config.fontSize.xsmall,
-                    color: Config.color.primaryColor1000
+                    color: Config.color.primaryColor800
                   }}
                 >Forgot Password</p>
               </div>
@@ -184,7 +184,7 @@ function SignIn() {
               onClick={signInHandler}
               style={{
                 fontSize: Config.fontSize.medium,
-                backgroundColor: isHovered ? Config.color.primaryColor1000 : Config.color.background,
+                backgroundColor: isHovered ? Config.color.primaryColor800 : Config.color.background,
                 transitionProperty: "background-color ,color ,transform",
                 color: isHovered ? Config.color.background : Config.color.textColor,
                 transitionDuration: ".5s",
@@ -197,7 +197,7 @@ function SignIn() {
             <Link to={"/signup"} style={{ textDecoration: "none" }}>
               <p style={{
                 fontSize: Config.fontSize.small,
-                color: Config.color.primaryColor1000,
+                color: Config.color.primaryColor800,
                 cursor: "pointer"
               }}>Don’t Have Account? Sign Up</p>
             </Link>

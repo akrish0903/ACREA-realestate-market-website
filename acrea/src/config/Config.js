@@ -2,7 +2,14 @@ export var Config = {
     color: {
         background: "white",
         textColor: "black",
-        primaryColor1000: "#D74646"
+        primaryColor1000: "red",
+        primaryColor900: "#BC0000",
+        primaryColor800: "#D74646",
+
+        secondaryColor100: "#F3F4F6",
+        secondaryColor200: "#EFF6FF",
+        secondaryColor300: "#DBEAFE",
+
     },
     fontSize: {
         xlarge: '2.5rem',  // Equivalent to 40px if the root font size is 16px
@@ -18,6 +25,8 @@ export var Config = {
     imagesPaths: {
         signinBackground: "/assets/signinBackground.jpg",
         logo: "/assets/logo.png",
+        logo2: "/assets/logo2.png",
+        user_null: "/assets/user_null.png",
 
     }
 };

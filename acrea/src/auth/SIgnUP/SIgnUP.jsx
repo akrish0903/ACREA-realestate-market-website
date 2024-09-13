@@ -175,7 +175,7 @@ function SIgnUP() {
                   className={Styles.screenRightContainerMidFormForgetPass}
                   style={{
                     fontSize: Config.fontSize.xsmall,
-                    color: Config.color.primaryColor1000
+                    color: Config.color.primaryColor800
                   }}
                 >Forgot Password</p> */}
               </div>
@@ -203,7 +203,7 @@ function SIgnUP() {
                   className={Styles.screenRightContainerMidFormForgetPass}
                   style={{
                     fontSize: Config.fontSize.xsmall,
-                    color: Config.color.primaryColor1000
+                    color: Config.color.primaryColor800
                   }}
                 >Forgot Password</p> */}
               </div>
@@ -217,7 +217,7 @@ function SIgnUP() {
               className={Styles.screenRightContainerBottomButton}
               style={{
                 fontSize: Config.fontSize.medium,
-                backgroundColor: isHovered ? Config.color.primaryColor1000 : Config.color.background,
+                backgroundColor: isHovered ? Config.color.primaryColor800 : Config.color.background,
                 transitionProperty: "background-color ,color ,transform",
                 color: isHovered ? Config.color.background : Config.color.textColor,
                 transitionDuration: ".5s",
@@ -231,7 +231,7 @@ function SIgnUP() {
             <Link to={"/signin"} style={{ textDecoration: "none" }}>
               <p style={{
                 fontSize: Config.fontSize.small,
-                color: Config.color.primaryColor1000,
+                color: Config.color.primaryColor800,
                 cursor: "pointer"
               }}>Already Have Account? Sign In</p>
             </Link>

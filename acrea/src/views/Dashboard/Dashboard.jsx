@@ -1,13 +1,19 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
+import Header from '../../components/Header';
+import Styles from "./css/Dashboard.module.css";
 
 function Dashboard() {
-    var data = useSelector(data => data.AuthUserDetailsSlice)
-   
-    console.log("redux",data)
+    var userAuthData = useSelector(data => data.AuthUserDetailsSlice)
+
     return (
-        <div>Dashboard</div>
+        <div className={`screen ${Styles.dashboardScreen}`}>
+            <Header />
+            
+
+            
+        </div>
     )
 }
 

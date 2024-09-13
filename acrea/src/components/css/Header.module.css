@@ -1,0 +1,74 @@
+.headerScreen {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: fit-content;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    flex-direction: row;
+    justify-content: space-between;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.headerScreenLeft {
+    width: 20%;
+    justify-content: center;
+    align-items: center;
+    height: 3.8rem;
+}
+
+.headerScreenRight {
+    width: 60%;
+    height: 3.8rem;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.headerScreenRight>div {
+    height: 100%;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+
+
+.headerScreenRightFirst {
+    gap: 1.5rem;
+}
+
+.headerScreenRightFirst h6 {
+    width: 6rem;
+   height: 2rem;
+    text-align: center;
+    justify-items: center;
+    align-items: center;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    transition-property: "transform,";
+    transition-duration: 400ms;
+    /* box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset; */
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.headerScreenRightFirst h6:hover {
+    transform: translateX(-.3rem) translateY(-.3rem);
+}
+
+.headerScreenRightSecond {
+    gap: .5rem;
+    border-left: 1px white solid;
+    cursor: pointer;
+}
+
+
+
+
+.headerScreenRightSecondContainer{
+    height: 100%;
+    flex-direction: column;
+}
