@@ -49,6 +49,8 @@ function SIgnUP() {
               usrMobileNumber: userObj.usrMobileNumber,
               usrPassword: userObj.usrPassword,
               usrType: userObj.usrType,
+              usrProfileUrl:null,
+              userBio:null,
             },
           });
           if (apiResponse && apiResponse.error) {

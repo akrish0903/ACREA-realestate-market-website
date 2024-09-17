@@ -10,9 +10,6 @@ function Dashboard() {
     return (
         <div className={`screen ${Styles.dashboardScreen}`}>
             <Header />
-            
-
-            
         </div>
     )
 }

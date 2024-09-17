@@ -9,7 +9,7 @@ router.post("/signup",UserAuthController.signupUserAuthController);
 router.post("/signin",UserAuthController.signinUserAuthController);
 
 // protected route and accessed when correct token is passes
-router.post("/updateAcc",jwt_verify_token,UserAuthController.updateAccUserAuthController)
+router.post("/updateUserProfile",jwt_verify_token,UserAuthController.updateUserProfileAuthController)
 
 router.post("/refresh-token",UserAuthController.refreshTokenUserAuthController);
 

@@ -7,7 +7,7 @@ const httpErrors = require("http-errors");
 const signupUserAuthController = async (req, res, next) => {
     // getting from frontend
     console.log("----> ", req.body);
-    const { usrFullName, usrEmail, usrMobileNumber, usrPassword, usrType } = req.body;
+    const { usrFullName, usrEmail, usrMobileNumber, usrPassword, usrType, usrProfileUrl, userBio } = req.body;
     // previous user finding
     var previousUserFound;
     try {
@@ -29,6 +29,8 @@ const signupUserAuthController = async (req, res, next) => {
                 usrMobileNumber,
                 usrPassword,
                 usrType,
+                usrProfileUrl,
+                userBio
             });
 
             var savedUserDetails = await newUserSetup.save();
@@ -39,7 +41,9 @@ const signupUserAuthController = async (req, res, next) => {
                     usrFullName: savedUserDetails.usrFullName,
                     usrEmail: savedUserDetails.usrEmail,
                     usrMobileNumber: savedUserDetails.usrMobileNumber,
-                    usrType: savedUserDetails.usrType
+                    usrType: savedUserDetails.usrType,
+                    usrProfileUrl: savedUserDetails.usrProfileUrl,
+                    userBio: savedUserDetails.userBio,
                 }
             });
         } catch (err) {
@@ -76,7 +80,9 @@ const signinUserAuthController = async (req, res, next) => {
                         usrFullName: isEmailFound.usrFullName,
                         usrEmail: isEmailFound.usrEmail,
                         usrMobileNumber: isEmailFound.usrMobileNumber,
-                        usrType: isEmailFound.usrType
+                        usrType: isEmailFound.usrType,
+                        usrProfileUrl: isEmailFound.usrProfileUrl,
+                        userBio: isEmailFound.userBio,
                     }
                 });
             } else {
@@ -93,8 +99,40 @@ const signinUserAuthController = async (req, res, next) => {
 };
 
 
-const updateAccUserAuthController = async function (req, res, next) {
-    res.send("User token is correct.")
+const updateUserProfileAuthController = async function (req, res, next) {
+
+    var userId = req.payload.aud;
+    const { usrFullName, usrEmail, usrMobileNumber, usrProfileUrl, userBio } = req.body;
+    try {
+        // question asked for this
+        var fetchedUserData = await UserAuthModel.findById(userId);
+        if (!fetchedUserData) {
+            next(httpErrors.NotFound("User not found."))
+        }
+        console.log("---out --- ", fetchedUserData)
+        fetchedUserData.usrFullName = usrFullName;
+        fetchedUserData.usrEmail = usrEmail;
+        fetchedUserData.usrMobileNumber = usrMobileNumber;
+        fetchedUserData.usrProfileUrl = usrProfileUrl;
+        fetchedUserData.userBio = userBio;
+        console.log("first")
+        var updatedFetchedUser = await fetchedUserData.save()
+        console.log("second")
+        res.status(200).json({
+            message: "User profile updated successfully.",
+            user_details: {
+                usrFullName: updatedFetchedUser.usrFullName,
+                usrEmail: updatedFetchedUser.usrEmail,
+                usrMobileNumber: updatedFetchedUser.usrMobileNumber,
+                usrProfileUrl: updatedFetchedUser.usrProfileUrl,
+                userBio: updatedFetchedUser.userBio,
+            }
+        });
+        console.log("third")
+
+    } catch (error) {
+        next(httpErrors.InternalServerError("Error updating profile."))
+    }
 }
 
 const refreshTokenUserAuthController = async function (req, res, next) {
@@ -141,4 +179,4 @@ const logoutUserAuthController = async (req, res, next) => {
         next(error)
     }
 }
-module.exports = { signupUserAuthController, signinUserAuthController, updateAccUserAuthController, refreshTokenUserAuthController, logoutUserAuthController };
+module.exports = { signupUserAuthController, signinUserAuthController, updateUserProfileAuthController, refreshTokenUserAuthController, logoutUserAuthController };

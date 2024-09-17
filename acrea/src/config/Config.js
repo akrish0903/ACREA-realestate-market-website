@@ -5,6 +5,7 @@ export var Config = {
         primaryColor1000: "red",
         primaryColor900: "#BC0000",
         primaryColor800: "#D74646",
+        primaryColor100:"#fae7e7",
 
         secondaryColor100: "#F3F4F6",
         secondaryColor200: "#EFF6FF",

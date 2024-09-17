@@ -49,7 +49,7 @@ function SignIn() {
           pending: "Signing in user..!!",
           success: {
             render({ toastProps, closeToast, data }) {
-              console.log(data)
+              
               // Updating details to class
               dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrEmail));
               dispatch(AuthUserDetailsSliceAction.setUsrFullName(data.user_details.usrFullName));
@@ -57,6 +57,9 @@ function SignIn() {
               dispatch(AuthUserDetailsSliceAction.setUsrType(data.user_details.usrType));
               dispatch(AuthUserDetailsSliceAction.setAccessToken(data.access_token));
               dispatch(AuthUserDetailsSliceAction.setRefreshToken(data.refresh_token));
+              dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(data.user_details.usrProfileUrl));
+              dispatch(AuthUserDetailsSliceAction.setUserBio(data.user_details.userBio));
+
 
               // seting state back to normal
               setUserObj({

@@ -6,7 +6,9 @@ var initialAuthState = {
     usrMobileNumber: null,
     usrType: null,
     usrRefreshToken: null,
-    usrAccessToken: null
+    usrAccessToken: null,
+    usrProfileUrl: null,
+    userBio: null,
 }
 
 var AuthUserDetailsSlice = createSlice({
@@ -24,6 +26,12 @@ var AuthUserDetailsSlice = createSlice({
         },
         setUsrType: (state, action) => {
             state.usrType = action.payload;
+        },
+        setUsrProfileUrl: (state, action) => {
+            state.usrProfileUrl = action.payload;
+        },
+        setUserBio: (state, action) => {
+            state.userBio = action.payload;
         },
         setRefreshToken: (state, action) => {
             state.usrRefreshToken = action.payload;

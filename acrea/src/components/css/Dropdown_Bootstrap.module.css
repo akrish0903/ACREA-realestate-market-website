@@ -1,0 +1,11 @@
+.dropdownMenu {
+    cursor: pointer;
+    border-bottom: .1px grey solid;
+    transition-property: transform, background-color;
+    margin-top: .3rem;
+    transition-duration: 500ms;
+}
+
+.dropdownMenu:hover {
+    background-color: #fae7e7;
+}

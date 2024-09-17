@@ -4,9 +4,10 @@ import SignIn from './auth/SignIn/SignIn'
 import SIgnUP from './auth/SIgnUP/SIgnUP'
 import Dashboard from './views/Dashboard/Dashboard'
 import NoPageFound from './views/NoPageFound/NoPageFound'
-import { ToastContainer} from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
+import EditProfile from './views/EditProfile/EditProfile'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SIgnUP />} />
+        <Route path='/editProfile' element={<EditProfile />} />
         <Route path='/' element={<Dashboard />} />
         <Route path='*' element={<NoPageFound />} />
       </Routes>

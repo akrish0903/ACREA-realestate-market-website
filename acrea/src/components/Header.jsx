@@ -14,24 +14,31 @@ function Header() {
     const dropdownDataArr = [
         {
             title: "Edit Account",
-            navigate: "",
+            navigate: "/editProfile",
             customDom: null
         },
         {
-            title: "My Proper",
+            title: "My Properties",
             navigate: "",
+            customDom: null
+        }, {
+            title: "Favorites",
+            navigate: "/favorites",
             customDom: null
         },
         {
-            title: "",
-            navigate: "",
+            title: "Help Center",
+            navigate: "/help-center",
             customDom: null
         },
         {
-            title: "",
-            navigate: "",
+            title: "Logout",
+            navigate: "/logout",
             customDom: null
         },
+
+
+
     ]
 
 
@@ -61,7 +68,7 @@ function Header() {
                             textDecoration: 'none',
                             height: "2rem"
                         }}
-                        className={({ isActive }) => { console.log(isActive) }}
+                        className={({ isActive }) => { null }}
                     >
                         <h6 style={{ color: Config.color.background, borderBottom: `4px ${Config.color.primaryColor1000} solid` }}>HOME</h6>
                     </NavLink>
@@ -98,7 +105,7 @@ function Header() {
                                 borderRadius: "50%",
                                 overflow: "hidden",
                             }}>
-                                <img src={Config.imagesPaths.user_null} style={{
+                                <img src={userAuthData.usrProfileUrl?userAuthData.usrProfileUrl:Config.imagesPaths.user_null} style={{
                                     objectFit: "contain",
                                     width: "3rem",
                                     height: "3rem",
@@ -121,8 +128,14 @@ function Header() {
                                         fontSize: Config.fontSize.xsmall,
                                         fontFamily: "cursive"
                                     }}
-                                >{userAuthData.usrEmail}</p>
-                                <Dropdown_Bootstrap isDropdownOpen={isDropdownOpen} />
+                                >{userAuthData.usrFullName}</p>
+                                <Dropdown_Bootstrap
+                                    marginTop='13.5rem'
+                                    isDropdownOpen={isDropdownOpen}
+                                    dropdownDataArr={dropdownDataArr}
+                                    closeFunc={() => {
+                                        setIsDropdownOpen(false)
+                                    }} />
                             </div>
 
                         </>
