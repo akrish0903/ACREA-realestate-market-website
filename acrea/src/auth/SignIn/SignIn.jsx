@@ -25,81 +25,76 @@ function SignIn() {
   });
 
   async function signInHandler(userObj, formicHelpers) {
-    console.log(userObj);
-    console.log(formicHelpers)
-    // formicHelpers.resetForm();
+    
 
-    // try {
-    //   // toast notification
-    //   const apiCallPromise = new Promise(async (resolve, reject) => {
-    //     const apiResponse = await useApi({
-    //       url: "/signin",
-    //       method: "POST",
-    //       data: {
-    //         usrEmail: userObj.usrEmail,
-    //         usrPassword: userObj.usrPassword,
-    //       },
-    //     });
-    //     if (apiResponse && apiResponse.error) {
-    //       reject(apiResponse.error.message);
-    //     } else {
-    //       resolve(apiResponse);
-    //     }
-    //   });
+    try {
+      // toast notification
+      const apiCallPromise = new Promise(async (resolve, reject) => {
+        const apiResponse = await useApi({
+          url: "/signin",
+          method: "POST",
+          data: {
+            usrEmail: userObj.usrEmail,
+            usrPassword: userObj.usrPassword,
+          },
+        });
+        if (apiResponse && apiResponse.error) {
+          reject(apiResponse.error.message);
+        } else {
+          resolve(apiResponse);
+        }
+      });
 
-    //   //showing toast
-    //   // Use toast.promise with the new wrapped promise
-    //   await toast.promise(apiCallPromise, {
-    //     pending: "Signing in user..!!",
-    //     success: {
-    //       render({ toastProps, closeToast, data }) {
+      //showing toast
+      // Use toast.promise with the new wrapped promise
+      await toast.promise(apiCallPromise, {
+        pending: "Signing in user..!!",
+        success: {
+          render({ toastProps, closeToast, data }) {
 
-    //         // Updating details to class
-    //         dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrEmail));
-    //         dispatch(AuthUserDetailsSliceAction.setUsrFullName(data.user_details.usrFullName));
-    //         dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(data.user_details.usrMobileNumber));
-    //         dispatch(AuthUserDetailsSliceAction.setUsrType(data.user_details.usrType));
-    //         dispatch(AuthUserDetailsSliceAction.setAccessToken(data.access_token));
-    //         dispatch(AuthUserDetailsSliceAction.setRefreshToken(data.refresh_token));
-    //         dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(data.user_details.usrProfileUrl));
-    //         dispatch(AuthUserDetailsSliceAction.setUserBio(data.user_details.userBio));
+            // Updating details to class
+            dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrEmail));
+            dispatch(AuthUserDetailsSliceAction.setUsrFullName(data.user_details.usrFullName));
+            dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(data.user_details.usrMobileNumber));
+            dispatch(AuthUserDetailsSliceAction.setUsrType(data.user_details.usrType));
+            dispatch(AuthUserDetailsSliceAction.setAccessToken(data.access_token));
+            dispatch(AuthUserDetailsSliceAction.setRefreshToken(data.refresh_token));
+            dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(data.user_details.usrProfileUrl));
+            dispatch(AuthUserDetailsSliceAction.setUserBio(data.user_details.userBio));
 
 
-    //         // seting state back to normal
-    //         setUserObj({
-    //           usrEmail: "",
-    //           usrPassword: ""
-    //         })
+            formicHelpers.resetForm();
 
-    //         // logout 
-    //         setTimeout(() => {
 
-    //           toast.info("Session Expired", {
-    //             position: 'bottom-left',
-    //           });
-    //           navigate("/signin");
-    //         }, 60 * 60 * 1000)
+            // logout 
+            setTimeout(() => {
 
-    //         // Redirecting back to dashboard
-    //         setTimeout(() => {
-    //           navigate("/");
-    //         }, 5000)
+              toast.info("Session Expired", {
+                position: 'bottom-left',
+              });
+              navigate("/signin");
+            }, 60 * 60 * 1000)
 
-    //         return "Account signed in successfully. Redirecting to dashboard page."
-    //       },
-    //     },
-    //     error: {
-    //       render({ toastProps, closeToast, data }) {
-    //         return data
-    //       },
-    //     },
-    //   }, {
-    //     position: 'bottom-left',
-    //   });
+            // Redirecting back to dashboard
+            setTimeout(() => {
+              navigate("/");
+            }, 5000)
 
-    // } catch (error) {
-    //   console.log("Sign in err ---> ", error)
-    // }
+            return "Account signed in successfully. Redirecting to dashboard page."
+          },
+        },
+        error: {
+          render({ toastProps, closeToast, data }) {
+            return data
+          },
+        },
+      }, {
+        position: 'bottom-left',
+      });
+
+    } catch (error) {
+      console.log("Sign in err ---> ", error)
+    }
   }
 
 
