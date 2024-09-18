@@ -8,8 +8,11 @@ import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import EditProfile from './views/EditProfile/EditProfile'
+import { useSelector } from 'react-redux'
 
 function App() {
+  var authUserDetails = useSelector(data=>data.AuthUserDetailsSlice)
+  
   return (
     // for page routing purpose
     <BrowserRouter>
@@ -17,7 +20,7 @@ function App() {
       <Routes>
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SIgnUP />} />
-        <Route path='/editProfile' element={<EditProfile />} />
+        {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
         <Route path='/' element={<Dashboard />} />
         <Route path='*' element={<NoPageFound />} />
       </Routes>
