@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Config } from '../../config/Config';
 import useApi from '../../utils/useApi';
 import { toast } from 'react-toastify';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function SIgnUP() {
   const [isHovered, setIsHovered] = useState(false);
@@ -49,8 +50,8 @@ function SIgnUP() {
               usrMobileNumber: userObj.usrMobileNumber,
               usrPassword: userObj.usrPassword,
               usrType: userObj.usrType,
-              usrProfileUrl:null,
-              userBio:null,
+              usrProfileUrl: null,
+              userBio: null,
             },
           });
           if (apiResponse && apiResponse.error) {
@@ -108,7 +109,19 @@ function SIgnUP() {
         backgroundSize: "cover"
       }}
     >
-
+      <ArrowBackIcon onClick={()=>{navigate("/")}}
+        style={{
+          color: Config.color.textColor,
+          width: "5rem",
+          height: "5rem",
+          // margin:"2rem",
+          position: "absolute",
+          zIndex: 1,
+          top: "2rem",
+          left: "2rem",
+          cursor: "pointer"
+        }}
+      />
       {/* right */}
       <div
         className={Styles.screenRight}

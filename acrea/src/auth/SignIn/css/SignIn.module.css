@@ -1,29 +1,29 @@
 .screen {
     min-height: 100vh;
-    flex-direction: row;
+    /* flex-direction: row; */
     width: 100%;
 }
 
 .screenLeft {
     min-width: 40%;
-     min-height: 100vh;
-     overflow: hidden;
- }
- 
- 
- .screenRight {
-     min-width: 60%;
-     min-height: 100vh;
- 
-     justify-content: center;
-     align-items: center;
- }
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+
+.screenRight {
+    min-width: 60%;
+    min-height: 100vh;
+
+    justify-content: center;
+    align-items: center;
+}
 
 .screenRightContainer {
 
     flex-direction: column;
     align-items: center;
-    gap:2rem;
+    gap: 2rem;
 }
 
 .screenRightContainerImg {
@@ -65,11 +65,11 @@
 
 .screenRightContainerMidFormEyeIcon {
     position: absolute;
-    margin: 0;
+    margin: .56rem;
     padding: 0;
     margin-right: 0.5rem;
     cursor: pointer;
-
+    align-self: start;
 
 }
 
@@ -78,7 +78,7 @@
 }
 
 
-.screenRightContainerMidFormForgetPass{
+.screenRightContainerMidFormForgetPass {
     /* font-size: smaller; */
     cursor: pointer;
 }
@@ -86,12 +86,12 @@
 
 
 
-.screenRightContainerBottom{
+.screenRightContainerBottom {
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.screenRightContainerBottomButton{
+.screenRightContainerBottomButton {
     border: 3px black solid;
     border-radius: 2rem;
     padding-left: 4rem;
@@ -100,5 +100,17 @@
     padding-bottom: 1rem;
     outline: none;
     transition-duration: 5s;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;    
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.screenRightContainerMidFormErrorNormal {
+    width: fit-content;
+    margin: 0px;
+    padding: 0px;
+}
+
+.screenRightContainerMidFormErrorPassword {
+    width: fit-content;
+    margin: 0px;
+    padding: 0px;
 }

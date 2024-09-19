@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import validateSchemaHelper from '../../utils/validateSchemaHelper';
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function SignIn() {
 
@@ -18,14 +18,13 @@ function SignIn() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [showPassword, setShowPassword] = useState(false);
   const validationSchema = Yup.object({
     usrEmail: validateSchemaHelper.usrEmail,
     usrPassword: validateSchemaHelper.usrPassword,
   });
 
   async function signInHandler(userObj, formicHelpers) {
-    
 
     try {
       // toast notification
@@ -108,7 +107,7 @@ function SignIn() {
       onSubmit={signInHandler}
       initialErrors={{
         usrEmail: "Not touched",
-        usrPassword: "Not touched"
+        usrPassword: "Not touched",
       }}
     >
       {({
@@ -130,6 +129,19 @@ function SignIn() {
             backgroundSize: "cover"
           }}
         >
+          <ArrowBackIcon onClick={() => { navigate("/") }}
+            style={{
+              color: Config.color.background,
+              width: "5rem",
+              height: "5rem",
+              // margin:"2rem",
+              position: "absolute",
+              zIndex: 1,
+              top: "2rem",
+              left: "2rem",
+              cursor: "pointer"
+            }}
+          />
           {/* left */}
           <div
             className={Styles.screenLeft}
@@ -159,15 +171,29 @@ function SignIn() {
             </div> */}
 
                 <Form className={Styles.screenRightContainerMidForm}>
-                  <Field
-                    placeholder='Enter your Email'
-                    type='email'
-                    style={{ fontSize: Config.fontSize.regular }}
-                    value={values.usrEmail}
-                    onChange={handleChange("usrEmail")}
-                    onBlur={() => { setFieldTouched("usrEmail") }}
-                  />
-                  {touched.usrEmail && errors.usrEmail && (<p>{errors.usrEmail}</p>)}
+                  <div style={{
+                    flexDirection: "column",
+                  }}>
+                    <Field
+                      placeholder='Enter your Email'
+                      type='email'
+                      style={{ fontSize: Config.fontSize.regular }}
+                      value={values.usrEmail}
+                      onBlur={() => { setFieldTouched("usrEmail") }}
+                      onChange={handleChange("usrEmail")}
+                    />
+                    {touched.usrEmail && errors.usrEmail && (
+                      <p
+                        className={Styles.screenRightContainerMidFormErrorNormal}
+                        style={{
+                          color: Config.color.warning,
+                          fontSize: Config.fontSize.xsmall
+                        }}
+                      >
+                        {errors.usrEmail}
+                      </p>
+                    )}
+                  </div>
                   <div style={{
                     flexDirection: "column",
                     alignItems: "end"
@@ -176,19 +202,29 @@ function SignIn() {
                       alignItems: "center",
                       justifyContent: "right"
                     }}>
-                      <Field
-                        placeholder='Enter your Password'
-                        type='password'
-                        style={{ fontSize: Config.fontSize.regular }}
-                        value={values.usrPassword}
-                        onChange={handleChange("usrPassword")}
-                        onBlur={() => { setFieldTouched("usrPassword") }}
-                      />
-                      {touched.usrPassword && errors.usrPassword && (<p>{errors.usrPassword}</p>)}
-
-                      <RemoveRedEyeIcon
+                      <div style={{ flexDirection: 'column' }}>
+                        <Field
+                          placeholder='Enter your Password'
+                          type='password'
+                          style={{ fontSize: Config.fontSize.regular }}
+                          value={values.usrPassword}
+                          onChange={handleChange("usrPassword")}
+                          onBlur={() => { setFieldTouched("usrPassword") }}
+                        />
+                        {touched.usrPassword && errors.usrPassword && (
+                          <p
+                            className={Styles.screenRightContainerMidFormErrorPassword}
+                            style={{
+                              color: Config.color.warning,
+                              fontSize: Config.fontSize.xsmall
+                            }}
+                          >{errors.usrPassword}</p>)}
+                      </div>
+                      <RemoveRedEyeIcon onClick={()=>{setShowPassword(!showPassword)}} 
                         color={Config.color.textColor}
-                        className={Styles.screenRightContainerMidFormEyeIcon} />
+                        className={Styles.screenRightContainerMidFormEyeIcon}
+                        
+                        />
                     </div>
                     <p
                       className={Styles.screenRightContainerMidFormForgetPass}

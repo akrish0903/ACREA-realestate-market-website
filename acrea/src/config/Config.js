@@ -11,6 +11,11 @@ export var Config = {
         secondaryColor200: "#EFF6FF",
         secondaryColor300: "#DBEAFE",
 
+        danger:"#DC4C64",
+        success:"#14A44D",
+        primary:"#3B71CA",
+        warning:"#E4A11B",
+
     },
     fontSize: {
         xlarge: '2.5rem',  // Equivalent to 40px if the root font size is 16px
