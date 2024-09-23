@@ -1,0 +1,10 @@
+.viewAllScreen{
+    display: flex;
+    flex-direction: column;
+}
+.viewAllScreenContainer{
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-evenly;
+    padding: 1.5rem;
+}

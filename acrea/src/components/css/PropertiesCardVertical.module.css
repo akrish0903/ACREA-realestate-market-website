@@ -1,0 +1,48 @@
+
+.recentProp{
+    flex-direction: column;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    align-items: center;
+    
+}
+.recentPropContainer{
+    width: 100%;
+    padding: 1rem;
+    justify-content: space-evenly;
+}
+.recentPropCard{
+        width: 20%;
+        flex-direction: column;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+
+
+.featuredPropertyContainerCardLeft {
+    height: 100%;
+    width: 40%;
+}
+
+.featuredPropertyContainerCardRight {
+    height: 100%;
+    width: 60%;
+    padding: 1rem;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.featuredPropertyContainerCardRightTop {
+    flex-direction: column;
+}
+
+.featuredPropertyContainerCardRightBottom {
+    justify-content: space-between;
+    border-top: .5px grey solid;
+    padding-top: .4rem;
+}
+.featuredPropertyContainerCardRightTopSub {
+    align-items: center;
+    gap: .2rem;
+}

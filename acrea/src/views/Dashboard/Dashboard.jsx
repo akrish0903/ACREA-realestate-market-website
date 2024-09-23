@@ -9,16 +9,20 @@ import HotelIcon from '@mui/icons-material/Hotel';
 import BathtubIcon from '@mui/icons-material/Bathtub';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import PlaceIcon from '@mui/icons-material/Place';
+import PropertiesCardVertical from '../../components/PropertiesCardVertical';
+import { useNavigate } from 'react-router-dom';
 function Dashboard() {
     var userAuthData = useSelector(data => data.AuthUserDetailsSlice)
-
+    console.log("user auth data ---> ",userAuthData);
+    
+    var navigation = useNavigate();
     return (
         <div className={`screen ${Styles.dashboardScreen}`}>
             <Header />
             <SecondHeader />
 
             {/* optional auth nav */}
-            <div className={Styles.optionalAuthCard}>
+            {userAuthData.usrEmail===null && (<div className={Styles.optionalAuthCard}>
                 <div
                     style={{ backgroundColor: Config.color.secondaryColor100 }}
                     className={Styles.optionalAuthCardLeft}
@@ -33,6 +37,7 @@ function Dashboard() {
                         color: Config.color.textColor
                     }}>Find your dream  property. Bookmark properties and contact owners.</p>
                     <button
+                    onClick={()=>{navigation("/viewAllProperties")}}
                         style={{
                             backgroundColor: Config.color.textColor,
                             color: Config.color.background,
@@ -59,6 +64,7 @@ function Dashboard() {
                         color: Config.color.textColor
                     }}>List your properties and reach potential buyers.</p>
                     <button
+                    onClick={()=>{navigation("/signin")}}
                         style={{
                             backgroundColor: Config.color.primaryColor900,
                             color: Config.color.background,
@@ -72,7 +78,7 @@ function Dashboard() {
                         }}
                     >Add Property</button>
                 </div>
-            </div>
+            </div>)}
 
 
             {/* featured Properties */}
@@ -295,6 +301,41 @@ function Dashboard() {
 
                 </div>
             </div>
+
+            {/* Recent Properties */}
+            <div className={Styles.recentProp}>
+                <h4 style={{
+                    color: Config.color.primaryColor900,
+                    fontWeight: "bolder"
+                }}>Recent Properties</h4>
+
+                <div className={Styles.recentPropContainer}>
+                    <PropertiesCardVertical />
+                    <PropertiesCardVertical />
+                    <PropertiesCardVertical />
+                    <PropertiesCardVertical />
+                </div>
+            </div>
+
+
+            {/* view all button  */}
+            <button 
+            onClick={()=>{navigation("/viewAllProperties")}}
+            style={{
+                background: Config.color.textColor,
+                color: Config.color.background,
+                fontSize: Config.fontSize.regular,
+                width: "fit-content",
+                alignSelf: "center",
+                paddingLeft: "8rem",
+                paddingRight: "8rem",
+                borderRadius: "10px",
+                paddingTop: "1rem",
+                paddingBottom: "1rem",
+                textAlign: "center",
+                margin: "1rem"
+            }}>View All Properties</button>
+
         </div>
     )
 }
