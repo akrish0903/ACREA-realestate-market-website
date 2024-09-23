@@ -46,7 +46,7 @@ function Header() {
         <div
             className={Styles.headerScreen}
             style={{
-                backgroundColor: Config.color.primaryColor800
+                backgroundColor: Config.color.primaryColor900
             }}
         >
             <div className={Styles.headerScreenLeft}>
@@ -72,7 +72,7 @@ function Header() {
                     >
                         <h6 style={{ color: Config.color.background, borderBottom: `4px ${Config.color.primaryColor1000} solid` }}>HOME</h6>
                     </NavLink>
-                    <h6 style={{ color: Config.color.background }}>SELL</h6>
+                    <h6 style={{ color: Config.color.background }}>BUY</h6>
                     <h6 style={{ color: Config.color.background }}>AGENTS</h6>
                     <h6 style={{ color: Config.color.background }}>ABOUT US</h6>
                 </div>

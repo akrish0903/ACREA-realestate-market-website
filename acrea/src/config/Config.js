@@ -2,19 +2,21 @@ export var Config = {
     color: {
         background: "white",
         textColor: "black",
+        textColor100: "#4B5563",
         primaryColor1000: "red",
         primaryColor900: "#BC0000",
         primaryColor800: "#D74646",
-        primaryColor100:"#fae7e7",
+        primaryColor600: "#FF3C3C",
+        primaryColor100: "#fae7e7",
 
         secondaryColor100: "#F3F4F6",
         secondaryColor200: "#EFF6FF",
         secondaryColor300: "#DBEAFE",
 
-        danger:"#DC4C64",
-        success:"#14A44D",
-        primary:"#3B71CA",
-        warning:"#E4A11B",
+        danger: "#DC4C64",
+        success: "#14A44D",
+        primary: "#3B71CA",
+        warning: "#E4A11B",
 
     },
     fontSize: {

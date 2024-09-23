@@ -1,4 +1,94 @@
-.dashboardScreen{
+.dashboardScreen {
     display: flex;
     flex-direction: column;
+}
+
+.optionalAuthCard {
+    height: 10rem;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.optionalAuthCardLeft {
+    height: 80%;
+    width: 47%;
+    border-radius: 10px;
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
+    flex-direction: column;
+    padding: 1rem;
+    gap: .3rem;
+}
+
+.optionalAuthCardLeft button {
+    width: fit-content;
+}
+
+.optionalAuthCardRight {
+    height: 80%;
+    width: 47%;
+    border-radius: 10px;
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
+    gap: .3rem;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.optionalAuthCardRight button {
+    width: fit-content;
+}
+
+
+
+
+
+
+.featuredProperty {
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    gap: 1rem;
+}
+
+.featuredPropertyContainer {
+    width: 100%;
+    padding: 1rem;
+    justify-content: space-evenly;
+}
+
+.featuredPropertyContainerCard {
+    height: 12rem;
+    width: 45%;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+
+.featuredPropertyContainerCardLeft {
+    height: 100%;
+    width: 40%;
+}
+
+.featuredPropertyContainerCardRight {
+    height: 100%;
+    width: 60%;
+    padding: 1rem;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.featuredPropertyContainerCardRightTop {
+    flex-direction: column;
+}
+
+.featuredPropertyContainerCardRightBottom {
+    justify-content: space-between;
+    border-top: .5px grey solid;
+    padding-top: .4rem;
+}
+
+
+.featuredPropertyContainerCardRightTopSub {
+    align-items: center;
+    gap: .2rem;
 }
