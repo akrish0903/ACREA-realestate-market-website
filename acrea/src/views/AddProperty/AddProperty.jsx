@@ -100,7 +100,7 @@ function AddProperty (){
                   <label htmlFor="amenity_air_conditioning">Air Conditioning</label>
                 </div>
               </div>
-            </section>
+            </div>
             <div className={Styles.formGroup}>
               <div  className={Styles.locationGroup }>
                 <label>Number of (Leave blank if not applicable)</label>
