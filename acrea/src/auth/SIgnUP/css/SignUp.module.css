@@ -102,3 +102,11 @@
     transition-duration: 5s;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;    
 }
+
+.error {
+    font-size: 0.8rem;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+  }
+  

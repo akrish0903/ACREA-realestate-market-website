@@ -1,5 +1,6 @@
 import React from 'react'
 import Header from '../../components/Header'
+import Footer from '../../components/Footer';
 import Styles from "./css/ViewAllProperties.module.css"
 import { useLocation } from 'react-router-dom';
 import SecondHeader from '../../components/SecondHeader';
@@ -23,6 +24,7 @@ function ViewAllProperties() {
                 
 
             </div>
+            <Footer/>
         </div>
     )
 }

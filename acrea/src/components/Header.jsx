@@ -1,46 +1,44 @@
-import React, { useState } from 'react'
-import Styles from "./css/Header.module.css"
-import { Config } from '../config/Config'
+import React, { useState } from 'react';
+import Styles from "./css/Header.module.css";
+import { Config } from '../config/Config';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Dropdown_Bootstrap from './Dropdown_Bootstrap';
+import HomeIcon from '@mui/icons-material/Home';
 
 function Header() {
     const navigation = useNavigate();
-    var userAuthData = useSelector(data => data.AuthUserDetailsSlice);
+    const userAuthData = useSelector(data => data.AuthUserDetailsSlice);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const dropdownDataArr = [
         {
             title: "Edit Account",
-            navigate: "/editProfile",
-            customDom: null
+            navigate: "/editProfile"
+            // customDom: null
         },
-        {
-            title: "My Properties",
-            navigate: "",
-            customDom: null
-        }, {
-            title: "Favorites",
-            navigate: "/favorites",
-            customDom: null
-        },
-        {
+        // Only add "My Properties" if the user is an agent
+        ...(userAuthData.usrType === 'agent' ? [{ title: "My Properties", navigate: "/myProperties" }] : []),
+        ...(userAuthData.usrType === 'buyer' ? [{ title: "Favorites", navigate: "/FavoritedProperties" }] : []),
+        { 
             title: "Help Center",
-            navigate: "/help-center",
-            customDom: null
-        },
+            navigate: "/help-center"
+            // customDom: null
+         },
         {
             title: "Logout",
-            navigate: "/logout",
-            customDom: null
+            navigate: "/logout"
+            // customDom: null
         },
+    ];
 
-
-
-    ]
-
+    const activeLinkStyle = {
+        borderBottom: `4px solid ${Config.color.primaryColor1000}`,
+        borderBottomColor:  `${Config.color.primaryColor1000}`,
+        color: Config.color.background,
+        textDecoration: 'none'
+    };
 
     return (
         <div
@@ -50,46 +48,65 @@ function Header() {
             }}
         >
             <div className={Styles.headerScreenLeft}>
-                <img
-                    src={Config.imagesPaths.logo2}
-                    className={Styles.screenRightContainerImg}
+                <NavLink to={"/"}
                     style={{
-                        objectFit: 'contain',
-                        width: "100%",
-                        height: "100%"
-                    }}
-                />
+                        textDecoration: 'none',
+                        height: "3.5rem"
+                    }}>
+                    <img
+                        src={Config.imagesPaths.logo2}
+                        className={Styles.screenRightContainerImg}
+                        style={{
+                            objectFit: 'contain',
+                            width: "100%",
+                            height: "100%"
+                        }}
+                    />
+                </NavLink>
             </div>
             <div className={Styles.headerScreenRight}>
                 <div className={Styles.headerScreenRightFirst}>
-                    <NavLink
+                <h6><NavLink
                         to={"/"}
-                        style={{
-                            textDecoration: 'none',
-                            height: "2rem"
-                        }}
-                        className={({ isActive }) => { null }}
+                        style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
                     >
-                        <h6 style={{ color: Config.color.background, borderBottom: `4px ${Config.color.primaryColor1000} solid` }}>HOME</h6>
+                        {/* <HomeIcon style={{margin:'auto'}}/> */}
+                        HOME
                     </NavLink>
-                    <h6 style={{ color: Config.color.background }}>BUY</h6>
-                    <h6 style={{ color: Config.color.background }}>AGENTS</h6>
-                    <h6 style={{ color: Config.color.background }}>ABOUT US</h6>
+                </h6>
+                {(userAuthData.usrEmail=== null || userAuthData.usrType==='buyer' ) &&
+                    <h6>
+                        <NavLink
+                            to="/ViewAllProperties"
+                            style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
+                        >
+                            BUY
+                        </NavLink>
+                    </h6>}
+                    {(userAuthData.usrEmail=== null || userAuthData.usrType==='buyer' ) &&
+                    <h6 style={{ color: Config.color.background }}>AGENTS</h6>}
+                    <h6><NavLink
+                        to={"/About"}
+                        style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
+                    >
+                        ABOUT US
+                    </NavLink>
+                </h6>
                 </div>
 
                 <div
                     className={Styles.headerScreenRightSecond}
                     style={{ height: "88%" }}
                     onClick={() => {
-                        userAuthData.usrEmail === null ?
-                            navigation("/signin") :
-                            null;
-                        userAuthData.usrEmail === null ?
-                            null :
+                        if (userAuthData.usrEmail === null) {
+                            navigation("/signin");
+                        } else {
                             setIsDropdownOpen(true);
-                    }}>
+                        }
+                    }}
+                >
                     {userAuthData.usrEmail === null ? (
-                        <>
+                        <div>
                             <AccountCircleIcon
                                 style={{
                                     objectFit: "contain",
@@ -99,13 +116,11 @@ function Header() {
                                 }}
                             />
                             <p style={{ color: Config.color.background }}>Sign In/Register</p>
-                        </>) : (
-                        <>
-                            <div style={{
-                                borderRadius: "50%",
-                                overflow: "hidden",
-                            }}>
-                                <img src={userAuthData.usrProfileUrl?userAuthData.usrProfileUrl:Config.imagesPaths.user_null} style={{
+                        </div>
+                    ) : (
+                        <div>
+                            <div style={{ borderRadius: "50%", overflow: "hidden" }}>
+                                <img src={userAuthData.usrProfileUrl ? userAuthData.usrProfileUrl : Config.imagesPaths.user_null} style={{
                                     objectFit: "contain",
                                     width: "3rem",
                                     height: "3rem",
@@ -134,18 +149,15 @@ function Header() {
                                     isDropdownOpen={isDropdownOpen}
                                     dropdownDataArr={dropdownDataArr}
                                     closeFunc={() => {
-                                        setIsDropdownOpen(false)
+                                        setIsDropdownOpen(false);
                                     }} />
                             </div>
-
-                        </>
-
-                    )
-                    }
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default Header
+export default Header;

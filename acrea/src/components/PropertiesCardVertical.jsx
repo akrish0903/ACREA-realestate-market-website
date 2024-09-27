@@ -5,7 +5,10 @@ import HotelIcon from '@mui/icons-material/Hotel';
 import BathtubIcon from '@mui/icons-material/Bathtub';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import PlaceIcon from '@mui/icons-material/Place';
+import { useNavigate } from 'react-router-dom';
+
 function PropertiesCardVertical() {
+    var navigation = useNavigate();
     return (
         <div className={Styles.recentPropCard}>
             {/* top */}
@@ -29,7 +32,7 @@ function PropertiesCardVertical() {
                     paddingLeft: ".5rem",
                     paddingRight: ".5rem",
                     alignSelf: "flex-end"
-                }}>$2,500</p>
+                }}>₹2,500</p>
             </div>
 
             {/* bottom */}
@@ -87,7 +90,6 @@ function PropertiesCardVertical() {
                     </div>
                 </div>
 
-
                 <div className={Styles.featuredPropertyContainerCardRightBottom}>
                     <div style={{ alignItems: "center" }}>
                         <PlaceIcon style={{
@@ -101,7 +103,8 @@ function PropertiesCardVertical() {
                             fontSize: Config.fontSize.small
                         }}>Boston MA</p>
                     </div>
-                    <button style={{
+                    <button onClick={()=>{navigation("/PropertyPage")}}
+                    style={{
                         color: Config.color.background,
                         backgroundColor: Config.color.primaryColor900,
                         width: "fit-content",

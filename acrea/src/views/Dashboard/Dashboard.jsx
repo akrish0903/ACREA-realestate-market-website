@@ -2,6 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
 import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import Styles from "./css/Dashboard.module.css";
 import SecondHeader from '../../components/SecondHeader';
 import { Config } from '../../config/Config';
@@ -79,6 +80,38 @@ function Dashboard() {
                     >Add Property</button>
                 </div>
             </div>)}
+            {/*only in agentpage */}
+            {userAuthData.usrType=== 'agent' && (<div className={Styles.optionalAuthCard}>
+                <div
+                    style={{ backgroundColor: Config.color.secondaryColor300 }}
+                    className={Styles.optionalAuthCardRight}
+                >
+                    <p style={{
+                        fontWeight: "bolder",
+                        fontSize: Config.fontSize.medium,
+                        color: Config.color.textColor
+                    }}>For Property Agents</p>
+                    <p style={{
+                        fontSize: Config.fontSize.small,
+                        color: Config.color.textColor
+                    }}>List your properties and reach potential buyers.</p>
+                    <button
+                    onClick={()=>{navigation("/AddProperty")}}
+                        style={{
+                            backgroundColor: Config.color.primaryColor900,
+                            color: Config.color.background,
+                            border: "none",
+                            padding: ".2rem",
+                            paddingLeft: ".8rem",
+                            paddingRight: ".8rem",
+                            borderRadius: "5px",
+                            fontSize: Config.fontSize.regular,
+                            alignSelf: "flex-end",
+                        }}
+                    >Add Property</button>
+                </div>
+            </div>)}
+
 
 
             {/* featured Properties */}
@@ -110,7 +143,7 @@ function Dashboard() {
                                 margin: ".8rem",
                                 paddingLeft: ".5rem",
                                 paddingRight: ".5rem"
-                            }}>$2,500</p>
+                            }}>₹2,500</p>
                         </div>
                         <div
                             className={Styles.featuredPropertyContainerCardRight}
@@ -180,7 +213,8 @@ function Dashboard() {
                                         fontSize: Config.fontSize.small
                                     }}>Boston MA</p>
                                 </div>
-                                <button style={{
+                                <button onClick={()=>{navigation("/PropertyPage")}}
+                                    style={{
                                     color: Config.color.background,
                                     backgroundColor: Config.color.primaryColor900,
                                     width: "fit-content",
@@ -215,7 +249,7 @@ function Dashboard() {
                                 margin: ".8rem",
                                 paddingLeft: ".5rem",
                                 paddingRight: ".5rem"
-                            }}>$2,500</p>
+                            }}>₹2,500</p>
                         </div>
                         <div
                             className={Styles.featuredPropertyContainerCardRight}
@@ -285,7 +319,8 @@ function Dashboard() {
                                         fontSize: Config.fontSize.small
                                     }}>Boston MA</p>
                                 </div>
-                                <button style={{
+                                <button onClick={()=>{navigation("/PropertyPage")}}
+                                style={{
                                     color: Config.color.background,
                                     backgroundColor: Config.color.primaryColor900,
                                     width: "fit-content",
@@ -335,7 +370,7 @@ function Dashboard() {
                 textAlign: "center",
                 margin: "1rem"
             }}>View All Properties</button>
-
+            <Footer/>
         </div>
     )
 }

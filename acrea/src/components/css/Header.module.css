@@ -66,11 +66,16 @@
     cursor: pointer;
 }
 
-
-
-
 .headerScreenRightSecondContainer{
     height: 100%;
     justify-content: center;
     flex-direction: column;
+}
+
+.activeLink {
+    border-bottom: 4px solid #ff9800;
+}
+
+.inactiveLink {
+    border-bottom: none;
 }
