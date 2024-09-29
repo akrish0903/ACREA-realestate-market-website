@@ -54,14 +54,6 @@ const signupUserAuthController = async (req, res, next) => {
 
 };
 
-
-
-
-
-
-
-
-
 // Get all users
 const signinUserAuthController = async (req, res, next) => {
     const { usrEmail, usrPassword } = req.body;
@@ -168,8 +160,6 @@ const refreshTokenUserAuthController = async function (req, res, next) {
         next(error)
     }
 }
-
-
 
 const logoutUserAuthController = async (req, res, next) => {
 

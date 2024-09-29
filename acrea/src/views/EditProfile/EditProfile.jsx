@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../../components/Header';
+import Footer from '../../components/Footer'
 import Styles from "./css/EditProfile.module.css";
 import { Config } from '../../config/Config';
 import { useNavigate } from 'react-router-dom';
@@ -7,9 +8,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "react-toastify";
 import useApi from '../../utils/useApi';
 import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 
 function EditProfile() {
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
     var userAuthDetails = useSelector(state => state.AuthUserDetailsSlice);
 
     const dispatch = useDispatch();
@@ -19,7 +22,6 @@ function EditProfile() {
         usrMobileNumber: userAuthDetails.usrMobileNumber,
         usrProfileUrl: userAuthDetails.usrProfileUrl,
         userBio: userAuthDetails.userBio,
-        // usrPassword: userAuthDetails.usrPassword
     });
 
     // State for password change
@@ -90,6 +92,7 @@ function EditProfile() {
         }
     }
 
+    // Password change handler
     async function changePasswordHandler(e) {
         e.preventDefault();
         const { currentPassword, newPassword, confirmNewPassword } = passwordChangeObj;
@@ -184,6 +187,7 @@ function EditProfile() {
                     </div>
                     <div className={Styles.editProfileContainerRight}>
                         <form className={Styles.editProfileContainerRightForm}>
+                        <h3>Edit Profile</h3>
                             <input
                                 placeholder='Edit your name.'
                                 type={"text"}
@@ -207,8 +211,7 @@ function EditProfile() {
                         <div className={Styles.editProfileContainerRightButtonsDiv}>
                             <button className="btn btn-primary" onClick={(e) => { editUserDetailsHandler(e) }}>Save</button>
                             <button className="btn btn-danger" onClick={() => navigate("/")}>Cancel</button>
-                        </div>
-
+                        </div>  
                     </div>
                 </div>
 
@@ -216,29 +219,60 @@ function EditProfile() {
                 <div className={Styles.passwordChangeSection}>
                     <h3>Change Password</h3>
                     <form onSubmit={changePasswordHandler} className={Styles.editProfileContainerRightForm}>
-                        <input
-                            type="password"
-                            placeholder="Current Password"
-                            value={passwordChangeObj.currentPassword}
-                            onChange={(f) => setPasswordChangeObj({ ...passwordChangeObj, currentPassword: f.target.value })}
-                            style={{marginTop:'2px'}}
-                        />
-                        <input
-                            type="password"
-                            placeholder="New Password"
-                            value={passwordChangeObj.newPassword}
-                            onChange={(f) => setPasswordChangeObj({ ...passwordChangeObj, newPassword: f.target.value })}
-                        />
-                        <input
-                            type="password"
-                            placeholder="Confirm New Password"
-                            value={passwordChangeObj.confirmNewPassword}
-                            onChange={(f) => setPasswordChangeObj({ ...passwordChangeObj, confirmNewPassword: f.target.value })}
-                        />
+                        <div style={{
+                            alignItems: "center",
+                            justifyContent: "right"
+                        }}>
+                            <div style={{ flexDirection: 'column' }}>
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="Current Password"
+                                    value={passwordChangeObj.currentPassword}
+                                    onChange={(e) => setPasswordChangeObj({ ...passwordChangeObj, currentPassword: e.target.value })}
+                                    style={{marginTop:'2px'}}
+                                />
+                            </div>
+                            <RemoveRedEyeIcon onClick={() => { setShowPassword(!showPassword) }} 
+                                className={Styles.screenRightContainerMidFormEyeIcon}
+                                style={{ cursor: 'pointer' }}/>
+                        </div>
+                        <div style={{
+                            alignItems: "center",
+                            justifyContent: "right"
+                        }}>
+                            <div style={{ flexDirection: 'column' }}>
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="New Password"
+                                    value={passwordChangeObj.newPassword}
+                                    onChange={(e) => setPasswordChangeObj({ ...passwordChangeObj, newPassword: e.target.value })}
+                                />
+                            </div>
+                            <RemoveRedEyeIcon onClick={() => { setShowPassword(!showPassword) }} 
+                                className={Styles.screenRightContainerMidFormEyeIcon}
+                                style={{ cursor: 'pointer' }}/>
+                        </div>
+                        <div style={{
+                            alignItems: "center",
+                            justifyContent: "right"
+                        }}>
+                            <div style={{ flexDirection: 'column' }}>
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="Confirm New Password"
+                                    value={passwordChangeObj.confirmNewPassword}
+                                    onChange={(e) => setPasswordChangeObj({ ...passwordChangeObj, confirmNewPassword: e.target.value })}
+                                />
+                            </div>
+                            <RemoveRedEyeIcon onClick={() => { setShowPassword(!showPassword) }} 
+                                className={Styles.screenRightContainerMidFormEyeIcon}
+                                style={{ cursor: 'pointer' }}/>
+                        </div>
                         <button type="submit" className="btn btn-primary" onClick={(e) => { changePasswordHandler(e) }}>Change Password</button>
                     </form>
                 </div>
             </div>
+            <Footer/>
         </div>
     );
 }

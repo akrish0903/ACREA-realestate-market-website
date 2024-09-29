@@ -2,7 +2,7 @@ import React from 'react'
 
 function NoPageFound() {
   return (
-    <div>NoPageFound</div>
+    <div style={{alignContent:'center'}}><h1>NoPageFound</h1></div>
   )
 }
 

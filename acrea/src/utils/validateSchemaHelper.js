@@ -4,7 +4,7 @@ const validateSchemaHelper = {
     usrFullName: "",
     usrEmail: Yup.string()
         .email('Invalid email address.')
-        .matches(/^[A-Za-z][A-Za-z0-9]*@[A-Za-z]+\.[A-Za-z0-9]+$/, 'Email should start with an alphabet, may contain numbers, have an alphabet before and after @, and a dot followed by alphanumeric.')
+        .matches(/^[A-Za-z][A-Za-z0-9]*@[A-Za-z]+\.[A-Za-z0-9]+$/, 'Email format not correct.')
         .required('Email is required.'),
     usrPhoneNumber: Yup.string()
         .matches(/^[0-9]+$/, 'Phone number must contain only digits.')
