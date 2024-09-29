@@ -120,7 +120,7 @@ function Header() {
                     ) : (
                         <div>
                             <div style={{ borderRadius: "50%", overflow: "hidden" }}>
-                                <img src={userAuthData.usrProfileUrl ? userAuthData.usrProfileUrl : Config.imagesPaths.user_null} style={{
+                                <img src={userAuthData.usrProfileUrl ?userAuthData.usrProfileUrl==="null"?Config.imagesPaths.user_null: userAuthData.usrProfileUrl : Config.imagesPaths.user_null} style={{
                                     objectFit: "contain",
                                     width: "3rem",
                                     height: "3rem",

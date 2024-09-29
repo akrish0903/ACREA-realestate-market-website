@@ -11,7 +11,7 @@ import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
 function EditProfile() {
     const navigate = useNavigate();
     var userAuthDetails = useSelector(state => state.AuthUserDetailsSlice);
-    
+
     const dispatch = useDispatch();
     const [userEditObj, setUserEditObj] = useState({
         usrFullName: userAuthDetails.usrFullName,
@@ -23,11 +23,11 @@ function EditProfile() {
     });
 
     // State for password change
-    // const [passwordChangeObj, setPasswordChangeObj] = useState({
-    //     currentPassword: "",
-    //     newPassword: "",
-    //     confirmNewPassword: "",
-    // });
+    const [passwordChangeObj, setPasswordChangeObj] = useState({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+    });
 
     async function editUserDetailsHandler(e) {
         e.preventDefault();
@@ -66,11 +66,15 @@ function EditProfile() {
                 success: {
                     render({ toastProps, closeToast, data }) {
                         dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrEmail));
+                        localStorage.setItem("usrEmail", data.user_details.usrEmail);
                         dispatch(AuthUserDetailsSliceAction.setUsrFullName(data.user_details.usrFullName));
+                        localStorage.setItem("usrFullName", data.user_details.usrFullName);
                         dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(data.user_details.usrMobileNumber));
+                        localStorage.setItem("usrMobileNumber", data.user_details.usrMobileNumber);
                         dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(data.user_details.usrProfileUrl));
+                        localStorage.setItem("usrProfileUrl", data.user_details.usrProfileUrl);
                         dispatch(AuthUserDetailsSliceAction.setUserBio(data.user_details.userBio));
-                        
+                        localStorage.setItem("userBio", data.user_details.userBio);
                         return data.message || "Account details updated successfully.";
                     },
                 },
@@ -86,69 +90,69 @@ function EditProfile() {
         }
     }
 
-    // async function changePasswordHandler(f) {
-    //     e.preventDefault();
-    //     const { currentPassword, newPassword, confirmNewPassword } = passwordChangeObj;
+    async function changePasswordHandler(e) {
+        e.preventDefault();
+        const { currentPassword, newPassword, confirmNewPassword } = passwordChangeObj;
 
-    //     if (!currentPassword || !newPassword || !confirmNewPassword) {
-    //         toast.error("Please fill all password fields.", {
-    //             position: 'bottom-right',
-    //             theme: "dark",
-    //         });
-    //         return;
-    //     }
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            toast.error("Please fill all password fields.", {
+                position: 'bottom-right',
+                theme: "dark",
+            });
+            return;
+        }
 
-    //     if (newPassword !== confirmNewPassword) {
-    //         toast.error("New passwords do not match.", {
-    //             position: 'bottom-right',
-    //             theme: "dark",
-    //         });
-    //         return;
-    //     }
+        if (newPassword !== confirmNewPassword) {
+            toast.error("New passwords do not match.", {
+                position: 'bottom-right',
+                theme: "dark",
+            });
+            return;
+        }
 
-    //     const apiCallPromise = new Promise(async (resolve, reject) => {
-    //         const apiResponse = await useApi({
-    //             url: "/changePassword",
-    //             method: "POST",
-    //             authRequired: true,
-    //             authToken: userAuthDetails.usrAccessToken,
-    //             data: {
-    //                 usrPassword: userEditObj.usrPassword,
-    //             },
-    //         });
+        const apiCallPromise = new Promise(async (resolve, reject) => {
+            const apiResponse = await useApi({
+                url: "/resetPassword",
+                method: "POST",
+                authRequired: true,
+                authToken: userAuthDetails.usrAccessToken,
+                data: {
+                    usrPasswordCurrent: passwordChangeObj.currentPassword,
+                    usrPasswordNew:passwordChangeObj.confirmNewPassword,
+                },
+            });
 
-    //         if (apiResponse && apiResponse.error) {
-    //             reject(apiResponse.error.message);
-    //         } else {
-    //             resolve(apiResponse);
-    //         }
-    //     });
+            if (apiResponse && apiResponse.error) {
+                reject(apiResponse.error.message);
+            } else {
+                resolve(apiResponse);
+            }
+        });
 
-    //     await toast.promise(apiCallPromise, {
-    //         pending: "Changing password...",
-    //         success: {
-    //             render({ toastProps, closeToast, data }) {
-    //                 dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrPassword));
-    //                 return data.message || "Password changed successfully.";
-    //             },
-    //         },
-    //         error: {
-    //             render({ toastProps, closeToast, data }) {
-    //                 return data;
-    //             },
-    //         },
-    //     }, {
-    //         position: 'bottom-right',
-    //         theme: "dark",
-    //     });
+        await toast.promise(apiCallPromise, {
+            pending: "Changing password...",
+            success: {
+                render({ toastProps, closeToast, data }) {
+                    return data.message || "Password changed successfully.";
+                },
+            },
+            error: {
+                render({ toastProps, closeToast, data }) {
+                    return data;
+                },
+            },
+        }, {
+            position: 'bottom-right',
+            theme: "dark",
+        });
 
-    //     // Clear password fields after successful change
-    //     setPasswordChangeObj({
-    //         currentPassword: "",
-    //         newPassword: "",
-    //         confirmNewPassword: "",
-    //     });
-    // }
+        // Clear password fields after successful change
+        setPasswordChangeObj({
+            currentPassword: "",
+            newPassword: "",
+            confirmNewPassword: "",
+        });
+    }
 
     return (
         <div className={Styles.editProfileScreen}>
@@ -204,12 +208,12 @@ function EditProfile() {
                             <button className="btn btn-primary" onClick={(e) => { editUserDetailsHandler(e) }}>Save</button>
                             <button className="btn btn-danger" onClick={() => navigate("/")}>Cancel</button>
                         </div>
-                        
+
                     </div>
                 </div>
 
                 {/* Password Change Section */}
-                {/* <div className={Styles.passwordChangeSection}>
+                <div className={Styles.passwordChangeSection}>
                     <h3>Change Password</h3>
                     <form onSubmit={changePasswordHandler} className={Styles.editProfileContainerRightForm}>
                         <input
@@ -231,9 +235,9 @@ function EditProfile() {
                             value={passwordChangeObj.confirmNewPassword}
                             onChange={(f) => setPasswordChangeObj({ ...passwordChangeObj, confirmNewPassword: f.target.value })}
                         />
-                        <button type="submit" className="btn btn-primary" onClick={(f) => { changePasswordHandler(f) }}>Change Password</button>
+                        <button type="submit" className="btn btn-primary" onClick={(e) => { changePasswordHandler(e) }}>Change Password</button>
                     </form>
-                </div> */}
+                </div>
             </div>
         </div>
     );

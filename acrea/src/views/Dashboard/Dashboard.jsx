@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
 import Header from '../../components/Header';
@@ -15,8 +15,24 @@ import { useNavigate } from 'react-router-dom';
 function Dashboard() {
     var userAuthData = useSelector(data => data.AuthUserDetailsSlice)
     console.log("user auth data ---> ",userAuthData);
-    
+    const dispatch = useDispatch();
+
     var navigation = useNavigate();
+
+    useEffect(() => {
+        //if user is logged in already make him logged in 
+        if (localStorage.getItem("access_token") && userAuthData.usrAccessToken === null) {
+          dispatch(AuthUserDetailsSliceAction.setUsrEmail(localStorage.getItem("usrEmail")));
+          dispatch(AuthUserDetailsSliceAction.setUsrFullName(localStorage.getItem("usrFullName")));
+          dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(localStorage.getItem("usrMobileNumber")));
+          dispatch(AuthUserDetailsSliceAction.setUsrType(localStorage.getItem("usrType")));
+          dispatch(AuthUserDetailsSliceAction.setAccessToken(localStorage.getItem("access_token")));
+          dispatch(AuthUserDetailsSliceAction.setRefreshToken(localStorage.getItem("refresh_token")));
+          dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(localStorage.getItem("usrProfileUrl")));
+          dispatch(AuthUserDetailsSliceAction.setUserBio(localStorage.getItem("userBio")));
+        }
+      }, [])
+
     return (
         <div className={`screen ${Styles.dashboardScreen}`}>
             <Header />

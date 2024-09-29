@@ -115,9 +115,7 @@ const updateUserProfileAuthController = async function (req, res, next) {
         fetchedUserData.usrMobileNumber = usrMobileNumber;
         fetchedUserData.usrProfileUrl = usrProfileUrl;
         fetchedUserData.userBio = userBio;
-        console.log("first")
         var updatedFetchedUser = await fetchedUserData.save()
-        console.log("second")
         res.status(200).json({
             message: "User profile updated successfully.",
             user_details: {
@@ -130,6 +128,26 @@ const updateUserProfileAuthController = async function (req, res, next) {
         });
         console.log("third")
 
+    } catch (error) {
+        next(httpErrors.InternalServerError("Error updating profile."))
+    }
+}
+
+const resetPasswordAuthController = async function (req, res, next) {
+    var { usrPasswordCurrent, usrPasswordNew } = req.body;
+    var { aud: userId } = req.payload;
+    try {
+        var fetchedUserData = await UserAuthModel.findById(userId);
+        var oldPassRes = await fetchedUserData.isValidPassword(usrPasswordCurrent);
+        if (oldPassRes === false) {
+            next(httpErrors.Unauthorized("Current password is wrong."))
+        } else {
+            fetchedUserData.usrPassword = usrPasswordNew;
+            var updatedFetchedUser = await fetchedUserData.save();
+            console.log(updatedFetchedUser);
+            res.status(201).json({ message: "User password updated success." })
+        }
+        console.log(oldPassRes)
     } catch (error) {
         next(httpErrors.InternalServerError("Error updating profile."))
     }
@@ -179,4 +197,4 @@ const logoutUserAuthController = async (req, res, next) => {
         next(error)
     }
 }
-module.exports = { signupUserAuthController, signinUserAuthController, updateUserProfileAuthController, refreshTokenUserAuthController, logoutUserAuthController };
+module.exports = { signupUserAuthController, signinUserAuthController, updateUserProfileAuthController, resetPasswordAuthController, refreshTokenUserAuthController, logoutUserAuthController };

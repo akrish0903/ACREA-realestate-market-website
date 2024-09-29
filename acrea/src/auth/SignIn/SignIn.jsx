@@ -51,14 +51,21 @@ function SignIn() {
 
             // Updating details to class
             dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrEmail));
+            localStorage.setItem("usrEmail",data.user_details.usrEmail);
             dispatch(AuthUserDetailsSliceAction.setUsrFullName(data.user_details.usrFullName));
+            localStorage.setItem("usrFullName",data.user_details.usrFullName);
             dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(data.user_details.usrMobileNumber));
+            localStorage.setItem("usrMobileNumber",data.user_details.usrMobileNumber);
             dispatch(AuthUserDetailsSliceAction.setUsrType(data.user_details.usrType));
+            localStorage.setItem("usrType",data.user_details.usrType);
             dispatch(AuthUserDetailsSliceAction.setAccessToken(data.access_token));
+            localStorage.setItem("access_token",data.access_token);
             dispatch(AuthUserDetailsSliceAction.setRefreshToken(data.refresh_token));
+            localStorage.setItem("refresh_token",data.refresh_token);
             dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(data.user_details.usrProfileUrl));
+            localStorage.setItem("usrProfileUrl",data.user_details.usrProfileUrl);
             dispatch(AuthUserDetailsSliceAction.setUserBio(data.user_details.userBio));
-
+            localStorage.setItem("userBio",data.user_details.userBio);
 
             formicHelpers.resetForm();
 

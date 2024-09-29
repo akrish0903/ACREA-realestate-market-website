@@ -38,10 +38,12 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function (next) {
     try {
         console.log("This is middleware is called before the user save is done")
+        console.log(this.usrPassword)
         if (this.isModified("usrPassword")) {
             const salt = await bcrypt.genSalt(10);
             const hashPass = await bcrypt.hash(this.usrPassword, salt);
             this.usrPassword = hashPass;
+            console.log(this.usrPassword);
         }
         next();
     } catch (error) {

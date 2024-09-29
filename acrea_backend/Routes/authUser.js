@@ -10,7 +10,7 @@ router.post("/signin",UserAuthController.signinUserAuthController);
 
 // protected route and accessed when correct token is passes
 router.post("/updateUserProfile",jwt_verify_token,UserAuthController.updateUserProfileAuthController)
-
+router.post("/resetPassword",jwt_verify_token,UserAuthController.resetPasswordAuthController)
 router.post("/refresh-token",UserAuthController.refreshTokenUserAuthController);
 
 router.delete("/logout",UserAuthController.logoutUserAuthController);
