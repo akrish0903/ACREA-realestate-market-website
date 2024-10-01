@@ -14,6 +14,10 @@ router.post("/updateUserProfile",jwt_verify_token,UserAuthController.updateUserP
 // New route to reset password (protected)
 router.post("/resetPassword",jwt_verify_token,UserAuthController.resetPasswordAuthController)
 
+// New route to forgot password
+router.post("/forgot-password",jwt_verify_token,UserAuthController.forgotPasswordAuthController)
+
+
 // Route to refresh token
 router.post("/refresh-token",UserAuthController.refreshTokenUserAuthController);
 
