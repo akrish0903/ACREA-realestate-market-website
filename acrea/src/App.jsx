@@ -15,6 +15,7 @@ import FavoritedProperties from './views/FavoritedProperties/FavoritedProperties
 import Logout from './views/Logout/Logout';
 import About from './views/About/About';
 import AddProperty from './views/AddProperty/AddProperty'
+import ForgotPassword from './views/ForgotPassword/ForgotPassword'
 
 function App() {
   var authUserDetails = useSelector(data=>data.AuthUserDetailsSlice)
@@ -26,6 +27,7 @@ function App() {
       <Routes>
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SIgnUP />} />
+        <Route path='/ForgotPassword' element={<ForgotPassword />} />
         {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
         
         <Route path='/AddProperty' element={<AddProperty />} />

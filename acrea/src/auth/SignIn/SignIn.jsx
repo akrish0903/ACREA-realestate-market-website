@@ -224,6 +224,7 @@ function SignIn() {
                         style={{ cursor: 'pointer' }}
                       />
                     </div>
+                    <Link to={"/ForgotPassword"} style={{ textDecoration: "none" }}>
                     <p
                       className={Styles.screenRightContainerMidFormForgetPass}
                       style={{
@@ -231,6 +232,7 @@ function SignIn() {
                         color: Config.color.primaryColor800
                       }}
                     >Forgot Password</p>
+                    </Link>
                   </div>
                 </Form>
 

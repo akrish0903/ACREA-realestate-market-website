@@ -104,6 +104,7 @@
   }
   .amenitiesSection {
     margin: 20px 0;
+    display: block;
   }
   .amenitiesSection label {
     display: block;
