@@ -70,6 +70,12 @@ const handleForgotPassword = async (values, { setSubmitting }) => {
       validationSchema={Yup.object(validationForgotPassword)} // Ensure this is correct
       onSubmit={handleForgotPassword}
       validateOnChange={true}
+      initialErrors={{
+        usrEmail: 'Email not filled.',
+        usrPhoneNumber: 'Phone Number not filled.',
+        newPassword: 'Password not filled.',
+        confirmPassword: 'Confirm Password not filled.',
+      }}
     >
       {({
         values,

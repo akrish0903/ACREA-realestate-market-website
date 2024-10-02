@@ -19,7 +19,7 @@ import ForgotPassword from './views/ForgotPassword/ForgotPassword'
 
 function App() {
   var authUserDetails = useSelector(data=>data.AuthUserDetailsSlice)
-  
+  // console.log(authUserDetails)
   return (
     // for page routing purpose
     <BrowserRouter>
@@ -30,7 +30,7 @@ function App() {
         <Route path='/ForgotPassword' element={<ForgotPassword />} />
         {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
         
-        <Route path='/AddProperty' element={<AddProperty />} />
+        {authUserDetails.usrType === "agent" && (<Route path='/AddProperty' element={<AddProperty />} />)}
         <Route path='/FavoritedProperties' element={<FavoritedProperties />} />
         <Route path='/PropertyPage' element={<PropertyPage />} />
         <Route path='/viewAllProperties' element={<ViewAllProperties />} />

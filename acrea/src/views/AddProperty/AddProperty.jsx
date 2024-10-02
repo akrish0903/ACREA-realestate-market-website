@@ -6,45 +6,121 @@ import { useLocation } from 'react-router-dom';
 import { Config } from '../../config/Config';
 
 
-function AddProperty (){
+function AddProperty() {
+
+  var [usrProperty, setUsrProperty] = useState({
+    userListingType: "Land",
+    usrListingName: "",
+    usrListingDescription: "",
+    usrListingSquareFeet: 0,
+    location: {
+      street: "",
+      city: "",
+      state: "",
+      pinCode: 0
+    },
+    usrAmenities: [],
+    usrExtraFacilities: {
+      beds: 0,
+      bath: 0
+    },
+    userListingImage: ""
+  })
+  console.log("--->", usrProperty)
   return (
-    <div className={`screen ${Styles.addPropertyScreen}`} style={{backgroundColor: Config.color.secondaryColor200}}>
-      <Header/>
-      <div className={Styles.card1}>      
-         <div className={Styles.formContainer}>
+    <div className={`screen ${Styles.addPropertyScreen}`} style={{ backgroundColor: Config.color.secondaryColor200 }}>
+      <Header />
+      <div className={Styles.card1}>
+        <div className={Styles.formContainer}>
           <form>
             <h2 className={Styles.formTitle}>Add Property</h2>
             <div className={Styles.formGroup}>
               <label htmlFor="type">Property Type</label>
               <div className={Styles.formGroup}>
-              <select id="type" name="type" required>
-                <option value="Land">Land</option>
-                <option value="Apartment">Apartment</option>
-                <option value="House">House</option>
-                <option value="Room">Room</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+
+                <select
+                  id="type"
+                  name="type"
+                  value={usrProperty.userListingType}
+                  onChange={(e) => setUsrProperty({ ...usrProperty, userListingType: e.target.value })}
+                  required>
+                  <option value="Land">Land</option>
+                  <option value="Apartment">Apartment</option>
+                  <option value="House">House</option>
+                  <option value="Room">Room</option>
+                  <option value="Other">Other</option>
+                </select>
+
+              </div>
             </div>
             <div className={Styles.formGroup}>
               <label htmlFor="name">Listing Name</label>
-              <input type="text" id="name" name="name" placeholder="eg. Beautiful Apartment In Mumbai" required />
+              <input type="text"
+                id="name"
+                name="name"
+                placeholder="eg. Beautiful Apartment In Mumbai"
+                value={usrProperty.usrListingName}
+                onChange={(e) => setUsrProperty({ ...usrProperty, usrListingName: e.target.value })}
+                required />
             </div>
             <div className={Styles.formGroup}>
               <label htmlFor="description">Description</label>
-              <textarea id="description" name="description" rows="4" placeholder="Add an optional description of your property"></textarea>
+              <textarea
+                id="description"
+                name="description"
+                rows="4"
+                placeholder="Add an optional description of your property"
+                value={usrProperty.usrListingDescription}
+                onChange={(e) => setUsrProperty({ ...usrProperty, usrListingDescription: e.target.value })}
+              ></textarea>
             </div>
             <div className={Styles.formGroup}>
               <label htmlFor="square_feet">Square Feet</label>
-              <input type="number" id="square_feet" name="square_feet" required />
+              <input
+                type="number"
+                id="square_feet"
+                name="square_feet"
+                value={usrProperty.usrListingSquareFeet}
+                onChange={(e) => setUsrProperty({ ...usrProperty, usrListingSquareFeet: e.target.value })}
+                required />
             </div>
             <div className={Styles.formGroup}>
-              <div  className={Styles.locationGroup }>
-              <label>Location</label>
-              <input type="text" id="street" name="location.street" placeholder="Street" />
-              <input type="text" id="city" name="location.city" placeholder="City" required />
-              <input type="text" id="state" name="location.state" placeholder="State" required />
-              <input type="text" id="zipcode" name="location.zipcode" placeholder="Zipcode" />
+              <div className={Styles.locationGroup}>
+                <label>Location</label>
+                <input
+                  type="text"
+                  id="street"
+                  name="location.street"
+                  placeholder="Street"
+                  value={usrProperty.location.street}
+                  onChange={(e) => { setUsrProperty({ ...usrProperty, location: { ...usrProperty.location, street: e.target.value } }) }}
+                />
+                <input
+                  type="text"
+                  id="city"
+                  name="location.city"
+                  placeholder="City"
+                  required
+                  value={usrProperty.location.city}
+                  onChange={(e) => { setUsrProperty({ ...usrProperty, location: { ...usrProperty.location, city: e.target.value } }) }}
+                />
+                <input
+                  type="text"
+                  id="state"
+                  name="location.state"
+                  placeholder="State"
+                  required
+                  value={usrProperty.location.state}
+                  onChange={(e) => { setUsrProperty({ ...usrProperty, location: { ...usrProperty.location, state: e.target.value } }) }}
+                />
+                <input
+                  type="number"
+                  id="zipcode"
+                  name="location.zipcode"
+                  placeholder="Zipcode"
+                  value={usrProperty.location.pinCode}
+                  onChange={(e) => { setUsrProperty({ ...usrProperty, location: { ...usrProperty.location, pinCode: e.target.value } }) }}
+                />
               </div>
             </div>
 
@@ -52,80 +128,260 @@ function AddProperty (){
               <label htmlFor="amenities">Amenities</label>
               <div className={Styles.amenitiesGrid}>
                 <div>
-                  <input type="checkbox" id="amenity_wifi" name="amenities" value="Wifi" />
+                  <input
+                    type="checkbox"
+                    id="amenity_wifi"
+                    name="amenities"
+                    value="Wifi"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_wifi">Wifi</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_kitchen" name="amenities" value="Full Kitchen" />
+                  <input type="checkbox" id="amenity_kitchen" name="amenities" value="Full Kitchen"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_kitchen">Full Kitchen</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_washer_dryer" name="amenities" value="Washer & Dryer" />
+                  <input type="checkbox" id="amenity_washer_dryer" name="amenities" value="Washer & Dryer"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_washer_dryer">Washer & Dryer</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_free_parking" name="amenities" value="Free Parking" />
+                  <input type="checkbox" id="amenity_free_parking" name="amenities" value="Free Parking"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_free_parking">Free Parking</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_pool" name="amenities" value="Swimming Pool" />
+                  <input type="checkbox" id="amenity_pool" name="amenities" value="Swimming Pool"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_pool">Swimming Pool</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_hot_tub" name="amenities" value="Hot Tub" />
+                  <input type="checkbox" id="amenity_hot_tub" name="amenities" value="Hot Tub"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_hot_tub">Hot Tub</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_24_7_security" name="amenities" value="24/7 Security" />
+                  <input type="checkbox" id="amenity_24_7_security" name="amenities" value="24/7 Security"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_24_7_security">24/7 Security</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_wheelchair_accessible" name="amenities" value="Wheelchair Accessible" />
+                  <input type="checkbox" id="amenity_wheelchair_accessible" name="amenities" value="Wheelchair Accessible"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_wheelchair_accessible">Wheelchair Accessible</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_elevator_access" name="amenities" value="Elevator Access" />
+                  <input type="checkbox" id="amenity_elevator_access" name="amenities" value="Elevator Access"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_elevator_access">Elevator Access</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_dishwasher" name="amenities" value="Dishwasher" />
+                  <input type="checkbox" id="amenity_dishwasher" name="amenities" value="Dishwasher"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_dishwasher">Dishwasher</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_gym_fitness_center" name="amenities" value="Gym/Fitness Center" />
+                  <input type="checkbox" id="amenity_gym_fitness_center" name="amenities" value="Gym/Fitness Center"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_gym_fitness_center">Gym/Fitness Center</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="amenity_air_conditioning" name="amenities" value="Air Conditioning" />
+                  <input type="checkbox" id="amenity_air_conditioning" name="amenities" value="Air Conditioning"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [...usrProperty.usrAmenities, e.target.value]
+                        })
+                      } else {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: usrProperty.usrAmenities.filter(amenity => amenity !== e.target.value)
+                        });
+                      }
+                    }}
+                  />
                   <label htmlFor="amenity_air_conditioning">Air Conditioning</label>
                 </div>
               </div>
             </div>
             <div className={Styles.formGroup}>
-              <div  className={Styles.locationGroup }>
+              <div className={Styles.locationGroup}>
                 <label>Number of (Leave blank if not applicable)</label>
                 <div className={Styles.flexRow}>
                   <div className={Styles.formGroup}>
                     <label htmlFor="beds">Beds</label>
-                     <input type="number" id="beds" name="beds" />
+                    <input type="number" id="beds" name="beds" 
+                    value={usrProperty.usrExtraFacilities.beds}
+                    onChange={(e)=>{setUsrProperty({...usrProperty,usrExtraFacilities:{...usrProperty.usrExtraFacilities,beds:e.target.value}})}}
+                    />
                   </div>
                   <div className={Styles.formGroup}>
-                     <label htmlFor="baths">Baths</label>
-                     <input type="number" id="baths" name="baths" />
+                    <label htmlFor="baths">Baths</label>
+                    <input type="number" id="baths" name="baths" 
+                    value={usrProperty.usrExtraFacilities.bath}
+                    onChange={(e)=>{setUsrProperty({...usrProperty,usrExtraFacilities:{...usrProperty.usrExtraFacilities,bath:e.target.value}})}}
+                    />
                   </div>
                 </div>
               </div>
             </div>
             <div className={Styles.formFooter}>
               <label htmlFor="image">Images</label>
-              <input type="file" id="image" name="image" />
+              <input type="file" id="image" name="image"
+                value={usrProperty.userListingImage}
+                onChange={(e) => setUsrProperty({ ...usrProperty, userListingImage: e.target.value })} />
             </div>
             <button type="submit" className={Styles.submitBtn}>Add Property</button>
             <p className={Styles.textSmallall}>By adding a property, you agree to our terms and conditions.</p>
           </form>
-          </div>
-    </div>
-    <Footer/>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 };
