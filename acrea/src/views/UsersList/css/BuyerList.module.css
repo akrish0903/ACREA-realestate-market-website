@@ -1,0 +1,29 @@
+.buyerScreen{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.buyerListContainer {
+    padding: 20px;
+    flex-direction: column;
+}
+.buyerTitle{
+    /* text-align: center; */
+    margin: 2rem;
+}
+
+.buyerTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.buyerTable th, .buyerTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.buyerTable th {
+    background-color: #f2f2f2;
+}

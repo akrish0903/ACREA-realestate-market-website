@@ -671,7 +671,7 @@ function Dashboard() {
                             color: Config.color.textColor
                         }}>Manage buyer profiles and track property interests.</p>
                         <button
-                        onClick={()=>{navigation("/viewAllProperties")}}
+                        onClick={()=>{navigation("/BuyerList")}}
                             style={{
                                 backgroundColor: Config.color.textColor,
                                 color: Config.color.background,

@@ -1,24 +1,27 @@
 import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
 import SignIn from './auth/SignIn/SignIn'
 import SIgnUP from './auth/SIgnUP/SIgnUP'
 import Dashboard from './views/Dashboard/Dashboard'
 import NoPageFound from './views/NoPageFound/NoPageFound'
-import { ToastContainer } from 'react-toastify';
 
-import 'react-toastify/dist/ReactToastify.css';
-import EditProfile from './views/EditProfile/EditProfile'
 import { useSelector } from 'react-redux'
+import 'react-toastify/dist/ReactToastify.css'
+import About from './views/About/About'
+import AddProperty from './views/AddProperty/AddProperty'
+import EditProfile from './views/EditProfile/EditProfile'
+import FavoritedProperties from './views/FavoritedProperties/FavoritedProperties'
+import ForgotPassword from './views/ForgotPassword/ForgotPassword'
+import Logout from './views/Logout/Logout'
 import PropertyPage from './views/PropertyPage/PropertyPage'
 import ViewAllProperties from './views/ViewAllProperties/ViewAllProperties'
-import FavoritedProperties from './views/FavoritedProperties/FavoritedProperties'
-import Logout from './views/Logout/Logout';
-import About from './views/About/About';
-import AddProperty from './views/AddProperty/AddProperty'
-import ForgotPassword from './views/ForgotPassword/ForgotPassword'
+// import BuyerList from './views/UserList/BuyerList';
+// import BuyerList from './views/UserList/BuyerList'
+import BuyerList from './views/UsersList/BuyerList'
 
 function App() {
-  var authUserDetails = useSelector(data=>data.AuthUserDetailsSlice)
+  var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
   // console.log(authUserDetails)
   return (
     // for page routing purpose
@@ -29,8 +32,9 @@ function App() {
         <Route path='/signup' element={<SIgnUP />} />
         <Route path='/ForgotPassword' element={<ForgotPassword />} />
         {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
-        
+
         {authUserDetails.usrType === "agent" && (<Route path='/AddProperty' element={<AddProperty />} />)}
+        <Route path='/BuyerList' element={<BuyerList />} />
         <Route path='/FavoritedProperties' element={<FavoritedProperties />} />
         <Route path='/PropertyPage' element={<PropertyPage />} />
         <Route path='/viewAllProperties' element={<ViewAllProperties />} />
