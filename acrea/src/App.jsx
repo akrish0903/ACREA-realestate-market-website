@@ -16,8 +16,6 @@ import ForgotPassword from './views/ForgotPassword/ForgotPassword'
 import Logout from './views/Logout/Logout'
 import PropertyPage from './views/PropertyPage/PropertyPage'
 import ViewAllProperties from './views/ViewAllProperties/ViewAllProperties'
-// import BuyerList from './views/UserList/BuyerList';
-// import BuyerList from './views/UserList/BuyerList'
 import BuyerList from './views/UsersList/BuyerList'
 
 function App() {
@@ -34,7 +32,8 @@ function App() {
         {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
 
         {authUserDetails.usrType === "agent" && (<Route path='/AddProperty' element={<AddProperty />} />)}
-        <Route path='/BuyerList' element={<BuyerList />} />
+        
+        {authUserDetails.usrType === "admin" && (<Route path='/BuyerList' element={<BuyerList />} />)}
         <Route path='/FavoritedProperties' element={<FavoritedProperties />} />
         <Route path='/PropertyPage' element={<PropertyPage />} />
         <Route path='/viewAllProperties' element={<ViewAllProperties />} />
