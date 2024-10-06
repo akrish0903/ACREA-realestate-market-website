@@ -4,9 +4,13 @@ import Footer from '../../components/Footer';
 import Styles from "./css/AddProperty.module.css"
 import { useLocation } from 'react-router-dom';
 import { Config } from '../../config/Config';
+import { toast } from 'react-toastify';
+import useApi from '../../utils/useApi';
+import { useSelector } from 'react-redux';
 
 
 function AddProperty() {
+  var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
 
   var [usrProperty, setUsrProperty] = useState({
     userListingType: "Land",
@@ -26,7 +30,63 @@ function AddProperty() {
     },
     userListingImage: ""
   })
-  console.log("--->", usrProperty)
+
+  async function addPropertyHandler(e) {
+    e.preventDefault();
+    
+
+    const apiCallPromise = new Promise(async (resolve, reject) => {
+      const apiResponse = await useApi({
+        url: "/add-properties",
+        authRequired: true,
+        method: "POST",
+        authToken:authUserDetails.usrAccessToken,
+        data: {
+          userListingType: usrProperty.userListingType,
+          usrListingName: usrProperty.usrListingName,
+          usrListingDescription: usrProperty.usrListingDescription,
+          usrListingSquareFeet: usrProperty.usrListingSquareFeet,
+          location: {
+            street: usrProperty.location.street,
+            city: usrProperty.location.city,
+            state: usrProperty.location.state,
+            pinCode: usrProperty.location.pinCode
+          },
+          usrAmenities: usrProperty.usrAmenities,
+          usrExtraFacilities: {
+            beds: usrProperty.usrExtraFacilities.beds,
+            bath: usrProperty.usrExtraFacilities.bath
+          },
+          userListingImage: usrProperty.userListingImage
+        },
+      });
+      if (apiResponse && apiResponse.error) {
+        reject(apiResponse.error.message);
+      } else {
+        resolve(apiResponse);
+      }
+    });
+
+    //showing toast
+    // Use toast.promise with the new wrapped promise
+    await toast.promise(apiCallPromise, {
+      pending: "Adding new property...!",
+      success: {
+        render({ toastProps, closeToast, data }) {
+          return data.message || "Property added success";
+        },
+      },
+      error: {
+        render({ toastProps, closeToast, data }) {
+          return data;
+        },
+      },
+    }, {
+      position: 'bottom-right',
+    });
+  }
+
+
   return (
     <div className={`screen ${Styles.addPropertyScreen}`} style={{ backgroundColor: Config.color.secondaryColor200 }}>
       <Header />
@@ -355,28 +415,33 @@ function AddProperty() {
                 <div className={Styles.flexRow}>
                   <div className={Styles.formGroup}>
                     <label htmlFor="beds">Beds</label>
-                    <input type="number" id="beds" name="beds" 
-                    value={usrProperty.usrExtraFacilities.beds}
-                    onChange={(e)=>{setUsrProperty({...usrProperty,usrExtraFacilities:{...usrProperty.usrExtraFacilities,beds:e.target.value}})}}
+                    <input type="number" id="beds" name="beds"
+                      value={usrProperty.usrExtraFacilities.beds}
+                      onChange={(e) => { setUsrProperty({ ...usrProperty, usrExtraFacilities: { ...usrProperty.usrExtraFacilities, beds: e.target.value } }) }}
                     />
                   </div>
                   <div className={Styles.formGroup}>
                     <label htmlFor="baths">Baths</label>
-                    <input type="number" id="baths" name="baths" 
-                    value={usrProperty.usrExtraFacilities.bath}
-                    onChange={(e)=>{setUsrProperty({...usrProperty,usrExtraFacilities:{...usrProperty.usrExtraFacilities,bath:e.target.value}})}}
+                    <input type="number" id="baths" name="baths"
+                      value={usrProperty.usrExtraFacilities.bath}
+                      onChange={(e) => { setUsrProperty({ ...usrProperty, usrExtraFacilities: { ...usrProperty.usrExtraFacilities, bath: e.target.value } }) }}
                     />
                   </div>
                 </div>
               </div>
             </div>
-            <div className={Styles.formFooter}>
+            <div className={Styles.formGroup}>
               <label htmlFor="image">Images</label>
-              <input type="file" id="image" name="image"
+              <br/>
+              <input type="text" id="image" name="image"
                 value={usrProperty.userListingImage}
                 onChange={(e) => setUsrProperty({ ...usrProperty, userListingImage: e.target.value })} />
             </div>
-            <button type="submit" className={Styles.submitBtn}>Add Property</button>
+            <button
+              type="submit"
+              className={Styles.submitBtn}
+              onClick={(e) => { addPropertyHandler(e) }}
+            >Add Property</button>
             <p className={Styles.textSmallall}>By adding a property, you agree to our terms and conditions.</p>
           </form>
         </div>

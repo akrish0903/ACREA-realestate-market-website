@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Styles from "./css/PropertiesCardVertical.module.css"
 import { Config } from '../config/Config'
 import HotelIcon from '@mui/icons-material/Hotel';
@@ -7,14 +7,21 @@ import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import PlaceIcon from '@mui/icons-material/Place';
 import { useNavigate } from 'react-router-dom';
 
-function PropertiesCardVertical() {
+function PropertiesCardVertical({ propertiesData }) {
     var navigation = useNavigate();
+    console.log("------ren---", propertiesData)
+    var [imgError, setImgError] = useState(false)
     return (
         <div className={Styles.recentPropCard}>
             {/* top */}
             <div style={{ flexDirection: "column", width: "100%" }} className={Styles.featuredPropertyContainerCardLeft}>
                 <img
-                    src='https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=600'
+                    src={propertiesData.userListingImage ?
+                        imgError === true ?
+                            'https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=600' :
+                            propertiesData.userListingImage :
+                        'https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=600'}
+                    onError={(err) => setImgError(true)}
                     style={{
                         width: "100%",
                         height: "100%",
@@ -103,17 +110,17 @@ function PropertiesCardVertical() {
                             fontSize: Config.fontSize.small
                         }}>Boston MA</p>
                     </div>
-                    <button onClick={()=>{navigation("/PropertyPage")}}
-                    style={{
-                        color: Config.color.background,
-                        backgroundColor: Config.color.primaryColor900,
-                        width: "fit-content",
-                        padding: ".2rem",
-                        paddingLeft: ".8rem",
-                        paddingRight: ".8rem",
-                        fontSize: Config.fontSize.small,
-                        borderRadius: "5px"
-                    }}>Details</button>
+                    <button onClick={() => { navigation("/PropertyPage") }}
+                        style={{
+                            color: Config.color.background,
+                            backgroundColor: Config.color.primaryColor900,
+                            width: "fit-content",
+                            padding: ".2rem",
+                            paddingLeft: ".8rem",
+                            paddingRight: ".8rem",
+                            fontSize: Config.fontSize.small,
+                            borderRadius: "5px"
+                        }}>Details</button>
                 </div>
             </div>
 

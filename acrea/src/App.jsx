@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import SignIn from './auth/SignIn/SignIn'
@@ -6,7 +6,7 @@ import SIgnUP from './auth/SIgnUP/SIgnUP'
 import Dashboard from './views/Dashboard/Dashboard'
 import NoPageFound from './views/NoPageFound/NoPageFound'
 
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import 'react-toastify/dist/ReactToastify.css'
 import About from './views/About/About'
 import AddProperty from './views/AddProperty/AddProperty'
@@ -17,10 +17,26 @@ import Logout from './views/Logout/Logout'
 import PropertyPage from './views/PropertyPage/PropertyPage'
 import ViewAllProperties from './views/ViewAllProperties/ViewAllProperties'
 import BuyerList from './views/UsersList/BuyerList'
+import { AuthUserDetailsSliceAction } from './store/AuthUserDetailsSlice'
 
 function App() {
   var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
-  // console.log(authUserDetails)
+  const dispatch = useDispatch();
+
+  function importOldUserData() {
+    //if user is logged in already make him logged in 
+    if (localStorage.getItem("access_token") && authUserDetails.usrAccessToken === null) {
+      dispatch(AuthUserDetailsSliceAction.setUsrEmail(localStorage.getItem("usrEmail")));
+      dispatch(AuthUserDetailsSliceAction.setUsrFullName(localStorage.getItem("usrFullName")));
+      dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(localStorage.getItem("usrMobileNumber")));
+      dispatch(AuthUserDetailsSliceAction.setUsrType(localStorage.getItem("usrType")));
+      dispatch(AuthUserDetailsSliceAction.setAccessToken(localStorage.getItem("access_token")));
+      dispatch(AuthUserDetailsSliceAction.setRefreshToken(localStorage.getItem("refresh_token")));
+      dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(localStorage.getItem("usrProfileUrl")));
+      dispatch(AuthUserDetailsSliceAction.setUserBio(localStorage.getItem("userBio")));
+    }
+  }
+  importOldUserData()
   return (
     // for page routing purpose
     <BrowserRouter>
@@ -32,7 +48,7 @@ function App() {
         {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
 
         {authUserDetails.usrType === "agent" && (<Route path='/AddProperty' element={<AddProperty />} />)}
-        
+
         {authUserDetails.usrType === "admin" && (<Route path='/BuyerList' element={<BuyerList />} />)}
         <Route path='/FavoritedProperties' element={<FavoritedProperties />} />
         <Route path='/PropertyPage' element={<PropertyPage />} />

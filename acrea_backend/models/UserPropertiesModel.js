@@ -1,4 +1,23 @@
+const { default: mongoose } = require("mongoose");
+
 const userPropertySchema = new mongoose.Schema({
+    agentId: {
+        type: String,
+        required: true,
+    },
+    usrPropertyTime: {
+        type: Date,
+    },
+    usrPropertyFavorites: {
+        type: Number
+    },
+    usrPropertyLiveStatus: {
+        type: Boolean,  
+    },
+    usrPropertySoldTime: {
+        type: Date,
+        default: null,
+    },
     userListingType: {
         type: String,
         required: true,
@@ -46,6 +65,7 @@ const userPropertySchema = new mongoose.Schema({
     userListingImage: {
         type: String,
     },
+    
 });
 
 
