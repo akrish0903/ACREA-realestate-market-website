@@ -100,13 +100,13 @@ function PropertyPage() {
           {/* Sidebar */}
           <aside className={Styles.sidebar} style={{justifyContent:'left',justifyItems:'end'}}>
             {/* <button className={Styles.favoriteButton}> */}
-            <button className={Styles.btn} style={{ color:Config.color.background}} >
+            <button className={Styles.favoriteButton} style={{ color:Config.color.background}} >
               <BookmarkIcon/> Favorite Property
             </button>
 
             <div className={Styles.contactFormSection}>
             {/* <div className={Styles.optionalAuthCardRight} style={{backgroundColor:Config.color.background}}> */}
-              <h3>Contact Property Manager</h3>
+              <h3>Contact Property Agent</h3>
               <form>
                 <div className={Styles.inputGroup}>
                   <label htmlFor="name">Name:</label>

@@ -431,6 +431,18 @@ function AddProperty() {
               </div>
             </div>
             <div className={Styles.formGroup}>
+              <label htmlFor="price">Price</label>
+              <input 
+                type="number" 
+                id="price" 
+                name="price" 
+                placeholder="Enter the price of the property" 
+                value={usrProperty.usrPrice || ''} 
+                onChange={(e) => setUsrProperty({ ...usrProperty, usrPrice: e.target.value })} 
+                required 
+              />
+            </div>
+            <div className={Styles.formGroup}>
               <label htmlFor="image">Images</label>
               <br/>
               <input type="text" id="image" name="image"
