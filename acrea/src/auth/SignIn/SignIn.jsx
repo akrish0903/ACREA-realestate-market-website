@@ -115,7 +115,7 @@ function SignIn() {
         usrEmail: "Not touched",
         usrPassword: "Not touched",
       }}
-      validateOnChange={true} // Enables validation when typing
+      validateOnChange={true} 
     >
       {({
         values,

@@ -25,7 +25,7 @@ function Dashboard() {
         var buyerRecentPropertiesFetched = await useApi({
             authRequired: true,
             authToken: userAuthData.usrAccessToken,
-            url: "/show-properties",
+            url: "/show-buyer-properties",
             method: "POST",
             data: {
                 limit: 4
@@ -34,11 +34,48 @@ function Dashboard() {
         setBuyerRecentProperties(buyerRecentPropertiesFetched.user_property_arr)
     }
 
+    const [agentRecentProperties, setAgentRecentProperties] = useState([]);
+    async function fetchAgentRecentProperties() {
+        var agentRecentPropertiesFetched = await useApi({
+            authRequired: true,
+            authToken: userAuthData.usrAccessToken,
+            url: "/show-agent-properties",
+            method: "POST",
+            data: {
+                limit: 4
+            },
+        })
+        setAgentRecentProperties(agentRecentPropertiesFetched.user_property_arr)
+    }
+
+    const [adminRecentProperties, setAdminRecentProperties] = useState([]);
+    async function fetchAdminRecentProperties() {
+        var adminRecentPropertiesFetched = await useApi({
+            authRequired: true,
+            authToken: userAuthData.usrAccessToken,
+            url: "/show-admin-properties",
+            method: "POST",
+            data: {
+                limit: 4
+            },
+        })
+        setAdminRecentProperties(adminRecentPropertiesFetched.user_property_arr)
+    }
+
+
 
     useEffect(() => {
         if (userAuthData.usrType === "buyer") {
             fetchBuyerRecentProperties()
         }
+        if (userAuthData.usrType==="agent"){
+            fetchAgentRecentProperties()
+        }
+        if(userAuthData.usrType==="admin"){
+            fetchAdminRecentProperties()
+
+        }
+
     }, [userAuthData])
 
     return (
@@ -631,10 +668,9 @@ function Dashboard() {
                     }}>Your Properties</h4>
 
                     <div className={Styles.recentPropContainer}>
-                        <PropertiesCardVertical />
-                        <PropertiesCardVertical />
-                        <PropertiesCardVertical />
-                        <PropertiesCardVertical />
+                    {agentRecentProperties?.map((item, index) => {
+                            return <PropertiesCardVertical propertiesData={item} />
+                        })}
                     </div>
                 </div>
 
@@ -971,10 +1007,9 @@ function Dashboard() {
                         }}>Recently Added Properties</h4>
 
                         <div className={Styles.recentPropContainer}>
-                            <PropertiesCardVertical />
-                            <PropertiesCardVertical />
-                            <PropertiesCardVertical />
-                            <PropertiesCardVertical />
+                        {adminRecentProperties?.map((item, index) => {
+                            return <PropertiesCardVertical propertiesData={item} />
+                        })}
                         </div>
                     </div>
                 </div>

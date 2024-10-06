@@ -7,6 +7,7 @@ import { Config } from '../../config/Config';
 import { toast } from 'react-toastify';
 import useApi from '../../utils/useApi';
 import { useSelector } from 'react-redux';
+import { propertyValidationSchema } from '../../utils/propertyValidationSchema';
 
 
 function AddProperty() {
@@ -28,6 +29,7 @@ function AddProperty() {
       beds: 0,
       bath: 0
     },
+    usrPrice: 0, 
     userListingImage: ""
   })
 
@@ -46,6 +48,7 @@ function AddProperty() {
           usrListingName: usrProperty.usrListingName,
           usrListingDescription: usrProperty.usrListingDescription,
           usrListingSquareFeet: usrProperty.usrListingSquareFeet,
+          usrPrice: usrProperty.usrPrice, 
           location: {
             street: usrProperty.location.street,
             city: usrProperty.location.city,

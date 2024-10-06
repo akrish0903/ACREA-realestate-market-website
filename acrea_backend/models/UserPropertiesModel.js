@@ -62,6 +62,11 @@ const userPropertySchema = new mongoose.Schema({
             default: 0,
         },
     },
+    usrPrice: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
     userListingImage: {
         type: String,
     },
