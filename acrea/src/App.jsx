@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import About from './views/About/About'
 import AddProperty from './views/AddProperty/AddProperty'
 import EditProfile from './views/EditProfile/EditProfile'
+import EditProperty from './views/EditProperty/EditProperty'
 import FavoritedProperties from './views/FavoritedProperties/FavoritedProperties'
 import ForgotPassword from './views/ForgotPassword/ForgotPassword'
 import Logout from './views/Logout/Logout'
@@ -48,6 +49,7 @@ function App() {
         {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
 
         {authUserDetails.usrType === "agent" && (<Route path='/AddProperty' element={<AddProperty />} />)}
+        {authUserDetails.usrType === "agent" && (<Route path='/EditProperty' element={<EditProperty /> }/>)}
 
         {authUserDetails.usrType === "admin" && (<Route path='/BuyerList' element={<BuyerList />} />)}
         <Route path='/FavoritedProperties' element={<FavoritedProperties />} />

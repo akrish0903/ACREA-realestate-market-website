@@ -3,6 +3,7 @@ import Header from '../../components/Header';
 import SecondHeader from '../../components/SecondHeader';
 import Footer from '../../components/Footer';
 import Styles from './css/PropertyPage.module.css';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -14,12 +15,19 @@ import { Config } from '../../config/Config';
 import { useNavigate } from 'react-router-dom';
 import CheckIcon from '@mui/icons-material/Check';
 import SendIcon from '@mui/icons-material/Send';
+import EditIcon from '@mui/icons-material/Edit';
 
 function PropertyPage() {
     const location = useLocation();
     const propertyData = location.state; // Get the passed data
+    const userAuthData = useSelector(data => data.AuthUserDetailsSlice); // Select auth data from Redux store
 
-    var navigation = useNavigate();
+    const navigation = useNavigate();
+
+    // Check if userAuthData is defined to avoid potential errors
+    if (!userAuthData) {
+        return <div>Loading...</div>; // You can show a loading spinner or placeholder here
+    }
 
     return (
         <div className={`screen ${Styles.propertyScreen}`}>
@@ -75,38 +83,55 @@ function PropertyPage() {
                     </main>
 
                     {/* Sidebar */}
-                    <aside className={Styles.sidebar}>
-                        <button className={Styles.favoriteButton} style={{ color: Config.color.background }}>
-                            <BookmarkIcon /> Favorite Property
-                        </button>
+                    {/* Only render if the user is a buyer */}
+                    {userAuthData.usrType === 'buyer' && (
+                        <aside className={Styles.sidebar}>
+                            <button className={Styles.favoriteButton} style={{ color: Config.color.background }}>
+                                <BookmarkIcon /> Favorite Property
+                            </button>
 
-                        <div className={Styles.contactFormSection}>
-                            <h3>Contact Property Agent</h3>
-                            <form>
-                                <div className={Styles.inputGroup}>
-                                    <label htmlFor="name">Name:</label>
-                                    <input type="text" id="name" placeholder="Enter your name" required />
-                                </div>
-                                <div className={Styles.inputGroup}>
-                                    <label htmlFor="email">Email:</label>
-                                    <input type="email" id="email" placeholder="Enter your email" required />
-                                </div>
-                                <div className={Styles.inputGroup}>
-                                    <label htmlFor="phone">Phone:</label>
-                                    <input type="text" id="phone" placeholder="Enter your phone number" />
-                                </div>
-                                <div className={Styles.inputGroup}>
-                                    <label htmlFor="message">Message:</label>
-                                    <textarea id="message" placeholder="Enter your message" required></textarea>
-                                </div>
-                                <center>
-                                    <button type="submit" className={Styles.sendMessageButton}>
-                                        <SendIcon /> Send Message
-                                    </button>
-                                </center>
-                            </form>
-                        </div>
-                    </aside>
+                            <div className={Styles.contactFormSection}>
+                                <h3>Contact Property Agent</h3>
+                                <form>
+                                    <div className={Styles.inputGroup}>
+                                        <label htmlFor="name">Name:</label>
+                                        <input type="text" id="name" placeholder="Enter your name" required />
+                                    </div>
+                                    <div className={Styles.inputGroup}>
+                                        <label htmlFor="email">Email:</label>
+                                        <input type="email" id="email" placeholder="Enter your email" required />
+                                    </div>
+                                    <div className={Styles.inputGroup}>
+                                        <label htmlFor="phone">Phone:</label>
+                                        <input type="text" id="phone" placeholder="Enter your phone number" />
+                                    </div>
+                                    <div className={Styles.inputGroup}>
+                                        <label htmlFor="message">Message:</label>
+                                        <textarea id="message" placeholder="Enter your message" required></textarea>
+                                    </div>
+                                    <center>
+                                        <button type="submit" className={Styles.sendMessageButton}>
+                                            <SendIcon /> Send Message
+                                        </button>
+                                    </center>
+                                </form>
+                            </div>
+                        </aside>
+                    )}
+
+                     {/* Only render if the user is a agent */}
+                     {userAuthData.usrType === 'agent' && (
+                        <aside className={Styles.sidebar}>
+                            <button 
+                              className={Styles.editBtn} 
+                              style={{ color: Config.color.background }} 
+                              onClick={() => { navigation('/EditProperty', { state: propertyData })}} 
+                            >
+                              <EditIcon /> EDIT
+                            </button>
+
+                        </aside>
+                     )}
                 </div>
             </div>
 
