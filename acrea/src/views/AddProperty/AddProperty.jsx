@@ -7,7 +7,7 @@ import { Config } from '../../config/Config';
 import { toast } from 'react-toastify';
 import useApi from '../../utils/useApi';
 import { useSelector } from 'react-redux';
-import { propertyValidationSchema } from '../../utils/propertyValidationSchema';
+// import { propertyValidationSchema } from '../../utils/propertyValidationSchema';
 
 
 function AddProperty() {
@@ -36,19 +36,18 @@ function AddProperty() {
   async function addPropertyHandler(e) {
     e.preventDefault();
     
-
     const apiCallPromise = new Promise(async (resolve, reject) => {
       const apiResponse = await useApi({
         url: "/add-properties",
         authRequired: true,
         method: "POST",
-        authToken:authUserDetails.usrAccessToken,
+        authToken: authUserDetails.usrAccessToken,
         data: {
           userListingType: usrProperty.userListingType,
           usrListingName: usrProperty.usrListingName,
           usrListingDescription: usrProperty.usrListingDescription,
           usrListingSquareFeet: usrProperty.usrListingSquareFeet,
-          usrPrice: usrProperty.usrPrice, 
+          usrPrice: usrProperty.usrPrice,
           location: {
             street: usrProperty.location.street,
             city: usrProperty.location.city,
@@ -63,24 +62,44 @@ function AddProperty() {
           userListingImage: usrProperty.userListingImage
         },
       });
+  
       if (apiResponse && apiResponse.error) {
         reject(apiResponse.error.message);
       } else {
         resolve(apiResponse);
       }
     });
-
-    //showing toast
-    // Use toast.promise with the new wrapped promise
+  
+    // Reset the form upon successful property addition
     await toast.promise(apiCallPromise, {
       pending: "Adding new property...!",
       success: {
-        render({ toastProps, closeToast, data }) {
-          return data.message || "Property added success";
+        render({ data }) {
+          // Reset the form values here after successful response
+          setUsrProperty({
+            userListingType: "Land",
+            usrListingName: "",
+            usrListingDescription: "",
+            usrListingSquareFeet: 0,
+            location: {
+              street: "",
+              city: "",
+              state: "",
+              pinCode: 0
+            },
+            usrAmenities: [],
+            usrExtraFacilities: {
+              beds: 0,
+              bath: 0
+            },
+            usrPrice: 0,
+            userListingImage: ""
+          });
+          return data.message || "Property added successfully!";
         },
       },
       error: {
-        render({ toastProps, closeToast, data }) {
+        render({ data }) {
           return data;
         },
       },
@@ -88,6 +107,7 @@ function AddProperty() {
       position: 'bottom-right',
     });
   }
+  
 
 
   return (

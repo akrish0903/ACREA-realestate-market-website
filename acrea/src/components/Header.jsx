@@ -19,7 +19,7 @@ function Header() {
             // customDom: null
         },
         // Only add "My Properties" if the user is an agent
-        ...(userAuthData.usrType === 'agent' ? [{ title: "My Properties", navigate: "/myProperties" }] : []),
+        ...(userAuthData.usrType === 'agent' ? [{ title: "My Properties", navigate: "/ViewAllProperties" }] : []),
         ...(userAuthData.usrType === 'buyer' ? [{ title: "Favorites", navigate: "/FavoritedProperties" }] : []),
         { 
             title: "Help Center",
