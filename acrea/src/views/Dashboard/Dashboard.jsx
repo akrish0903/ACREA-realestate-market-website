@@ -63,6 +63,20 @@ function Dashboard() {
         setAdminRecentProperties(adminRecentPropertiesFetched.user_property_arr)
     }
 
+    const [adminRecentProperties2, setAdminRecentProperties2] = useState([]);
+    async function fetchAdminRecentProperties2() {
+        var adminRecentPropertiesFetched2 = await useApi({
+            authRequired: true,
+            authToken: userAuthData.usrAccessToken,
+            url: "/show-admin-properties",
+            method: "POST",
+            data: {
+                limit: 2
+            },
+        })
+        setAdminRecentProperties2(adminRecentPropertiesFetched2.user_property_arr)
+    }
+
     const [buyerFeaturesProperties, setBuyerFeaturesProperties] = useState([]);
     async function fetchBuyerFeaturesProperties() {
         var buyerFeaturesPropertiesFetched = await useApi({
@@ -86,6 +100,7 @@ function Dashboard() {
         }
         if (userAuthData.usrType==="agent"){
             fetchAgentRecentProperties()
+            // fetchAgentRecentProperties2()
         }
         if(userAuthData.usrType==="admin"){
             fetchAdminRecentProperties()
@@ -255,6 +270,9 @@ function Dashboard() {
                     <div className={Styles.featuredPropertyContainer}>
 
                         {/* card  */}
+                        {/* {agentRecentProperties2?.map((item, index) => {
+                            return <FeaturedPropertyContainer propertiesData={item} />
+                        })} */}
                         <div className={Styles.featuredPropertyContainerCard}>
                             <div className={Styles.featuredPropertyContainerCardLeft}>
                                 <img
