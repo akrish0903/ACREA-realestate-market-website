@@ -1,0 +1,35 @@
+.featuredPropertyContainerCard {
+    height: 12rem;
+    width: 45%;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+
+.featuredPropertyContainerCardLeft {
+    height: 100%;
+    width: 40%;
+}
+
+.featuredPropertyContainerCardRight {
+    height: 100%;
+    width: 60%;
+    padding: 1rem;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.featuredPropertyContainerCardRightTop {
+    flex-direction: column;
+}
+
+.featuredPropertyContainerCardRightTopSub {
+    align-items: center;
+    gap: .2rem;
+}
+
+.featuredPropertyContainerCardRightBottom {
+    justify-content: space-between;
+    border-top: .5px grey solid;
+    padding-top: .4rem;
+}

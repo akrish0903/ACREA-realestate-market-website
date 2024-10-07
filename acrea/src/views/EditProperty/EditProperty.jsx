@@ -1,122 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Styles from "./css/AddProperty.module.css"
+import Styles from "./css/EditProperty.module.css"
 import { useLocation } from 'react-router-dom';
 import { Config } from '../../config/Config';
 import { toast } from 'react-toastify';
 import useApi from '../../utils/useApi';
 import { useSelector } from 'react-redux';
-// import { propertyValidationSchema } from '../../utils/propertyValidationSchema';
 
 
-function AddProperty() {
-  var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
-
-  var [usrProperty, setUsrProperty] = useState({
-    userListingType: "Land",
-    usrListingName: "",
-    usrListingDescription: "",
-    usrListingSquareFeet: 0,
-    location: {
-      street: "",
-      city: "",
-      state: "",
-      pinCode: 0
-    },
-    usrAmenities: [],
-    usrExtraFacilities: {
-      beds: 0,
-      bath: 0
-    },
-    usrPrice: 0, 
-    userListingImage: ""
-  })
-
-  async function addPropertyHandler(e) {
-    e.preventDefault();
-    
-    const apiCallPromise = new Promise(async (resolve, reject) => {
-      const apiResponse = await useApi({
-        url: "/add-properties",
-        authRequired: true,
-        method: "POST",
-        authToken: authUserDetails.usrAccessToken,
-        data: {
-          userListingType: usrProperty.userListingType,
-          usrListingName: usrProperty.usrListingName,
-          usrListingDescription: usrProperty.usrListingDescription,
-          usrListingSquareFeet: usrProperty.usrListingSquareFeet,
-          usrPrice: usrProperty.usrPrice,
-          location: {
-            street: usrProperty.location.street,
-            city: usrProperty.location.city,
-            state: usrProperty.location.state,
-            pinCode: usrProperty.location.pinCode
-          },
-          usrAmenities: usrProperty.usrAmenities,
-          usrExtraFacilities: {
-            beds: usrProperty.usrExtraFacilities.beds,
-            bath: usrProperty.usrExtraFacilities.bath
-          },
-          userListingImage: usrProperty.userListingImage
-        },
-      });
-  
-      if (apiResponse && apiResponse.error) {
-        reject(apiResponse.error.message);
-      } else {
-        resolve(apiResponse);
-      }
-    });
-  
-    // Reset the form upon successful property addition
-    await toast.promise(apiCallPromise, {
-      pending: "Adding new property...!",
-      success: {
-        render({ data }) {
-          // Reset the form values here after successful response
-          setUsrProperty({
-            userListingType: "Land",
-            usrListingName: "",
-            usrListingDescription: "",
-            usrListingSquareFeet: 0,
-            location: {
-              street: "",
-              city: "",
-              state: "",
-              pinCode: 0
-            },
-            usrAmenities: [],
-            usrExtraFacilities: {
-              beds: 0,
-              bath: 0
-            },
-            usrPrice: 0,
-            userListingImage: ""
-          });
-          return data.message || "Property added successfully!";
-        },
-      },
-      error: {
-        render({ data }) {
-          return data;
-        },
-      },
-    }, {
-      position: 'bottom-right',
-    });
-  }
-  
-
+function EditProperty() {
+  var authUserDetails = useSelector(data => data.AuthUserDetailsSlice);
+  const location = useLocation(); 
+  const propertyId = location.state?.propertyId;
 
   return (
-    <div className={`screen ${Styles.addPropertyScreen}`} style={{ backgroundColor: Config.color.secondaryColor200 }}>
+    <div className={`screen ${Styles.editPropertyScreen}`} style={{ backgroundColor: Config.color.secondaryColor200 }}>
       <Header />
       <div className={Styles.card1}>
         <div className={Styles.formContainer}>
           <form>
-            <h2 className={Styles.formTitle}>Add Property</h2>
+            <h2 className={Styles.formTitle}>Edit Property</h2>
 
             <div className={Styles.formGroup}>
               <label htmlFor="type">Property Type</label>
@@ -471,13 +375,13 @@ function AddProperty() {
                 value={usrProperty.userListingImage}
                 onChange={(e) => setUsrProperty({ ...usrProperty, userListingImage: e.target.value })} />
             </div>
-            
+
             <button
               type="submit"
               className={Styles.submitBtn}
-              onClick={(e) => { addPropertyHandler(e) }}
-            >Add Property</button>
-            <p className={Styles.textSmallall}>By adding a property, you agree to our terms and conditions.</p>
+              onClick={(e) => { editPropertyHandler(e) }}
+            >Update Property</button>
+            <p className={Styles.textSmallall}>By updating a property, you agree to our terms and conditions.</p>
           </form>
         </div>
       </div>
@@ -486,4 +390,4 @@ function AddProperty() {
   );
 };
 
-export default AddProperty;
+export default EditProperty;

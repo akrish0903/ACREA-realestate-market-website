@@ -32,15 +32,6 @@
 }
 
 
-
-
-
-/* .container {
-  width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-} */
-
 a {
   text-decoration: none;
   color: inherit;
@@ -87,11 +78,8 @@ a {
 }
 
 .propertyInfoContainer {
-  /* display: flex;
-  flex-direction: column; */
   flex: 1;
   gap: 1.5rem;
-  width: 70%;
   padding-right: 1rem;
 }
 
@@ -102,11 +90,13 @@ a {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  width: 60rem;
 }
 
 .propertyType {
-  color: gray;
+  /* color: gray; */
   margin-bottom: 1rem;
+  font-weight:bold;
 }
 
 .propertyDetails h1 {
@@ -155,14 +145,13 @@ a {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-top: 1.5rem;
-
   display: flex;
   flex-direction: column;
 }
 
 .amenitiesList {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   list-style: none;
   padding: 0;
@@ -180,12 +169,10 @@ a {
 
 /* Sidebar */
 .sidebar {
-  /* display: flex;
-  flex-direction: column; */
   flex-shrink: 0;
   gap: 1rem;
   width: 30%;
-  
+  margin-left: auto;
 }
 
 .favoriteButton {
@@ -196,6 +183,8 @@ a {
   cursor: pointer;
   border: none;
   text-align: center;
+  width: 28rem;
+  margin-bottom: 1rem;
 }
 
 .favoriteButton:hover {
@@ -260,6 +249,14 @@ a {
   margin-right: 0.5rem;
 }
 
+.editBtn{
+  background-color: #1e3a8a;
+   width:20rem;
+   font-weight: bold;
+}
+.editBtn:hover{
+  background-color: #0e2a6b;
+}
 
 
 
