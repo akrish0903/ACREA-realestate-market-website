@@ -18,6 +18,7 @@ import Logout from './views/Logout/Logout'
 import PropertyPage from './views/PropertyPage/PropertyPage'
 import ViewAllProperties from './views/ViewAllProperties/ViewAllProperties'
 import BuyerList from './views/UsersList/BuyerList'
+import AgentList from './views/UsersList/AgentList'
 import { AuthUserDetailsSliceAction } from './store/AuthUserDetailsSlice'
 
 function App() {
@@ -52,6 +53,8 @@ function App() {
         {authUserDetails.usrType === "agent" && (<Route path='/EditProperty' element={<EditProperty /> }/>)}
 
         {authUserDetails.usrType === "admin" && (<Route path='/BuyerList' element={<BuyerList />} />)}
+        {authUserDetails.usrType === "admin" && (<Route path='/AgentList' element={<AgentList />} />)}
+        
         <Route path='/FavoritedProperties' element={<FavoritedProperties />} />
         <Route path='/PropertyPage' element={<PropertyPage />} />
         <Route path='/viewAllProperties' element={<ViewAllProperties />} />

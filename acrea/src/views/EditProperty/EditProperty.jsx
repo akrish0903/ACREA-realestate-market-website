@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 
 function EditProperty() {
   var authUserDetails = useSelector(data => data.AuthUserDetailsSlice);
-  const location = useLocation(); // Assuming property ID is passed via location.state
+  const location = useLocation(); 
   const propertyId = location.state?.propertyId;
 
   return (

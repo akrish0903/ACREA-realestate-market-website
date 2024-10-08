@@ -24,4 +24,12 @@ router.post("/refresh-token",UserAuthController.refreshTokenUserAuthController);
 // Route to logout user
 router.delete("/logout",UserAuthController.logoutUserAuthController);
 
+router.get("/buyerslist",jwt_verify_token,UserAuthController.showBuyerListController)
+
+router.get("/agentslist",jwt_verify_token,UserAuthController.showAgentListController)
+
+router.get("/show-buyers-recent",jwt_verify_token,UserAuthController.showRecentBuyerstoAdminController)
+
+router.get("/show-agents-recent",jwt_verify_token,UserAuthController.showRecentAgentstoAdminController)
+
 module.exports = router;

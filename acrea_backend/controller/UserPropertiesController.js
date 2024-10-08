@@ -73,18 +73,21 @@ const showBuyerRecentPropertyController = async (req, res, next) => {
 
 const showBuyerFeaturesPropertyController = async (req, res, next) => {
     var userId = req.payload.aud;
+    var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
 
     // Ensure only "buyer" or if user type is not set can access this feature
     if (fetchedUserData.usrType === "buyer" || fetchedUserData.usrType === null) {
         try {
             // Fetch the two properties with the highest price, sorting by usrPrice in descending order
-            const topProperties = await UserPropertiesModel.find()
-                .sort({ usrPrice: -1 })  // Sorting by price in descending order
-                .limit(2);  // Limit to top 2 properties
+            const topProperties = limit
+                ? await UserPropertiesModel.find().sort({ usrPrice: -1 }).limit(limit)
+                : await UserPropertiesModel.find().sort({ usrPrice: -1 });
+
+            console.log("Fetched properties (sorted by price):", topProperties); // Debugging log
 
             res.status(200).json({
-                message: "Top 2 highest priced properties fetched successfully.",
+                message: "Top properties fetched successfully.",
                 user_property_arr: topProperties
             });
         } catch (error) {
@@ -138,7 +141,7 @@ const showPropertyController = async (req, res, next) => {
 }
 
 const showAgentRecentPropertyController = async (req, res, next) => {
-    var userId = req.payload.aud; // Assuming userId is stored in the payload
+    var userId = req.payload.aud;
     var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
     
@@ -164,12 +167,15 @@ const showAgentRecentPropertyController = async (req, res, next) => {
 
 const showAgentPropertyController = async (req, res, next) => {
     var userId = req.payload.aud;
+    var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
     
     try {
         if (fetchedUserData.usrType === "agent") {
             const agentId = userId;
-            const usrPropertiesArr = await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 });
+            const usrPropertiesArr = limit
+                ? await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 }).limit(limit)
+                : await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 });
 
             res.status(200).json({
                 message: "All property records fetched successfully.",
@@ -183,7 +189,27 @@ const showAgentPropertyController = async (req, res, next) => {
     }
 };
 
+const showAdminPropertyController = async (req, res, next) => {
+    var userId = req.payload.aud;
+    var { limit } = req.body;
+    var fetchedUserData = await UserAuthModel.findById(userId);
+
+    if (fetchedUserData.usrType === "admin") {
+
+        try {
+            const usrPropertiesArr = await UserPropertiesModel.find().sort({ usrPropertyTime: -1 });
+            res.status(200).json({
+                message: "All property records fetched successfully.",
+                user_property_arr: usrPropertiesArr
+            });
+        } catch (error) {
+            next(httpErrors.BadRequest())
+        }
+    }
+};
 
 
 
-module.exports = { addPropertyController, showBuyerRecentPropertyController, showBuyerFeaturesPropertyController, showBuyerPropertyController, showPropertyController, showAgentRecentPropertyController, showAgentPropertyController }
+
+
+module.exports = { addPropertyController, showBuyerRecentPropertyController, showBuyerFeaturesPropertyController, showBuyerPropertyController,showAdminPropertyController, showPropertyController, showAgentRecentPropertyController, showAgentPropertyController }

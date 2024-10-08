@@ -63,9 +63,9 @@ function Dashboard() {
         setAdminRecentProperties(adminRecentPropertiesFetched.user_property_arr)
     }
 
-    const [adminRecentProperties2, setAdminRecentProperties2] = useState([]);
-    async function fetchAdminRecentProperties2() {
-        var adminRecentPropertiesFetched2 = await useApi({
+    const [agentRecentProperties2, setAgentRecentProperties2] = useState([]);
+    async function fetchAgentRecentProperties2() {
+        var agentRecentPropertiesFetched2 = await useApi({
             authRequired: true,
             authToken: userAuthData.usrAccessToken,
             url: "/show-admin-properties",
@@ -74,7 +74,7 @@ function Dashboard() {
                 limit: 2
             },
         })
-        setAdminRecentProperties2(adminRecentPropertiesFetched2.user_property_arr)
+        setAgentRecentProperties2(agentRecentPropertiesFetched2.user_property_arr)
     }
 
     const [buyerFeaturesProperties, setBuyerFeaturesProperties] = useState([]);
@@ -91,6 +91,46 @@ function Dashboard() {
         setBuyerFeaturesProperties(buyerFeaturesPropertiesFetched.user_property_arr)
     }
 
+    const [buyers, setBuyers] = useState([]);
+    async function fetchBuyersList() {
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: "/show-buyers-recent",
+                method: "GET",
+            });
+
+            if (response && response.user_buyerlist_arr) {
+                setBuyers(response.user_buyerlist_arr);
+            } else {
+                console.error("Failed to fetch buyers:", response.message);
+            }
+        } catch (error) {
+            console.error("Error fetching buyers:", error);
+        }
+    }
+
+    const [agents, setAgents] = useState([]);
+    async function fetchAgentsList() {
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: "/show-agents-recent",
+                method: "GET",
+            });
+
+            if (response && response.user_agentlist_arr) {
+                setAgents(response.user_agentlist_arr);
+            } else {
+                console.error("Failed to fetch agents:", response.message);
+            }
+        } catch (error) {
+            console.error("Error fetching agents:", error);
+        }
+    }
+
 
 
     useEffect(() => {
@@ -100,11 +140,12 @@ function Dashboard() {
         }
         if (userAuthData.usrType==="agent"){
             fetchAgentRecentProperties()
-            // fetchAgentRecentProperties2()
+            fetchAgentRecentProperties2()
         }
         if(userAuthData.usrType==="admin"){
             fetchAdminRecentProperties()
-
+            fetchBuyersList()
+            fetchAgentsList()
         }
 
     }, [userAuthData])
@@ -219,7 +260,7 @@ function Dashboard() {
                         {/* card  */}
                         {buyerFeaturesProperties?.map((item, index) => {
                             return <FeaturedPropertyContainer propertiesData={item} />
-                        })}
+                        })}               
                     </div>
                 </div>
 
@@ -270,219 +311,9 @@ function Dashboard() {
                     <div className={Styles.featuredPropertyContainer}>
 
                         {/* card  */}
-                        {/* {agentRecentProperties2?.map((item, index) => {
+                        {agentRecentProperties2?.map((item, index) => {
                             return <FeaturedPropertyContainer propertiesData={item} />
-                        })} */}
-                        <div className={Styles.featuredPropertyContainerCard}>
-                            <div className={Styles.featuredPropertyContainerCardLeft}>
-                                <img
-                                    src='https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=600'
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "fill"
-                                    }}
-                                />
-                                <p style={{
-                                    backgroundColor: Config.color.background,
-                                    position: "absolute",
-                                    fontSize: Config.fontSize.xsmall,
-                                    fontWeight: "bolder",
-                                    color: Config.color.primaryColor900,
-                                    borderRadius: "5px",
-                                    margin: ".8rem",
-                                    paddingLeft: ".5rem",
-                                    paddingRight: ".5rem"
-                                }}>₹2,500</p>
-                            </div>
-                            <div
-                                className={Styles.featuredPropertyContainerCardRight}
-                                style={{ backgroundColor: Config.color.background }}
-                            >
-                                <div className={Styles.featuredPropertyContainerCardRightTop}>
-                                    <p style={{
-                                        fontSize: Config.fontSize.regular,
-                                        fontWeight: "bolder",
-                                        color: Config.color.textColor
-                                    }}>Seaside Retreat</p>
-                                    <p style={{
-                                        fontSize: Config.fontSize.small,
-                                        color: Config.color.textColor100
-                                    }}>House</p>
-                                    <div style={{ gap: "1rem", marginTop: ".8rem" }}>
-                                        <div className={Styles.featuredPropertyContainerCardRightTopSub}>
-                                            <HotelIcon style={{
-                                                width: "1.5rem",
-                                                height: "1.5rem",
-                                                objectFit: "contain",
-                                                color: Config.color.textColor100
-                                            }} />
-                                            <p style={{
-                                                color: Config.color.textColor100,
-                                                fontSize: Config.fontSize.small
-                                            }}>4 Beds</p>
-                                        </div>
-                                        <div className={Styles.featuredPropertyContainerCardRightTopSub}>
-                                            <BathtubIcon style={{
-                                                width: "1.5rem",
-                                                height: "1.5rem",
-                                                objectFit: "contain",
-                                                color: Config.color.textColor100
-                                            }} />
-                                            <p style={{
-                                                color: Config.color.textColor100,
-                                                fontSize: Config.fontSize.small
-                                            }}> 3 Baths</p>
-                                        </div>
-                                        <div className={Styles.featuredPropertyContainerCardRightTopSub}>
-                                            <SquareFootIcon style={{
-                                                width: "1.5rem",
-                                                height: "1.5rem",
-                                                objectFit: "contain",
-                                                color: Config.color.textColor100
-                                            }} />
-                                            <p style={{
-                                                color: Config.color.textColor100,
-                                                fontSize: Config.fontSize.small
-                                            }}>2,800 sqft</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div className={Styles.featuredPropertyContainerCardRightBottom}>
-                                    <div style={{ alignItems: "center" }}>
-                                        <PlaceIcon style={{
-                                            width: "1.5rem",
-                                            height: "1.5rem",
-                                            objectFit: "contain",
-                                            color: Config.color.primaryColor600
-                                        }} />
-                                        <p style={{
-                                            color: Config.color.primaryColor600,
-                                            fontSize: Config.fontSize.small
-                                        }}>Boston MA</p>
-                                    </div>
-                                    <button onClick={() => { navigation("/PropertyPage") }}
-                                        style={{
-                                            color: Config.color.background,
-                                            backgroundColor: Config.color.primaryColor900,
-                                            width: "fit-content",
-                                            padding: ".2rem",
-                                            paddingLeft: ".8rem",
-                                            paddingRight: ".8rem",
-                                            fontSize: Config.fontSize.small,
-                                            borderRadius: "5px"
-                                        }}>Details</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className={Styles.featuredPropertyContainerCard}>
-                            <div className={Styles.featuredPropertyContainerCardLeft}>
-                                <img
-                                    src='https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=600'
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "fill"
-                                    }}
-                                />
-                                <p style={{
-                                    backgroundColor: Config.color.background,
-                                    position: "absolute",
-                                    fontSize: Config.fontSize.xsmall,
-                                    fontWeight: "bolder",
-                                    color: Config.color.primaryColor900,
-                                    borderRadius: "5px",
-                                    margin: ".8rem",
-                                    paddingLeft: ".5rem",
-                                    paddingRight: ".5rem"
-                                }}>₹2,500</p>
-                            </div>
-                            <div
-                                className={Styles.featuredPropertyContainerCardRight}
-                                style={{ backgroundColor: Config.color.background }}
-                            >
-                                <div className={Styles.featuredPropertyContainerCardRightTop}>
-                                    <p style={{
-                                        fontSize: Config.fontSize.regular,
-                                        fontWeight: "bolder",
-                                        color: Config.color.textColor
-                                    }}>Seaside Retreat</p>
-                                    <p style={{
-                                        fontSize: Config.fontSize.small,
-                                        color: Config.color.textColor100
-                                    }}>House</p>
-                                    <div style={{ gap: "1rem", marginTop: ".8rem" }}>
-                                        <div className={Styles.featuredPropertyContainerCardRightTopSub}>
-                                            <HotelIcon style={{
-                                                width: "1.5rem",
-                                                height: "1.5rem",
-                                                objectFit: "contain",
-                                                color: Config.color.textColor100
-                                            }} />
-                                            <p style={{
-                                                color: Config.color.textColor100,
-                                                fontSize: Config.fontSize.small
-                                            }}>4 Beds</p>
-                                        </div>
-                                        <div className={Styles.featuredPropertyContainerCardRightTopSub}>
-                                            <BathtubIcon style={{
-                                                width: "1.5rem",
-                                                height: "1.5rem",
-                                                objectFit: "contain",
-                                                color: Config.color.textColor100
-                                            }} />
-                                            <p style={{
-                                                color: Config.color.textColor100,
-                                                fontSize: Config.fontSize.small
-                                            }}> 3 Baths</p>
-                                        </div>
-                                        <div className={Styles.featuredPropertyContainerCardRightTopSub}>
-                                            <SquareFootIcon style={{
-                                                width: "1.5rem",
-                                                height: "1.5rem",
-                                                objectFit: "contain",
-                                                color: Config.color.textColor100
-                                            }} />
-                                            <p style={{
-                                                color: Config.color.textColor100,
-                                                fontSize: Config.fontSize.small
-                                            }}>2,800 sqft</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div className={Styles.featuredPropertyContainerCardRightBottom}>
-                                    <div style={{ alignItems: "center" }}>
-                                        <PlaceIcon style={{
-                                            width: "1.5rem",
-                                            height: "1.5rem",
-                                            objectFit: "contain",
-                                            color: Config.color.primaryColor600
-                                        }} />
-                                        <p style={{
-                                            color: Config.color.primaryColor600,
-                                            fontSize: Config.fontSize.small
-                                        }}>Boston MA</p>
-                                    </div>
-                                    <button onClick={() => { navigation("/PropertyPage") }}
-                                        style={{
-                                            color: Config.color.background,
-                                            backgroundColor: Config.color.primaryColor900,
-                                            width: "fit-content",
-                                            padding: ".2rem",
-                                            paddingLeft: ".8rem",
-                                            paddingRight: ".8rem",
-                                            fontSize: Config.fontSize.small,
-                                            borderRadius: "5px"
-                                        }}>Details</button>
-                                </div>
-                            </div>
-                        </div>
-
+                        })}
                     </div>
                 </div>
 
@@ -568,7 +399,7 @@ function Dashboard() {
                                 color: Config.color.textColor
                             }}>Manage property agent accounts and their property listings.</p>
                             <button
-                                onClick={() => { navigation("/signin") }}
+                                onClick={() => { navigation("/agentlist") }}
                                 style={{
                                     backgroundColor: Config.color.primaryColor900,
                                     color: Config.color.background,
@@ -598,7 +429,7 @@ function Dashboard() {
                                 color: Config.color.textColor
                             }}>Oversee all property listings and manage approvals.</p>
                             <button
-                                onClick={() => { navigation("/signin") }}
+                                onClick={() => { navigation("/viewAllProperties") }}
                                 style={{
                                     backgroundColor: Config.color.primaryColor900,
                                     color: Config.color.background,
@@ -621,24 +452,30 @@ function Dashboard() {
                             fontWeight: "bolder"
                         }}>Recently Joined Buyers</h4>
                         <div className={Styles.featuredPropertyContainer}>
-                            <div className={Styles.recentPropCard}>
-                                <div
-                                    className={Styles.featuredPropertyContainerCardRight}
-                                    style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
-                                >
-                                    <div className={Styles.featuredPropertyContainerCardRightTop}>
-                                        <p style={{
-                                            fontSize: Config.fontSize.regular,
-                                            fontWeight: "bolder",
-                                            color: Config.color.textColor
-                                        }}>Anandhu Krishnan</p>
-                                        <p>AnandhuKrishnan@gmail.com</p>
-                                        <p>9876543210</p>
+                            {buyers.length > 0 ? (buyers.map((buyer) => (       
+                                <div className={Styles.recentPropCard}>
+                                    <div
+                                        key={buyer._id}
+                                        className={Styles.featuredPropertyContainerCardRight}
+                                        style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
+                                    >
+                                        <div className={Styles.featuredPropertyContainerCardRightTop}>
+                                            <p style={{
+                                                fontSize: Config.fontSize.regular,
+                                                fontWeight: "bolder",
+                                                color: Config.color.textColor
+                                            }}>{buyer.usrFullName}</p>
+                                            <p>{buyer.usrEmail}</p>
+                                            <p>{buyer.usrMobileNumber}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
+                                </div>))
+                            ) : (
+                                <p>No Buyers found</p>
+                            )}
+                           
 
-                            <div className={Styles.recentPropCard}>
+                            {/* <div className={Styles.recentPropCard}>
                                 <div
                                     className={Styles.featuredPropertyContainerCardRight}
                                     style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
@@ -653,41 +490,7 @@ function Dashboard() {
                                         <p>9876543210</p>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className={Styles.recentPropCard}>
-                                <div
-                                    className={Styles.featuredPropertyContainerCardRight}
-                                    style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
-                                >
-                                    <div className={Styles.featuredPropertyContainerCardRightTop}>
-                                        <p style={{
-                                            fontSize: Config.fontSize.regular,
-                                            fontWeight: "bolder",
-                                            color: Config.color.textColor
-                                        }}>Anandhu Krishnan</p>
-                                        <p>AnandhuKrishnan@gmail.com</p>
-                                        <p>9876543210</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={Styles.recentPropCard}>
-                                <div
-                                    className={Styles.featuredPropertyContainerCardRight}
-                                    style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
-                                >
-                                    <div className={Styles.featuredPropertyContainerCardRightTop}>
-                                        <p style={{
-                                            fontSize: Config.fontSize.regular,
-                                            fontWeight: "bolder",
-                                            color: Config.color.textColor
-                                        }}>Anandhu Krishnan</p>
-                                        <p>AnandhuKrishnan@gmail.com</p>
-                                        <p>9876543210</p>
-                                    </div>
-                                </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
@@ -698,8 +501,10 @@ function Dashboard() {
                             fontWeight: "bolder"
                         }}>Recently Joined Agents</h4>
                         <div className={Styles.featuredPropertyContainer}>
+                        {agents.length > 0 ? (agents.map((agent) => (       
                             <div className={Styles.recentPropCard}>
                                 <div
+                                    key={agent._id}
                                     className={Styles.featuredPropertyContainerCardRight}
                                     style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
                                 >
@@ -708,13 +513,12 @@ function Dashboard() {
                                             fontSize: Config.fontSize.regular,
                                             fontWeight: "bolder",
                                             color: Config.color.textColor
-                                        }}>Aakash</p>
-                                        <p>Aakash@gmail.com</p>
-                                        <p>9876543210</p>
+                                        }}>{agent.usrFullName}</p>
+                                        <p>{agent.usrEmail}</p>
+                                        <p>{agent.usrMobileNumber}</p>
                                     </div>
-
                                     <div className={Styles.featuredPropertyContainerCardRightBottom}>
-                                        <button onClick={() => { navigation("/PropertyPage") }}
+                                        <button onClick={() => { navigation('/PropertyPage', { state: agentData }) }}
                                             style={{
                                                 color: Config.color.background,
                                                 backgroundColor: Config.color.primaryColor900,
@@ -727,71 +531,12 @@ function Dashboard() {
                                             }}>Details</button>
                                     </div>
                                 </div>
-                            </div>
+                            </div>))
+                        ) : (
+                            <p>No Agents found</p>
+                        )}
 
-                            <div className={Styles.recentPropCard}>
-                                <div
-                                    className={Styles.featuredPropertyContainerCardRight}
-                                    style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
-                                >
-                                    <div className={Styles.featuredPropertyContainerCardRightTop}>
-                                        <p style={{
-                                            fontSize: Config.fontSize.regular,
-                                            fontWeight: "bolder",
-                                            color: Config.color.textColor
-                                        }}>Aakash</p>
-                                        <p>Aakashn@gmail.com</p>
-                                        <p>9876543210</p>
-                                    </div>
-
-                                    <div className={Styles.featuredPropertyContainerCardRightBottom}>
-                                        <button onClick={() => { navigation("/PropertyPage") }}
-                                            style={{
-                                                color: Config.color.background,
-                                                backgroundColor: Config.color.primaryColor900,
-                                                width: "fit-content",
-                                                padding: ".2rem",
-                                                paddingLeft: ".8rem",
-                                                paddingRight: ".8rem",
-                                                fontSize: Config.fontSize.small,
-                                                borderRadius: "5px"
-                                            }}>Details</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={Styles.recentPropCard}>
-                                <div
-                                    className={Styles.featuredPropertyContainerCardRight}
-                                    style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
-                                >
-                                    <div className={Styles.featuredPropertyContainerCardRightTop}>
-                                        <p style={{
-                                            fontSize: Config.fontSize.regular,
-                                            fontWeight: "bolder",
-                                            color: Config.color.textColor
-                                        }}>Aakash</p>
-                                        <p>Aakash@gmail.com</p>
-                                        <p>9876543210</p>
-                                    </div>
-
-                                    <div className={Styles.featuredPropertyContainerCardRightBottom}>
-                                        <button onClick={() => { navigation("/PropertyPage") }}
-                                            style={{
-                                                color: Config.color.background,
-                                                backgroundColor: Config.color.primaryColor900,
-                                                width: "fit-content",
-                                                padding: ".2rem",
-                                                paddingLeft: ".8rem",
-                                                paddingRight: ".8rem",
-                                                fontSize: Config.fontSize.small,
-                                                borderRadius: "5px"
-                                            }}>Details</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={Styles.recentPropCard}>
+                            {/* <div className={Styles.recentPropCard}>
                                 <div
                                     className={Styles.featuredPropertyContainerCardRight}
                                     style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
@@ -821,7 +566,7 @@ function Dashboard() {
                                     </div>
 
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 

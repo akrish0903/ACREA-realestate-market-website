@@ -1,7 +1,6 @@
+//acrea_backend/models/UserAuthModel.js
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-
-
 
 const userSchema = new mongoose.Schema({
     usrFullName: {
@@ -56,7 +55,6 @@ userSchema.post("save", async function (next) {
     try {
         console.log("This is middleware is called when the user save is done")
     } catch (error) {
-
     }
 })
 

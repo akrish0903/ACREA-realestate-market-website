@@ -14,6 +14,7 @@ function ViewAllProperties() {
 
     const [agentProperties, setAgentProperties] = useState([]);
     const [buyerProperties, setBuyerProperties] = useState([]);
+    const [adminProperties, setAdminProperties] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -63,6 +64,29 @@ function ViewAllProperties() {
             setIsLoading(false);
         }
     }
+
+    async function fetchAdminProperties() {
+        try {
+            const adminPropertiesFetched = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: "/show-admin-properties",
+                method: "POST",
+            });
+    
+            if (adminPropertiesFetched?.user_property_arr) {
+                setAdminProperties(adminPropertiesFetched.user_property_arr); // Correct state update for buyer properties
+            } else {
+                throw new Error("Failed to fetch properties");
+            }
+        } catch (err) {
+            console.error("Error fetching admin properties: ", err);
+            setError(err.message);
+            toast.error("Failed to load properties. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    }
     
     useEffect(() => {
         if (userAuthData?.usrType === "agent") {
@@ -72,6 +96,12 @@ function ViewAllProperties() {
         }
         if (userAuthData?.usrType === 'buyer'){
             fetchBuyerProperties();
+        }
+        else {
+            setIsLoading(false);
+        }
+        if (userAuthData?.usrType === 'admin'){
+            fetchAdminProperties();
         }
         else {
             setIsLoading(false);
@@ -100,6 +130,7 @@ function ViewAllProperties() {
                 )}
             </div>
             )}
+
             {userAuthData.usrType === 'buyer' && (<div className={Styles.viewAllScreenContainer}>
                 {buyerProperties.length > 0 ? (
                     buyerProperties.map((item, index) => (
@@ -108,8 +139,19 @@ function ViewAllProperties() {
                 ) : (
                     <div>No properties found.</div>
                 )}
-            </div>
-        )}
+                </div>
+            )}
+
+            {userAuthData.usrType === 'admin' && (<div className={Styles.viewAllScreenContainer}>
+                {adminProperties.length > 0 ? (
+                    adminProperties.map((item, index) => (
+                        <PropertiesCardVertical key={index} propertiesData={item} />
+                    ))
+                ) : (
+                    <div>No properties found.</div>
+                )}
+                </div>
+            )}
             <Footer />
         </div>
     );

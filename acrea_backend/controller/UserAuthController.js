@@ -1,3 +1,4 @@
+//acrea_backend/controller/UserAuthController.js
 const UserAuthModel = require("../models/UserAuthModel");
 const redis_client = require("../utils/init_redis");
 const { jwt_utils, jwt_refresh_token, jwt_verify_refresh_token } = require("../utils/jwt_utils");
@@ -222,4 +223,85 @@ const logoutUserAuthController = async (req, res, next) => {
         next(error)
     }
 }
-module.exports = { signupUserAuthController, signinUserAuthController, updateUserProfileAuthController, resetPasswordAuthController, refreshTokenUserAuthController, logoutUserAuthController,forgotPasswordAuthController };
+
+const showBuyerListController = async (req, res, next) => {
+    const userId = req.payload.aud;
+    try {
+        const fetchedUserData = await UserAuthModel.findById(userId);
+        if (fetchedUserData.usrType !== "admin") {
+            return res.status(403).json({ message: "Unauthorized access" });
+        }
+        const usrBuyerListArr = await UserAuthModel.find({ usrType: "buyer" }).sort({ usrFullName: 1 });
+        console.log("Fetched buyers: ", usrBuyerListArr); // Add this log
+        res.status(200).json({
+            message: "All user records fetched successfully.",
+            user_buyerlist_arr: usrBuyerListArr // Ensure this matches the frontend expectation
+        });
+    } catch (error) {
+        console.error("Failed to fetch buyers list:", error);
+        next(httpErrors.BadRequest("Failed to fetch buyers list"));
+    }
+};
+
+const showAgentListController = async (req, res, next) => {
+    const userId = req.payload.aud;
+    try {
+        const fetchedUserData = await UserAuthModel.findById(userId);
+        if (fetchedUserData.usrType !== "admin") {
+            return res.status(403).json({ message: "Unauthorized access" });
+        }
+        const usrAgentListArr = await UserAuthModel.find({ usrType: "agent" }).sort({ usrFullName: 1 });
+        console.log("Fetched agents: ", usrAgentListArr);
+        res.status(200).json({
+            message: "All user records fetched successfully.",
+            user_agentlist_arr: usrAgentListArr
+        });
+    } catch (error) {
+        console.error("Failed to fetch agents list:", error);
+        next(httpErrors.BadRequest("Failed to fetch agents list"));
+    }
+};
+
+const showRecentBuyerstoAdminController = async (req, res, next) => {
+    const userId = req.payload.aud;
+    try {
+        const fetchedUserData = await UserAuthModel.findById(userId);
+        if (fetchedUserData.usrType !== "admin") {
+            return res.status(403).json({ message: "Unauthorized access" });
+        }
+        // Fetch only the most recent 4 buyers
+        const usrBuyerListArr = await UserAuthModel.find({ usrType: "buyer" })
+            .sort({ createdAt: -1 }) // Sort by creation date, newest first
+            .limit(4); // Limit to 4 users
+        console.log("Fetched buyers: ", usrBuyerListArr);
+        res.status(200).json({
+            message: "All user records fetched successfully.",
+            user_buyerlist_arr: usrBuyerListArr
+        });
+    } catch (error) {
+        console.error("Failed to fetch buyers list:", error);
+        next(httpErrors.BadRequest("Failed to fetch buyers list"));
+    }
+};
+
+const showRecentAgentstoAdminController = async (req, res, next) => {
+    const userId = req.payload.aud;
+    try {
+        const fetchedUserData = await UserAuthModel.findById(userId);
+        if (fetchedUserData.usrType !== "admin") {
+            return res.status(403).json({ message: "Unauthorized access" });
+        }
+        const usrAgentListArr = await UserAuthModel.find({ usrType: "agent" }).sort({ createdAt: -1 }) .limit(4); 
+        console.log("Fetched agents: ", usrAgentListArr);
+        res.status(200).json({
+            message: "All agents records fetched successfully.",
+            user_agentlist_arr: usrAgentListArr
+        });
+    } catch (error) {
+        console.error("Failed to fetch agents list:", error);
+        next(httpErrors.BadRequest("Failed to fetch agents list"));
+    }
+};
+
+
+module.exports = { signupUserAuthController, signinUserAuthController, updateUserProfileAuthController, resetPasswordAuthController, refreshTokenUserAuthController, logoutUserAuthController, forgotPasswordAuthController, showBuyerListController, showAgentListController, showRecentBuyerstoAdminController, showRecentAgentstoAdminController };
