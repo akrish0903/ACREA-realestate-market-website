@@ -303,5 +303,128 @@ const showRecentAgentstoAdminController = async (req, res, next) => {
     }
 };
 
+const updateBuyerProfileByAdminController = async function (req, res, next) {
+    const adminId = req.payload.aud; // Admin ID from JWT token
+    const buyerId = req.params.buyerId; // Buyer ID from request params
 
-module.exports = { signupUserAuthController, signinUserAuthController, updateUserProfileAuthController, resetPasswordAuthController, refreshTokenUserAuthController, logoutUserAuthController, forgotPasswordAuthController, showBuyerListController, showAgentListController, showRecentBuyerstoAdminController, showRecentAgentstoAdminController };
+    const { usrFullName, usrEmail, usrMobileNumber, usrProfileUrl, userBio } = req.body;
+
+    try {
+        // Fetch the admin's data and ensure they are authorized
+        const adminUser = await UserAuthModel.findById(adminId);
+        if (!adminUser || adminUser.usrType !== 'admin') {
+            return next(httpErrors.Forbidden("Unauthorized access."));
+        }
+
+        // Fetch the buyer's data using buyerId
+        const buyer = await UserAuthModel.findById(buyerId);
+        if (!buyer) {
+            return next(httpErrors.NotFound("Buyer not found."));
+        }
+
+        // Update buyer's details
+        buyer.usrFullName = usrFullName;
+        buyer.usrEmail = usrEmail;
+        buyer.usrMobileNumber = usrMobileNumber;
+        buyer.usrProfileUrl = usrProfileUrl;
+        buyer.userBio = userBio;
+
+        const updatedBuyer = await buyer.save();
+
+        res.status(200).json({
+            message: "Buyer profile updated successfully by admin.",
+            buyer_details: {
+                usrFullName: updatedBuyer.usrFullName,
+                usrEmail: updatedBuyer.usrEmail,
+                usrMobileNumber: updatedBuyer.usrMobileNumber,
+                usrProfileUrl: updatedBuyer.usrProfileUrl,
+                userBio: updatedBuyer.userBio,
+            },
+        });
+    } catch (error) {
+        next(httpErrors.InternalServerError("Error updating buyer profile."));
+    }
+};
+
+const deleteBuyerProfileAuthController = async (req, res, next) => {
+    const buyerId = req.params.buyerId;
+
+    try {
+        const buyer = await UserAuthModel.findByIdAndDelete(buyerId);
+        if (!buyer) {
+            return next(httpErrors.NotFound("Buyer not found."));
+        }
+        res.status(200).json({ message: "Buyer deleted successfully." });
+    } catch (error) {
+        next(httpErrors.InternalServerError("Error deleting buyer."));
+    }
+};
+
+const updateAgentProfileByAdminController = async function (req, res, next) {
+    const adminId = req.payload.aud; // Admin ID from JWT token
+    const agentId = req.params.agentId; // Agent ID from request params
+
+    const { usrFullName, usrEmail, usrMobileNumber, usrProfileUrl, userBio } = req.body;
+
+    try {
+        // Verify the admin's identity
+        const adminUser = await UserAuthModel.findById(adminId);
+        if (!adminUser || adminUser.usrType !== 'admin') {
+            return next(httpErrors.Forbidden("Unauthorized access."));
+        }
+
+        // Fetch the agent's data using agentId
+        const agent = await UserAuthModel.findById(agentId);
+        if (!agent) {
+            return next(httpErrors.NotFound("Agent not found."));
+        }
+
+        // Update agent's details
+        agent.usrFullName = usrFullName;
+        agent.usrEmail = usrEmail;  // Email might not be editable in some cases
+        agent.usrMobileNumber = usrMobileNumber;
+        agent.usrProfileUrl = usrProfileUrl;
+        agent.userBio = userBio;
+
+        const updatedAgent = await agent.save();
+
+        res.status(200).json({
+            message: "Agent profile updated successfully by admin.",
+            agent_details: {
+                usrFullName: updatedAgent.usrFullName,
+                usrEmail: updatedAgent.usrEmail,
+                usrMobileNumber: updatedAgent.usrMobileNumber,
+                usrProfileUrl: updatedAgent.usrProfileUrl,
+                userBio: updatedAgent.userBio,
+            },
+        });
+    } catch (error) {
+        next(httpErrors.InternalServerError("Error updating agent profile."));
+    }
+};
+
+const deleteAgentProfileAuthController = async (req, res, next) => {
+    const agentId = req.params.agentId; // Agent ID from request params
+
+    try {
+        // Find and delete the agent by ID
+        const agent = await UserAuthModel.findByIdAndDelete(agentId);
+        if (!agent) {
+            return next(httpErrors.NotFound("Agent not found."));
+        }
+
+        res.status(200).json({ message: "Agent deleted successfully." });
+    } catch (error) {
+        next(httpErrors.InternalServerError("Error deleting agent."));
+    }
+};
+
+
+
+
+
+module.exports = { signupUserAuthController, signinUserAuthController, updateUserProfileAuthController,
+    resetPasswordAuthController, refreshTokenUserAuthController, logoutUserAuthController,
+    forgotPasswordAuthController, showBuyerListController, showAgentListController,
+    showRecentBuyerstoAdminController, showRecentAgentstoAdminController,updateBuyerProfileByAdminController,
+    deleteBuyerProfileAuthController, updateAgentProfileByAdminController, deleteAgentProfileAuthController };

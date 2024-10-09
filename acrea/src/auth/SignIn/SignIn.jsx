@@ -83,7 +83,7 @@ function SignIn() {
             // Redirecting back to dashboard
             setTimeout(() => {
               navigate("/");
-            }, 5000);
+            }, 1000);
 
             return "Account signed in successfully. Redirecting to dashboard page.";
           },

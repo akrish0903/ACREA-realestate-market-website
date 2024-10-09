@@ -1,0 +1,36 @@
+.userlistScreen{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.userListContainer {
+    padding: 20px;
+    flex-direction: column;
+    
+}
+.userListTitle{
+    /* text-align: center; */
+    margin: 2rem;
+    
+}
+
+.userListTable tr{
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+
+}
+
+.userListTable th, .userListTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    /* box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; */
+}
+
+.userListTable th {
+    background-color: #f2f2f2;
+    /* box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; */
+
+}
