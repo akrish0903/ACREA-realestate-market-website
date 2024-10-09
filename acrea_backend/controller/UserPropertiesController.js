@@ -49,13 +49,13 @@ const addPropertyController = async (req, res, next) => {
     }
 }
 
-const showBuyerRecentPropertyController = async (req, res, next) => {
+const showBuyerFourRecentPropertyController = async (req, res, next) => {
 
     var userId = req.payload.aud;
     var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
 
-    if (fetchedUserData.usrType === "buyer"  || UserAuthModel.usrType === null) {
+    if (fetchedUserData.usrType === "buyer"  || fetchedUserData.usrType === null) {
 
         try {
             const usrPropertiesArr = limit
@@ -71,7 +71,7 @@ const showBuyerRecentPropertyController = async (req, res, next) => {
     }
 }
 
-const showBuyerFeaturesPropertyController = async (req, res, next) => {
+const showBuyerTwoFeaturesPropertyController = async (req, res, next) => {
     var userId = req.payload.aud;
     var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
@@ -109,7 +109,6 @@ const showBuyerPropertyController = async (req, res, next) => {
     var fetchedUserData = await UserAuthModel.findById(userId);
 
     if (fetchedUserData.usrType === "buyer") {
-
         try {
             const usrPropertiesArr = await UserPropertiesModel.find().sort({ usrPropertyTime: -1 });
             res.status(200).json({
@@ -122,11 +121,12 @@ const showBuyerPropertyController = async (req, res, next) => {
     }
 }
 
-const showPropertyController = async (req, res, next) => {
+const showAdimFourRecentPropertyController = async (req, res, next) => {
 
     var userId = req.payload.aud;
     var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
+    if (fetchedUserData.usrType === "admin") {
         try {
             const usrPropertiesArr = limit
                 ? await UserPropertiesModel.find().sort({ usrPropertyTime: -1 }).limit(limit)
@@ -138,6 +138,7 @@ const showPropertyController = async (req, res, next) => {
         } catch (error) {
             next(httpErrors.BadRequest())
         }
+    }
 }
 
 const showAgentRecentPropertyController = async (req, res, next) => {
@@ -146,7 +147,6 @@ const showAgentRecentPropertyController = async (req, res, next) => {
     var fetchedUserData = await UserAuthModel.findById(userId);
     
     try {
-        
         if (fetchedUserData.usrType === "agent") {
             const  agentId  = userId;
             const usrPropertiesArr = limit
@@ -174,7 +174,7 @@ const showAgentPropertyController = async (req, res, next) => {
         if (fetchedUserData.usrType === "agent") {
             const agentId = userId;
             const usrPropertiesArr = limit
-                ? await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 }).limit(limit)
+                ? await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 })
                 : await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 });
 
             res.status(200).json({
@@ -189,27 +189,4 @@ const showAgentPropertyController = async (req, res, next) => {
     }
 };
 
-const showAdminPropertyController = async (req, res, next) => {
-    var userId = req.payload.aud;
-    var { limit } = req.body;
-    var fetchedUserData = await UserAuthModel.findById(userId);
-
-    if (fetchedUserData.usrType === "admin") {
-
-        try {
-            const usrPropertiesArr = await UserPropertiesModel.find().sort({ usrPropertyTime: -1 });
-            res.status(200).json({
-                message: "All property records fetched successfully.",
-                user_property_arr: usrPropertiesArr
-            });
-        } catch (error) {
-            next(httpErrors.BadRequest())
-        }
-    }
-};
-
-
-
-
-
-module.exports = { addPropertyController, showBuyerRecentPropertyController, showBuyerFeaturesPropertyController, showBuyerPropertyController,showAdminPropertyController, showPropertyController, showAgentRecentPropertyController, showAgentPropertyController }
+module.exports = { addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController, showBuyerPropertyController, showAdimFourRecentPropertyController, showAgentRecentPropertyController, showAgentPropertyController }

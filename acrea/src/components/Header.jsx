@@ -54,12 +54,13 @@ function Header() {
                         height: "3.5rem"
                     }}>
                     <img
-                        src={Config.imagesPaths.logo2}
+                        src={Config.imagesPaths.logo3}
                         className={Styles.screenRightContainerImg}
                         style={{
                             objectFit: 'contain',
                             width: "100%",
-                            height: "100%"
+                            height: "100%",
+                            marginLeft:'2.5rem',
                         }}
                     />
                 </NavLink>
@@ -82,10 +83,53 @@ function Header() {
                         >
                             BUY
                         </NavLink>
-                    </h6>}
-                    {(userAuthData.usrEmail=== null || userAuthData.usrType==='buyer' ) &&
-                    <h6 style={{ color: Config.color.background }}>AGENTS</h6>}
-                    <h6><NavLink
+                    </h6>
+                }
+
+                {(userAuthData.usrEmail=== null || userAuthData.usrType==='buyer' ) &&
+                    <h6 style={{ color: Config.color.background }}>AGENTS</h6>
+                }
+                {(userAuthData.usrType==='agent' ) &&
+                    <h6>
+                        <NavLink
+                            to="/ViewAllProperties"
+                            style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
+                        >
+                            Your Properties
+                        </NavLink>
+                    </h6>
+                }
+                {(userAuthData.usrType==='admin' ) &&
+                    <h6 style={{width:'6rem'}}>
+                        <NavLink
+                            to="/BuyerList"
+                            style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
+                        >
+                            View Buyers
+                        </NavLink>
+                    </h6>
+                }
+                {(userAuthData.usrType==='admin' ) &&
+                    <h6 style={{width:'6rem'}}>
+                        <NavLink
+                            to="/AgentList"
+                            style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
+                        >
+                            View Agents
+                        </NavLink>
+                    </h6>
+                }
+                {(userAuthData.usrType==='admin' ) &&
+                    <h6 style={{width:'9rem'}}>
+                        <NavLink
+                            to="/ViewAllProperties"
+                            style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
+                        >
+                            View Properties
+                        </NavLink>
+                    </h6>
+                }
+                <h6><NavLink
                         to={"/About"}
                         style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
                     >

@@ -26,7 +26,7 @@ function Dashboard() {
         var buyerRecentPropertiesFetched = await useApi({
             authRequired: true,
             authToken: userAuthData.usrAccessToken,
-            url: "/show-buyer-recent-properties",
+            url: "/show-buyer-four-recent-properties",
             method: "POST",
             data: {
                 limit: 4
@@ -40,7 +40,7 @@ function Dashboard() {
         var agentRecentPropertiesFetched = await useApi({
             authRequired: true,
             authToken: userAuthData.usrAccessToken,
-            url: "/show-agent-recent-properties",
+            url: "/show-agent-four-recent-properties",
             method: "POST",
             data: {
                 limit: 4
@@ -54,7 +54,7 @@ function Dashboard() {
         var adminRecentPropertiesFetched = await useApi({
             authRequired: true,
             authToken: userAuthData.usrAccessToken,
-            url: "/show-admin-properties",
+            url: "/show-admin-four-recent-properties",
             method: "POST",
             data: {
                 limit: 4
@@ -68,7 +68,7 @@ function Dashboard() {
         var agentRecentPropertiesFetched2 = await useApi({
             authRequired: true,
             authToken: userAuthData.usrAccessToken,
-            url: "/show-admin-properties",
+            url: "/show-agent-two-recent-properties",
             method: "POST",
             data: {
                 limit: 2
@@ -82,7 +82,7 @@ function Dashboard() {
         var buyerFeaturesPropertiesFetched = await useApi({
             authRequired: true,
             authToken: userAuthData.usrAccessToken,
-            url: "/show-buyer-features-properties",
+            url: "/show-buyer-two-feature-properties",
             method: "POST",
             data: {
                 limit: 2
@@ -260,7 +260,7 @@ function Dashboard() {
                         {/* card  */}
                         {buyerFeaturesProperties?.map((item, index) => {
                             return <FeaturedPropertyContainer propertiesData={item} />
-                        })}               
+                        })}                                 
                     </div>
                 </div>
 
@@ -327,7 +327,7 @@ function Dashboard() {
                     <div className={Styles.recentPropContainer}>
                     {agentRecentProperties?.map((item, index) => {
                             return <PropertiesCardVertical propertiesData={item} />
-                        })}
+                        })}                    
                     </div>
                 </div>
 

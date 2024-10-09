@@ -46,7 +46,7 @@ function AgentList() {
         <div className={`screen ${Styles.buyerScreen}`}>
             <Header />
             <div className={Styles.buyerListContainer}>
-                <h1 style={{ textAlign: 'center', margin: '2rem' }}>agents List</h1>
+                <h1 style={{ textAlign: 'center', margin: '2rem' }}>Agents List</h1>
                 <table className={Styles.buyerTable}>
                     <thead>
                         <tr>

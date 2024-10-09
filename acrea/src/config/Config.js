@@ -34,6 +34,7 @@ export var Config = {
         signinBackground: "/assets/signinBackground.jpg",
         logo: "/assets/logo.png",
         logo2: "/assets/logo2.png",
+        logo3: "/assets/logo3.png",
         user_null: "/assets/user_null.png",
 
     }
