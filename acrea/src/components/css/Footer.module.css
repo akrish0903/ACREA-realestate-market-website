@@ -2,6 +2,8 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: auto;
+    position: relative;
     padding: 16px;
     background-color: #f5f7fa; /* Light gray background */
     border-top: 1px solid #e5e7eb; /* Border at the top */

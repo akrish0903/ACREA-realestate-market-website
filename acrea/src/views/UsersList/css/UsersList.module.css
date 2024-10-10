@@ -1,4 +1,4 @@
-.userlistScreen{
+.userlistScreen {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -6,31 +6,80 @@
 
 .userListContainer {
     padding: 20px;
+    display: flex;
     flex-direction: column;
-    
-}
-.userListTitle{
-    /* text-align: center; */
-    margin: 2rem;
+    align-items: center;
     
 }
 
-.userListTable tr{
-    width: 100%;
+.userListTable {
+    background-color: white;
+    border-radius: 20px;
+    width: 90%;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
     border-collapse: collapse;
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    overflow: hidden; 
+}
 
+.userListTable thead {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 8px; /* Lighter shadow for the header */
+    background-color: white;
+    color: #BC0000;
+    text-align: center;
 }
 
 .userListTable th, .userListTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    /* box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; */
+    padding: 12px 15px; 
+    text-align: center;
+}
+
+.userListTable tr {
+    width: 100%;
+}
+
+.userListTable tr:nth-child(even) {
+    background-color: #f9f9f9; /* Add alternating row colors */
+}
+
+.userListTable tr:hover {
+    background-color: #f1f1f1; /* Row hover effect */
 }
 
 .userListTable th {
-    background-color: #f2f2f2;
-    /* box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; */
+    font-weight: bold;
+    background-color: white;
+    border-bottom: 2px solid #ddd; /* Subtle border under headers */
+}
 
+.userListTable td {
+    border-bottom: none; /* Remove bottom borders between rows */
+}
+
+/* Additional styling to ensure rounded corners look nice */
+.userListTable th:first-child,
+.userListTable td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.userListTable th:last-child,
+.userListTable td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.editBtn{
+    cursor: pointer;
+    width:4rem;
+    border-radius:1rem;
+}
+.deleteBtn{
+    cursor: pointer;
+    width:4rem;
+    margin-left: 10px;
+    border-radius:1rem;
+}
+input{
+    border-radius: .5rem;
+    padding: .5rem;
 }

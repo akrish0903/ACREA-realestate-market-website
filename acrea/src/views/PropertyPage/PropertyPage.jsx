@@ -120,7 +120,7 @@ function PropertyPage() {
                     )}
 
                      {/* Only render if the user is a agent */}
-                     {userAuthData.usrType === 'agent' && (
+                     {(userAuthData.usrType === 'agent' || userAuthData.usrType === 'admin' )&& (
                         <aside className={Styles.sidebar}>
                             <button 
                               className={Styles.editBtn} 

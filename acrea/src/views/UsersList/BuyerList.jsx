@@ -6,7 +6,8 @@ import useApi from '../../utils/useApi';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from 'react-redux';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material'; // Import Material UI components
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
+import { Config } from '../../config/Config';
 
 function BuyerList() {
     const [buyers, setBuyers] = useState([]);
@@ -104,7 +105,7 @@ function BuyerList() {
             <Header />
             <div className={Styles.userListContainer}>
                 <h1 style={{ textAlign: 'center', margin: '2rem' }}>Buyers List</h1>
-                <table className={Styles.userListTable}>
+                <table className={Styles.userListTable} style={{fontSize:Config.fontSize.regular}}>
                     <thead>
                         <tr>
                             <th>Full Name</th>
@@ -157,13 +158,15 @@ function BuyerList() {
                                             <>
                                                 <button
                                                     onClick={() => updateBuyer(buyer._id)}
-                                                    style={{ color: 'green', cursor: 'pointer' , backgroundColor:'white'}}
+                                                    className={Styles.editBtn}
+                                                    style={{ color: Config.color.background, backgroundColor:Config.color.success}}
                                                 >
                                                     Save
                                                 </button>
                                                 <button
                                                     onClick={() => setEditMode(null)}
-                                                    style={{ color: 'red', cursor: 'pointer', marginLeft: '10px' }}
+                                                    className={Styles.deleteBtn}
+                                                    style={{ color: Config.color.background, backgroundColor:Config.color.primaryColor800}}
                                                 >
                                                     Cancel
                                                 </button>
@@ -191,7 +194,10 @@ function BuyerList() {
                     </tbody>
                 </table>
             </div>
+        
+
             <Footer />
+         
 
             {/* Dialog for delete confirmation */}
             <Dialog

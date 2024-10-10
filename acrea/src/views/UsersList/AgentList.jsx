@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from 'react-redux';
 import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
+import { Config } from '../../config/Config';
 
 function AgentList() {
     const [agents, setAgents] = useState([]);
@@ -106,7 +107,7 @@ function AgentList() {
             <Header />
             <div className={Styles.userListContainer}>
                 <h1 style={{ textAlign: 'center', margin: '2rem' }}>Agents List</h1>
-                <table className={Styles.userListTable}>
+                <table className={Styles.userListTable} style={{fontSize:Config.fontSize.regular}}>
                     <thead>
                         <tr>
                             <th>Full Name</th>
@@ -159,13 +160,15 @@ function AgentList() {
                                             <>
                                                 <button
                                                     onClick={() => updateAgent(agent._id)}
-                                                    style={{ color: 'green', cursor: 'pointer' }}
+                                                    className={Styles.editBtn}
+                                                    style={{ color: Config.color.background, backgroundColor:Config.color.success}}
                                                 >
                                                     Save
                                                 </button>
                                                 <button
-                                                    onClick={() => setEditMode(null)}
-                                                    style={{ color: 'red', cursor: 'pointer', marginLeft: '10px' }}
+                                                    onClick={() => setEditMode(null)}  
+                                                    className={Styles.deleteBtn}
+                                                    style={{ color: Config.color.background, backgroundColor:Config.color.primaryColor800}}
                                                 >
                                                     Cancel
                                                 </button>
