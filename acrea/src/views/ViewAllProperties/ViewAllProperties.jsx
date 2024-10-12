@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom'; // import useLocation for query params
 import { useSelector } from 'react-redux';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -6,55 +7,65 @@ import Styles from './css/ViewAllProperties.module.css';
 import SecondHeader from '../../components/SecondHeader';
 import PropertiesCardVertical from '../../components/PropertiesCardVertical';
 import useApi from '../../utils/useApi';
-import { toast } from 'react-toastify'; // Optional: for user-friendly error display
+import { toast } from 'react-toastify';
 
 function ViewAllProperties() {
-    var userAuthData = useSelector(data => data.AuthUserDetailsSlice);
+    const userAuthData = useSelector(data => data.AuthUserDetailsSlice);
     console.log("user auth data ---> ", userAuthData);
-
-    const [agentProperties, setAgentProperties] = useState([]);
-    const [buyerProperties, setBuyerProperties] = useState([]);
-    const [adminProperties, setAdminProperties] = useState([]);
-
+    const [properties, setProperties] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    async function fetchAgentProperties() {
+    const location = useLocation();
+   
+    // Fetch agent's properties and fillter if needed
+    async function fetchAgentPropertiesByTypeAndSearch(type, searchText) {
         try {
-            const agentPropertiesFetched = await useApi({
+            console.log("Requesting agent properties with type:", type, "and searchText:", searchText);
+            
+            const fetchedProperties = await useApi({
                 authRequired: true,
                 authToken: userAuthData.usrAccessToken,
-                url: "/show-agent-properties",
+                url: "/show-by-type-agent-properties",
                 method: "POST",
+                data: { type, searchText }
             });
-
-            if (agentPropertiesFetched?.user_property_arr) {
-                setAgentProperties(agentPropertiesFetched.user_property_arr);
+    
+            console.log("Fetched agent properties:", fetchedProperties);
+    
+            if (fetchedProperties?.user_property_arr) {
+                setProperties(fetchedProperties.user_property_arr);
             } else {
-                throw new Error("Failed to fetch properties");
+                throw new Error("Failed to fetch agent properties");
             }
         } catch (err) {
             console.error("Error fetching agent properties: ", err);
             setError(err.message);
-            toast.error("Failed to load properties. Please try again.");  // Optional: Display toast error
+            toast.error("Failed to load properties. Please try again.");
         } finally {
             setIsLoading(false);
         }
     }
-
-    async function fetchBuyerProperties() {
+   
+    // Fetch properties to show buyer and fillter if needed
+    async function fetchBuyerPropertiesByTypeAndSearch(type, searchText) {
         try {
-            const buyerPropertiesFetched = await useApi({
+            console.log("Requesting buyer properties with type:", type, "and searchText:", searchText);
+            
+            const fetchedProperties = await useApi({
                 authRequired: true,
                 authToken: userAuthData.usrAccessToken,
-                url: "/show-buyer-properties",
+                url: "/show-by-type-buyer-properties",
                 method: "POST",
+                data: { type, searchText }
             });
     
-            if (buyerPropertiesFetched?.user_property_arr) {
-                setBuyerProperties(buyerPropertiesFetched.user_property_arr); // Correct state update for buyer properties
+            console.log("Fetched buyer properties:", fetchedProperties);
+    
+            if (fetchedProperties?.user_property_arr) {
+                setProperties(fetchedProperties.user_property_arr);
             } else {
-                throw new Error("Failed to fetch properties");
+                throw new Error("Failed to fetch buyer properties");
             }
         } catch (err) {
             console.error("Error fetching buyer properties: ", err);
@@ -64,20 +75,26 @@ function ViewAllProperties() {
             setIsLoading(false);
         }
     }
-
-    async function fetchAdminProperties() {
+   
+    // Fetch properties to show admin and fillter if needed
+    async function fetchAdminPropertiesByTypeAndSearch(type, searchText) {
         try {
-            const adminPropertiesFetched = await useApi({
+            console.log("Requesting admin properties with type:", type, "and searchText:", searchText);
+            
+            const fetchedProperties = await useApi({
                 authRequired: true,
                 authToken: userAuthData.usrAccessToken,
-                url: "/show-admin-properties",
+                url: "/show-by-type-admin-properties",
                 method: "POST",
+                data: { type, searchText }
             });
     
-            if (adminPropertiesFetched?.user_property_arr) {
-                setAdminProperties(adminPropertiesFetched.user_property_arr); // Correct state update for buyer properties
+            console.log("Fetched admin properties:", fetchedProperties);
+    
+            if (fetchedProperties?.user_property_arr) {
+                setProperties(fetchedProperties.user_property_arr);
             } else {
-                throw new Error("Failed to fetch properties");
+                throw new Error("Failed to fetch admin properties");
             }
         } catch (err) {
             console.error("Error fetching admin properties: ", err);
@@ -87,26 +104,24 @@ function ViewAllProperties() {
             setIsLoading(false);
         }
     }
-    
+
+    // Extract the search query from the URL parameters and fetch properties accordingly
     useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const propertyType = searchParams.get('propertyType') || 'All';
+        const searchText = searchParams.get('searchText') || ''; // Capture the search text
+
+        // Fetch properties based on user type
         if (userAuthData?.usrType === "agent") {
-            fetchAgentProperties();
-        } else {
-            setIsLoading(false); // Avoid infinite loading for non-agent users
+            fetchAgentPropertiesByTypeAndSearch(propertyType, searchText);
         }
-        if (userAuthData?.usrType === 'buyer'){
-            fetchBuyerProperties();
+        if (userAuthData?.usrType === "buyer") {
+            fetchBuyerPropertiesByTypeAndSearch(propertyType, searchText);
         }
-        else {
-            setIsLoading(false);
+        if (userAuthData?.usrType === "admin") {
+            fetchAdminPropertiesByTypeAndSearch(propertyType, searchText);
         }
-        if (userAuthData?.usrType === 'admin'){
-            fetchAdminProperties();
-        }
-        else {
-            setIsLoading(false);
-        }
-    }, [userAuthData]);
+    }, [location.search, userAuthData]);
 
     if (isLoading) {
         return <div className={Styles.loader}>Loading...</div>;
@@ -120,38 +135,31 @@ function ViewAllProperties() {
         <div className={`screen ${Styles.viewAllScreen}`}>
             <Header />
             <SecondHeader />
-            {userAuthData.usrType === 'agent' && (<div className={Styles.viewAllScreenContainer}>
-                {agentProperties.length > 0 ? (
-                    agentProperties.map((item, index) => (
+            <div className={Styles.viewAllScreenContainer}>
+                {userAuthData.usrType === 'agent' && ( properties.length > 0 ? (
+                    properties.map((item, index) => (
                         <PropertiesCardVertical key={index} propertiesData={item} />
                     ))
                 ) : (
                     <div>No properties found.</div>
-                )}
+                ))}
+                
+                {userAuthData.usrType === 'buyer' && ( properties.length > 0 ? (
+                    properties.map((item, index) => (
+                        <PropertiesCardVertical key={index} propertiesData={item} />
+                    ))
+                ) : (
+                    <div>No properties found.</div>
+                ))}
+
+                {userAuthData.usrType === 'admin' && ( properties.length > 0 ? (
+                    properties.map((item, index) => (
+                        <PropertiesCardVertical key={index} propertiesData={item} />
+                    ))
+                ) : (
+                    <div>No properties found.</div>
+                ))}
             </div>
-            )}
-
-            {userAuthData.usrType === 'buyer' && (<div className={Styles.viewAllScreenContainer}>
-                {buyerProperties.length > 0 ? (
-                    buyerProperties.map((item, index) => (
-                        <PropertiesCardVertical key={index} propertiesData={item} />
-                    ))
-                ) : (
-                    <div>No properties found.</div>
-                )}
-                </div>
-            )}
-
-            {userAuthData.usrType === 'admin' && (<div className={Styles.viewAllScreenContainer}>
-                {adminProperties.length > 0 ? (
-                    adminProperties.map((item, index) => (
-                        <PropertiesCardVertical key={index} propertiesData={item} />
-                    ))
-                ) : (
-                    <div>No properties found.</div>
-                )}
-                </div>
-            )}
             <Footer />
         </div>
     );

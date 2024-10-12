@@ -101,26 +101,6 @@ const showBuyerTwoFeaturesPropertyController = async (req, res, next) => {
     }
 }
 
-
-const showBuyerPropertyController = async (req, res, next) => {
-
-    var userId = req.payload.aud;
-    var { limit } = req.body;
-    var fetchedUserData = await UserAuthModel.findById(userId);
-
-    if (fetchedUserData.usrType === "buyer") {
-        try {
-            const usrPropertiesArr = await UserPropertiesModel.find().sort({ usrPropertyTime: -1 });
-            res.status(200).json({
-                message: "All property records fetched successfully.",
-                user_property_arr: usrPropertiesArr
-            });
-        } catch (error) {
-            next(httpErrors.BadRequest())
-        }
-    }
-}
-
 const showAdimFourRecentPropertyController = async (req, res, next) => {
 
     var userId = req.payload.aud;
@@ -165,28 +145,136 @@ const showAgentRecentPropertyController = async (req, res, next) => {
     }
 };
 
-const showAgentPropertyController = async (req, res, next) => {
-    var userId = req.payload.aud;
-    var { limit } = req.body;
-    var fetchedUserData = await UserAuthModel.findById(userId);
-    
+const showByTypeAgentPropertyController = async (req, res, next) => {
+    const userId = req.payload.aud;
+    const { type, searchText } = req.body; // Capture both type and searchText
+    const fetchedUserData = await UserAuthModel.findById(userId);
+
     try {
         if (fetchedUserData.usrType === "agent") {
-            const agentId = userId;
-            const usrPropertiesArr = limit
-                ? await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 })
-                : await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 });
+            let query = { agentId: userId };
+
+            // Add filtering by type
+            if (type && type !== 'All') {
+                query.userListingType = type;
+            }
+
+            // Add filtering by searchText (if provided)
+            if (searchText) {
+                query = {
+                    ...query,
+                    $or: [
+                        { usrListingName: { $regex: searchText, $options: 'i' } }, // Case-insensitive match for name
+                        { "location.street": { $regex: searchText, $options: 'i' } },
+                        { "location.city": { $regex: searchText, $options: 'i' } },
+                        { "location.state": { $regex: searchText, $options: 'i' } },
+                        { "location.pinCode": { $regex: searchText, $options: 'i' } }
+                    ]
+                };
+            }
+
+            const usrPropertiesArr = await UserPropertiesModel.find(query).sort({ usrPropertyTime: -1 });
 
             res.status(200).json({
-                message: "All property records fetched successfully.",
+                message: "Properties fetched successfully based on the type and search.",
                 user_property_arr: usrPropertiesArr
             });
         } else {
-            return next(httpErrors.Unauthorized("You are not authorized to view these properties."));
+            return next(httpErrors.Unauthorized("Unauthorized access."));
         }
     } catch (error) {
-        next(httpErrors.BadRequest());
+        console.error("Error fetching agent properties:", error); // Add logging
+        next(httpErrors.BadRequest("Failed to fetch properties"));
     }
 };
 
-module.exports = { addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController, showBuyerPropertyController, showAdimFourRecentPropertyController, showAgentRecentPropertyController, showAgentPropertyController }
+const showByTypeBuyerPropertyController = async (req, res, next) => {
+    const userId = req.payload.aud;
+    const { type, searchText } = req.body; // Capture both type and searchText
+    const fetchedUserData = await UserAuthModel.findById(userId);
+
+    try {
+        if (fetchedUserData.usrType === "buyer") {
+            let query = {}; // Remove buyerId filter
+
+            // Add filtering by type
+            if (type && type !== 'All') {
+                query.userListingType = type;
+            }
+
+            // Add filtering by searchText (if provided)
+            if (searchText) {
+                query = {
+                    ...query,
+                    $or: [
+                        { usrListingName: { $regex: searchText, $options: 'i' } }, // Case-insensitive match for name
+                        { "location.street": { $regex: searchText, $options: 'i' } },
+                        { "location.city": { $regex: searchText, $options: 'i' } },
+                        { "location.state": { $regex: searchText, $options: 'i' } },
+                        { "location.pinCode": { $regex: searchText, $options: 'i' } }
+                    ]
+                };
+            }
+
+            const usrPropertiesArr = await UserPropertiesModel.find(query).sort({ usrPropertyTime: -1 });
+
+            res.status(200).json({
+                message: "Properties fetched successfully based on the type and search.",
+                user_property_arr: usrPropertiesArr
+            });
+        } else {
+            return next(httpErrors.Unauthorized("Unauthorized access."));
+        }
+    } catch (error) {
+        console.error("Error fetching buyer properties:", error); // Add logging
+        next(httpErrors.BadRequest("Failed to fetch properties"));
+    }
+};
+
+
+const showByTypeAdminPropertyController = async (req, res, next) => {
+    const userId = req.payload.aud;
+    const { type, searchText } = req.body; // Capture both type and searchText
+    const fetchedUserData = await UserAuthModel.findById(userId);
+
+    try {
+        if (fetchedUserData.usrType === "admin") {
+            let query = {}; // Remove adminId filter
+
+            // Add filtering by type
+            if (type && type !== 'All') {
+                query.userListingType = type;
+            }
+
+            // Add filtering by searchText (if provided)
+            if (searchText) {
+                query = {
+                    ...query,
+                    $or: [
+                        { usrListingName: { $regex: searchText, $options: 'i' } }, // Case-insensitive match for name
+                        { "location.street": { $regex: searchText, $options: 'i' } },
+                        { "location.city": { $regex: searchText, $options: 'i' } },
+                        { "location.state": { $regex: searchText, $options: 'i' } },
+                        { "location.pinCode": { $regex: searchText, $options: 'i' } }
+                    ]
+                };
+            }
+
+            const usrPropertiesArr = await UserPropertiesModel.find(query).sort({ usrPropertyTime: -1 });
+
+            res.status(200).json({
+                message: "Properties fetched successfully based on the type and search.",
+                user_property_arr: usrPropertiesArr
+            });
+        } else {
+            return next(httpErrors.Unauthorized("Unauthorized access."));
+        }
+    } catch (error) {
+        console.error("Error fetching admin properties:", error); // Add logging
+        next(httpErrors.BadRequest("Failed to fetch properties"));
+    }
+};
+
+module.exports = { addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
+      showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
+      showByTypeBuyerPropertyController, showByTypeAdminPropertyController }
