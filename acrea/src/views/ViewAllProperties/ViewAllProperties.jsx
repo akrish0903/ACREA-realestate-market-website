@@ -105,6 +105,33 @@ function ViewAllProperties() {
         }
     }
 
+     // Fetch properties to show user not logged in and fillter if needed
+    async function fetchAllUserPropertiesByTypeAndSearch(type, searchText) {
+        try {
+            console.log("Requesting properties with type:", type, "and searchText:", searchText);
+            
+            const fetchedProperties = await useApi({
+                url: "/show-by-type-all-user-properties",
+                method: "POST",
+                data: { type, searchText }
+            });
+    
+            console.log("Fetched properties:", fetchedProperties);
+    
+            if (fetchedProperties?.user_property_arr) {
+                setProperties(fetchedProperties.user_property_arr);
+            } else {
+                throw new Error("Failed to fetch properties");
+            }
+        } catch (err) {
+            console.error("Error fetching properties: ", err);
+            setError(err.message);
+            toast.error("Failed to load properties. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     // Extract the search query from the URL parameters and fetch properties accordingly
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
@@ -120,6 +147,9 @@ function ViewAllProperties() {
         }
         if (userAuthData?.usrType === "admin") {
             fetchAdminPropertiesByTypeAndSearch(propertyType, searchText);
+        }
+        if (userAuthData.usrType === null) {
+            fetchAllUserPropertiesByTypeAndSearch(propertyType, searchText);
         }
     }, [location.search, userAuthData]);
 
@@ -159,6 +189,21 @@ function ViewAllProperties() {
                 ) : (
                     <div>No properties found.</div>
                 ))}
+
+                {userAuthData.usrType === null && ( properties.length > 0 ? (
+                    properties.map((item, index) => (
+                        <PropertiesCardVertical key={index} propertiesData={item} />
+                    ))
+                ) : (
+                    <div>No properties found.</div>
+                ))}
+                {/* {properties.length > 0 ? (
+                    properties.map((item, index) => (
+                        <PropertiesCardVertical key={index} propertiesData={item} />
+                    ))
+                ) : (
+                    <div>No properties found.</div>
+                )} */}
             </div>
             <Footer />
         </div>

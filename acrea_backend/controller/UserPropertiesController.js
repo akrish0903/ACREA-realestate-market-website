@@ -371,9 +371,39 @@ const showAllUsersTwoFeaturesPropertyController = async (req, res, next) => {
     }
 };
 
+const showByTypeAllUserPropertyController = async (req, res, next) => {
+    const { type, searchText } = req.body; // Capture both type and searchText
+   try {
+       let query = {};
+       if (type && type !== 'All') {
+           query.userListingType = type;
+       }
+       if (searchText) {
+           query = {
+               ...query,
+               $or: [
+                   { usrListingName: { $regex: searchText, $options: 'i' } },
+                   { "location.street": { $regex: searchText, $options: 'i' } },
+                   { "location.city": { $regex: searchText, $options: 'i' } },
+                   { "location.state": { $regex: searchText, $options: 'i' } },
+                   { "location.pinCode": { $regex: searchText, $options: 'i' } }
+               ]
+           };
+       }
+       const usrPropertiesArr = await UserPropertiesModel.find(query).sort({ usrPropertyTime: -1 });
+       res.status(200).json({
+           message: "Properties fetched successfully based on the type and search.",
+           user_property_arr: usrPropertiesArr
+       });
+   } catch (error) {
+       console.error("Error fetching properties:", error);
+       next(httpErrors.BadRequest("Failed to fetch properties"));
+   }
+};
+
 module.exports = {
     addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
     showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
     showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController,
-    showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController
+    showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController, showByTypeAllUserPropertyController
 }
