@@ -55,7 +55,7 @@ const showBuyerFourRecentPropertyController = async (req, res, next) => {
     var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
 
-    if (fetchedUserData.usrType === "buyer"  || fetchedUserData.usrType === null) {
+    if (fetchedUserData.usrType === "buyer" || fetchedUserData.usrType === null) {
 
         try {
             const usrPropertiesArr = limit
@@ -125,10 +125,10 @@ const showAgentRecentPropertyController = async (req, res, next) => {
     var userId = req.payload.aud;
     var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
-    
+
     try {
         if (fetchedUserData.usrType === "agent") {
-            const  agentId  = userId;
+            const agentId = userId;
             const usrPropertiesArr = limit
                 ? await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 }).limit(limit)
                 : await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 });
@@ -276,27 +276,9 @@ const showByTypeAdminPropertyController = async (req, res, next) => {
 };
 
 const editPropertyController = async (req, res) => {
-    const agentId = req.user.agentId;
-    const propertyId = req.params.propertyId;
+    const agentId = req.payload.aud;
     const {
-      usrListingName,
-      usrListingDescription,
-      usrListingSquareFeet,
-      location,
-      usrAmenities,
-      usrExtraFacilities,
-      usrPrice,
-      userListingImage,
-      userListingType
-    } = req.body;
-  
-    try {
-      const property = await Property.findOne({ _id: propertyId, agentId });
-      if (!property) {
-        return res.status(403).json({ message: "You do not have permission to edit this property." });
-      }
-  
-      const updateData = {
+        userId,
         usrListingName,
         usrListingDescription,
         usrListingSquareFeet,
@@ -306,26 +288,87 @@ const editPropertyController = async (req, res) => {
         usrPrice,
         userListingImage,
         userListingType
-      };
-  
-      const updatedProperty = await Property.findByIdAndUpdate(propertyId, updateData, { new: true });
-      
-      if (!updatedProperty) {
-        return res.status(404).json({ message: "Property not found." });
-      }
-  
-      res.status(200).json({
-        message: "Property updated successfully.",
-        property_details: updatedProperty
-      });
-    } catch (error) {
-      console.error("Error updating property:", error);
-      res.status(500).json({ message: "Failed to update property. Please try again." });
-    }
-  };
-  
-  
+    } = req.body;
 
-module.exports = { addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
-      showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
-      showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController }
+    try {
+        var fetchedUserData = await UserAuthModel.findById(agentId);
+        
+        if (fetchedUserData.usrType === "agent") {
+            const property = await UserPropertiesModel.findOne({ _id: userId, agentId });
+            console.log(property);
+            if (!property) {
+                return res.status(404).json({ message: "Property not found." });
+            } else {
+                property.usrListingName = usrListingName || property.usrListingName;
+                property.usrListingDescription = usrListingDescription || property.usrListingDescription;
+                property.usrListingSquareFeet = usrListingSquareFeet || property.usrListingSquareFeet;
+                property.location = location || property.location;
+                property.usrAmenities = usrAmenities || property.usrAmenities;
+                property.usrExtraFacilities = usrExtraFacilities || property.usrExtraFacilities;
+                property.usrPrice = usrPrice || property.usrPrice;
+                property.userListingImage = userListingImage || property.userListingImage;
+                property.userListingType = userListingType || property.userListingType;
+                
+                // Save the updated property
+                var savedUserDetails = await property.save();
+
+                res.status(200).json({
+                    message: "Property updated successfully.",
+                    property_details: savedUserDetails,
+                });
+            }
+        } else {
+            next(httpErrors.Unauthorized("Invalid UserType"))
+        }
+
+
+    } catch (error) {
+        console.error("Error updating property:", error);
+        res.status(500).json({ message: "Failed to update property. Please try again." });
+    }
+};
+
+
+
+const showAllUsersFourRecentPropertyController = async (req, res, next) => {
+    var { limit } = req.body;
+    try {
+        const usrPropertiesArr = limit ?
+            await UserPropertiesModel.find().sort({ usrPropertyTime: -1 }).limit(limit)
+            : await UserPropertiesModel.find().sort({ usrPropertyTime: -1 });
+        res.status(200).json({
+            message: "Property record fetched success.",
+            user_property_arr: usrPropertiesArr
+        });
+    } catch (error) {
+        next(httpErrors.BadRequest())
+    }
+}
+
+
+
+const showAllUsersTwoFeaturesPropertyController = async (req, res, next) => {
+    var { limit } = req.body;
+    try {
+        // Fetch the two properties with the highest price, sorting by usrPrice in descending order
+        const topProperties = limit
+            ? await UserPropertiesModel.find().sort({ usrPrice: -1 }).limit(limit)
+            : await UserPropertiesModel.find().sort({ usrPrice: -1 });
+
+        console.log("Fetched properties (sorted by price):", topProperties); // Debugging log
+
+        res.status(200).json({
+            message: "Top properties fetched successfully.",
+            user_property_arr: topProperties
+        });
+    } catch (error) {
+        console.error("Error fetching top properties: ", error);
+        next(httpErrors.BadRequest());
+    }
+};
+
+module.exports = {
+    addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
+    showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
+    showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController, showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController
+}

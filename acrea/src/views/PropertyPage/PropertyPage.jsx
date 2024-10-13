@@ -41,7 +41,7 @@ function PropertyPage() {
             {/* Go Back */}
             <div className={Styles.goBackSection}>
                 <div className={Styles.goBackContainer}>
-                    <a onClick={() => { navigation("/viewAllProperties") }} style={{ color: Config.color.primaryColor800, cursor: 'pointer' }}>
+                    <a onClick={() => { navigation(-1)}} style={{ color: Config.color.primaryColor800, cursor: 'pointer' }}>
                         <ArrowBackIcon /> Back to Properties
                     </a>
                 </div>

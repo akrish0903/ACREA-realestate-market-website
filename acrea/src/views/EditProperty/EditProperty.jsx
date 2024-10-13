@@ -7,13 +7,15 @@ import { Config } from '../../config/Config';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import useApi from '../../utils/useApi';
 
 function EditProperty() {
   const authUserDetails = useSelector(data => data.AuthUserDetailsSlice);
+
   const location = useLocation();
   const navigate = useNavigate();
-  const propertyId = location.state?.propertyId;
-  const propertyData=location.state;
+  const propertyId = location.state?._id;
+  const propertyData = location.state;
   const [usrProperty, setUsrProperty] = useState({
     propertyId: propertyData._id,
     userListingType: propertyData.userListingType,
@@ -35,54 +37,119 @@ function EditProperty() {
     userListingImage: propertyData.userListingImage
   });
 
-  useEffect(() => {
-    if (propertyId) {
-      const fetchPropertyDetails = async () => {
-        try {
-          const response = await axios.get(`${Config.apiBaseUrl}/properties/${propertyId}`, {
-            headers: { 'Authorization': `Bearer ${authUserDetails.authToken}` }
-          });
-          setUsrProperty(response.data);
-        } catch (error) {
-          console.error("Error fetching property details:", error);
-          toast.error("Failed to load property details");
-        }
-      };
-      fetchPropertyDetails();
-    }
-  }, [propertyId, authUserDetails.authToken]);
+  // useEffect(() => {
+  //   if (propertyId) {
+  //     const fetchPropertyDetails = async () => {
+  //       try {
+  //         const response = await axios.get(`${Config.apiBaseUrl}/properties/${propertyId}`, {
+  //           headers: { 'Authorization': `Bearer ${authUserDetails.authToken}` }
+  //         });
+  //         setUsrProperty(response.data);
+  //       } catch (error) {
+  //         console.error("Error fetching property details:", error);
+  //         toast.error("Failed to load property details");
+  //       }
+  //     };
+  //     fetchPropertyDetails();
+  //   }
+  // }, []);
 
   const editPropertyHandler = async (e) => {
     e.preventDefault();
-    
+
     if (!Config.apiBaseUrl) {
       console.error("API base URL is not defined");
       toast.error("Application configuration error. Please contact support.");
       return;
-    }
-
-    if (!propertyId) {
+    } else if (!propertyId) {
       console.error("Property ID is not defined");
       toast.error("Property ID is missing. Please try again or contact support.");
       return;
+    } else {
+      try {
+        // toast notification
+        const apiCallPromise = new Promise(async (resolve, reject) => {
+          const apiResponse = await useApi({
+            authRequired: true,
+            authToken: authUserDetails.usrAccessToken,
+            url: "/edit-property",
+            method: "POST",
+            data: {
+              userId: usrProperty.propertyId,
+              userListingType: usrProperty.userListingType,
+              usrListingName: usrProperty.usrListingName,
+              usrListingDescription: usrProperty.usrListingDescription,
+              usrListingSquareFeet: usrProperty.usrListingSquareFeet,
+              usrPrice: usrProperty.usrPrice,
+              location: {
+                street: usrProperty.location.street,
+                city: usrProperty.location.city,
+                state: usrProperty.location.state,
+                pinCode: usrProperty.location.pinCode
+              },
+              usrAmenities: usrProperty.usrAmenities,
+              usrExtraFacilities: {
+                beds: usrProperty.usrExtraFacilities.beds,
+                bath: usrProperty.usrExtraFacilities.bath
+              },
+              userListingImage: usrProperty.userListingImage
+            },
+          });
+          if (apiResponse && apiResponse.error) {
+            reject(apiResponse.error.message);
+          } else {
+            resolve(apiResponse);
+          }
+        });
+
+        // Reset the form upon successful property addition
+        await toast.promise(apiCallPromise, {
+          pending: "Editing property...!",
+          success: {
+            render({ data }) {
+              // Reset the form values here after successful response
+              setTimeout(() => {
+                navigate(-2);
+                setUsrProperty({
+                  userListingType: "Land",
+                  usrListingName: "",
+                  usrListingDescription: "",
+                  usrListingSquareFeet: 0,
+                  location: {
+                    street: "",
+                    city: "",
+                    state: "",
+                    pinCode: 0
+                  },
+                  usrAmenities: [],
+                  usrExtraFacilities: {
+                    beds: 0,
+                    bath: 0
+                  },
+                  usrPrice: 0,
+                  userListingImage: ""
+                });
+              }, 1000);
+
+              return data.message || "Property edited successfully!";
+            },
+          },
+          error: {
+            render({ data }) {
+              return data;
+            },
+          },
+        }, {
+          position: 'bottom-right',
+        });
+
+      } catch (error) {
+        console.log("Sign in err ---> ", error);
+      }
     }
 
-    try {
-      const response = await axios.put(`${Config.apiBaseUrl}/edit-property/${propertyId}`, usrProperty, {
-        headers: { 'Authorization': `Bearer ${authUserDetails.authToken}` }
-      });
-      if (response.data.message) {
-        toast.success(response.data.message);
-        navigate('/');
-      }
-    } catch (error) {
-      console.error("Error updating property:", error);
-      if (error.response && error.response.data && error.response.data.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Failed to update property. Please try again.");
-      }
-    }
+
+
   };
 
   const handleAmenityChange = (e) => {

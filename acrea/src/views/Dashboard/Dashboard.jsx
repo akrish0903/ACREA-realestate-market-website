@@ -21,6 +21,7 @@ function Dashboard() {
     var navigation = useNavigate();
 
 
+    const [allUsersRecentProperties, setAllUsersRecentProperties] = useState([]);
     const [buyerRecentProperties, setBuyerRecentProperties] = useState([]);
     async function fetchBuyerRecentProperties() {
         var buyerRecentPropertiesFetched = await useApi({
@@ -33,6 +34,16 @@ function Dashboard() {
             },
         })
         setBuyerRecentProperties(buyerRecentPropertiesFetched.user_property_arr)
+    }
+    async function fetchAllUsersRecentProperties() {
+        var allUsersRecentPropertiesFetched = await useApi({
+            url: "/show-allUsers-four-recent-properties",
+            method: "POST",
+            data: {
+                limit: 4
+            },
+        })
+        setAllUsersRecentProperties(allUsersRecentPropertiesFetched.user_property_arr)
     }
 
     const [agentRecentProperties, setAgentRecentProperties] = useState([]);
@@ -91,6 +102,18 @@ function Dashboard() {
         setBuyerFeaturesProperties(buyerFeaturesPropertiesFetched.user_property_arr)
     }
 
+    const [allUsersFeaturesProperties, setAllUsersFeaturesProperties] = useState([]);
+    async function fetchAllUsersFeaturesProperties() {
+        var allUsersFeaturesPropertiesFetched = await useApi({
+            url: "/show-allUsers-two-feature-properties",
+            method: "POST",
+            data: {
+                limit: 2
+            },
+        })
+        setAllUsersFeaturesProperties(allUsersFeaturesPropertiesFetched.user_property_arr)
+    }
+
     const [buyers, setBuyers] = useState([]);
     async function fetchBuyersList() {
         try {
@@ -134,15 +157,19 @@ function Dashboard() {
 
 
     useEffect(() => {
+        if (userAuthData.usrType === null) {
+            fetchAllUsersRecentProperties()
+            fetchAllUsersFeaturesProperties()
+        }
         if (userAuthData.usrType === "buyer") {
             fetchBuyerRecentProperties()
             fetchBuyerFeaturesProperties()
         }
-        if (userAuthData.usrType==="agent"){
+        if (userAuthData.usrType === "agent") {
             fetchAgentRecentProperties()
             fetchAgentRecentProperties2()
         }
-        if(userAuthData.usrType==="admin"){
+        if (userAuthData.usrType === "admin") {
             fetchAdminRecentProperties()
             fetchBuyersList()
             fetchAgentsList()
@@ -260,7 +287,10 @@ function Dashboard() {
                         {/* card  */}
                         {buyerFeaturesProperties?.map((item, index) => {
                             return <FeaturedPropertyContainer propertiesData={item} />
-                        })}                                 
+                        })}
+                        {allUsersFeaturesProperties?.map((item, index) => {
+                            return <FeaturedPropertyContainer propertiesData={item} />
+                        })}
                     </div>
                 </div>
 
@@ -272,8 +302,11 @@ function Dashboard() {
                     }}>Recent Properties</h4>
 
                     <div className={Styles.recentPropContainer}>
-                       
+
                         {buyerRecentProperties?.map((item, index) => {
+                            return <PropertiesCardVertical propertiesData={item} />
+                        })}
+                        {allUsersRecentProperties?.map((item, index) => {
                             return <PropertiesCardVertical propertiesData={item} />
                         })}
                     </div>
@@ -325,9 +358,9 @@ function Dashboard() {
                     }}>Your Properties</h4>
 
                     <div className={Styles.recentPropContainer}>
-                    {agentRecentProperties?.map((item, index) => {
+                        {agentRecentProperties?.map((item, index) => {
                             return <PropertiesCardVertical propertiesData={item} />
-                        })}                    
+                        })}
                     </div>
                 </div>
 
@@ -452,7 +485,7 @@ function Dashboard() {
                             fontWeight: "bolder"
                         }}>Recently Joined Buyers</h4>
                         <div className={Styles.featuredPropertyContainer}>
-                            {buyers.length > 0 ? (buyers.map((buyer) => (       
+                            {buyers.length > 0 ? (buyers.map((buyer) => (
                                 <div className={Styles.recentPropCard}>
                                     <div
                                         key={buyer._id}
@@ -473,7 +506,7 @@ function Dashboard() {
                             ) : (
                                 <p>No Buyers found</p>
                             )}
-                           
+
 
                             {/* <div className={Styles.recentPropCard}>
                                 <div
@@ -501,40 +534,40 @@ function Dashboard() {
                             fontWeight: "bolder"
                         }}>Recently Joined Agents</h4>
                         <div className={Styles.featuredPropertyContainer}>
-                        {agents.length > 0 ? (agents.map((agent) => (       
-                            <div className={Styles.recentPropCard}>
-                                <div
-                                    key={agent._id}
-                                    className={Styles.featuredPropertyContainerCardRight}
-                                    style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
-                                >
-                                    <div className={Styles.featuredPropertyContainerCardRightTop}>
-                                        <p style={{
-                                            fontSize: Config.fontSize.regular,
-                                            fontWeight: "bolder",
-                                            color: Config.color.textColor
-                                        }}>{agent.usrFullName}</p>
-                                        <p>{agent.usrEmail}</p>
-                                        <p>{agent.usrMobileNumber}</p>
+                            {agents.length > 0 ? (agents.map((agent) => (
+                                <div className={Styles.recentPropCard}>
+                                    <div
+                                        key={agent._id}
+                                        className={Styles.featuredPropertyContainerCardRight}
+                                        style={{ backgroundColor: Config.color.background, width: "100%", gap: "1rem" }}
+                                    >
+                                        <div className={Styles.featuredPropertyContainerCardRightTop}>
+                                            <p style={{
+                                                fontSize: Config.fontSize.regular,
+                                                fontWeight: "bolder",
+                                                color: Config.color.textColor
+                                            }}>{agent.usrFullName}</p>
+                                            <p>{agent.usrEmail}</p>
+                                            <p>{agent.usrMobileNumber}</p>
+                                        </div>
+                                        <div className={Styles.featuredPropertyContainerCardRightBottom}>
+                                            <button onClick={() => { navigation('/PropertyPage', { state: agentData }) }}
+                                                style={{
+                                                    color: Config.color.background,
+                                                    backgroundColor: Config.color.primaryColor900,
+                                                    width: "fit-content",
+                                                    padding: ".2rem",
+                                                    paddingLeft: ".8rem",
+                                                    paddingRight: ".8rem",
+                                                    fontSize: Config.fontSize.small,
+                                                    borderRadius: "5px"
+                                                }}>Details</button>
+                                        </div>
                                     </div>
-                                    <div className={Styles.featuredPropertyContainerCardRightBottom}>
-                                        <button onClick={() => { navigation('/PropertyPage', { state: agentData }) }}
-                                            style={{
-                                                color: Config.color.background,
-                                                backgroundColor: Config.color.primaryColor900,
-                                                width: "fit-content",
-                                                padding: ".2rem",
-                                                paddingLeft: ".8rem",
-                                                paddingRight: ".8rem",
-                                                fontSize: Config.fontSize.small,
-                                                borderRadius: "5px"
-                                            }}>Details</button>
-                                    </div>
-                                </div>
-                            </div>))
-                        ) : (
-                            <p>No Agents found</p>
-                        )}
+                                </div>))
+                            ) : (
+                                <p>No Agents found</p>
+                            )}
 
                             {/* <div className={Styles.recentPropCard}>
                                 <div
@@ -578,9 +611,9 @@ function Dashboard() {
                         }}>Recently Added Properties</h4>
 
                         <div className={Styles.recentPropContainer}>
-                        {adminRecentProperties?.map((item, index) => {
-                            return <PropertiesCardVertical propertiesData={item} />
-                        })}
+                            {adminRecentProperties?.map((item, index) => {
+                                return <PropertiesCardVertical propertiesData={item} />
+                            })}
                         </div>
                     </div>
                 </div>

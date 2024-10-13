@@ -75,7 +75,7 @@ function Header() {
                         HOME
                     </NavLink>
                 </h6>
-                {(userAuthData.usrEmail=== null || userAuthData.usrType==='buyer' ) &&
+                {( userAuthData.usrType==='buyer' ) &&
                     <h6>
                         <NavLink
                             to="/ViewAllProperties"
@@ -86,11 +86,11 @@ function Header() {
                     </h6>
                 }
 
-                {(userAuthData.usrEmail=== null || userAuthData.usrType==='buyer' ) &&
+                {( userAuthData.usrType==='buyer' ) &&
                     <h6 style={{ color: Config.color.background }}>AGENTS</h6>
                 }
                 {(userAuthData.usrType==='agent' ) &&
-                    <h6 style={{width:'7rem'}}>
+                    <h6 style={{width:'8rem'}}>
                         <NavLink
                             to="/ViewAllProperties"
                             style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}

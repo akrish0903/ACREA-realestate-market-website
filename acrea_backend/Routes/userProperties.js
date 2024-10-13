@@ -22,6 +22,12 @@ router.post("/show-admin-four-recent-properties", jwt_verify_token, UserProperti
 // show agent agent's two recent properties in Dashboard when Agent logged in
 router.post("/show-agent-two-recent-properties", jwt_verify_token, UserPropertiesController.showAgentRecentPropertyController)
 
+// show all users four recent properties in Dashboard when Buyer logged in
+router.post("/show-allUsers-four-recent-properties", UserPropertiesController.showAllUsersFourRecentPropertyController)
+
+// show all users two feature properties in Dashboard.
+router.post("/show-allUsers-two-feature-properties", UserPropertiesController.showAllUsersTwoFeaturesPropertyController)
+
 
 //show all agent's properties and fillter if needed in ViewAllProperties page
 router.post("/show-by-type-agent-properties", jwt_verify_token, UserPropertiesController.showByTypeAgentPropertyController);
@@ -33,7 +39,7 @@ router.post("/show-by-type-buyer-properties", jwt_verify_token, UserPropertiesCo
 //shows all properties and fillter if needed to admin in ViewAllProperties page
 router.post("/show-by-type-admin-properties", jwt_verify_token, UserPropertiesController.showByTypeAdminPropertyController);
 
-router.put("/edit-property/:propertyId", jwt_verify_token, UserPropertiesController.editPropertyController);
+router.post("/edit-property", jwt_verify_token, UserPropertiesController.editPropertyController);
 
 
 module.exports = router;
