@@ -4,7 +4,7 @@ import SecondHeader from '../../components/SecondHeader';
 import Footer from '../../components/Footer';
 import Styles from './css/PropertyPage.module.css';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PlaceIcon from '@mui/icons-material/Place';
 import HotelIcon from '@mui/icons-material/Hotel';
@@ -12,7 +12,6 @@ import BathtubIcon from '@mui/icons-material/Bathtub';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { Config } from '../../config/Config';
-import { useNavigate } from 'react-router-dom';
 import CheckIcon from '@mui/icons-material/Check';
 import SendIcon from '@mui/icons-material/Send';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,7 +20,6 @@ function PropertyPage() {
     const location = useLocation();
     const propertyData = location.state; // Get the passed data
     const userAuthData = useSelector(data => data.AuthUserDetailsSlice); // Select auth data from Redux store
-
     const navigation = useNavigate();
 
     // Check if userAuthData is defined to avoid potential errors
@@ -31,8 +29,8 @@ function PropertyPage() {
 
     return (
         <div className={`screen ${Styles.propertyScreen}`}>
-            <Header/>
-            <SecondHeader/>
+            <Header />
+            <SecondHeader />
       {/* Property Header Image */}
       {/* <div className={Styles.Styles.propertyHeader}>
         <div className={Styles.propertyImageContainer}>
@@ -42,13 +40,12 @@ function PropertyPage() {
 
             {/* Go Back */}
             <div className={Styles.goBackSection}>
-                <div className={Styles.goBackContainer}> 
+                <div className={Styles.goBackContainer}>
                     <a onClick={() => { navigation("/viewAllProperties") }} style={{ color: Config.color.primaryColor800, cursor: 'pointer' }}>
                         <ArrowBackIcon /> Back to Properties
                     </a>
                 </div>
             </div>
-
             {/* Property Info */}
             <div className={Styles.propertyInfo}>
                 <div className={Styles.propertyInfoContainer}>
@@ -64,7 +61,7 @@ function PropertyPage() {
 
                         <div className={Styles.descriptionSection}>
                             <h3>Description & Details</h3>
-                            <div className={Styles.propertyDetailsGrid} style={{color:Config.color.primaryColor900}}>
+                            <div className={Styles.propertyDetailsGrid} style={{ color: Config.color.primaryColor900 }}>
                                 <p><HotelIcon /> {propertyData.usrExtraFacilities.beds} Beds</p>
                                 <p><BathtubIcon /> {propertyData.usrExtraFacilities.bath} Baths</p>
                                 <p><SquareFootIcon /> {propertyData.usrListingSquareFeet} sqft</p>
@@ -95,15 +92,15 @@ function PropertyPage() {
                                 <form>
                                     <div className={Styles.inputGroup}>
                                         <label htmlFor="name">Name:</label>
-                                        <input type="text" id="name" placeholder="Enter your name" required />
+                                        <input type="text" id="name" placeholder="Enter your name" value={userAuthData.usrFullName} disabled required />
                                     </div>
                                     <div className={Styles.inputGroup}>
                                         <label htmlFor="email">Email:</label>
-                                        <input type="email" id="email" placeholder="Enter your email" required />
+                                        <input type="email" id="email" placeholder="Enter your email" value={userAuthData.usrEmail} disabled required />
                                     </div>
                                     <div className={Styles.inputGroup}>
                                         <label htmlFor="phone">Phone:</label>
-                                        <input type="text" id="phone" placeholder="Enter your phone number" />
+                                        <input type="text" id="phone" placeholder="Enter your phone number" value={userAuthData.usrMobileNumber} disabled />
                                     </div>
                                     <div className={Styles.inputGroup}>
                                         <label htmlFor="message">Message:</label>
@@ -119,22 +116,20 @@ function PropertyPage() {
                         </aside>
                     )}
 
-                     {/* Only render if the user is a agent */}
-                     {(userAuthData.usrType === 'agent' || userAuthData.usrType === 'admin' )&& (
+                    {/* Only render if the user is an agent or admin */}
+                    {(userAuthData.usrType === 'agent' || userAuthData.usrType === 'admin') && (
                         <aside className={Styles.sidebar}>
-                            <button 
-                              className={Styles.editBtn} 
-                              style={{ color: Config.color.background }} 
-                              onClick={() => { navigation('/EditProperty', { state: propertyData })}} 
+                            <button
+                                className={Styles.editBtn}
+                                style={{ color: Config.color.background }}
+                                onClick={() => { navigation('/EditProperty', { state: propertyData }) }}
                             >
-                              <EditIcon /> EDIT
+                                <EditIcon /> EDIT
                             </button>
-
                         </aside>
-                     )}
+                    )}
                 </div>
             </div>
-
             <Footer />
         </div>
     );

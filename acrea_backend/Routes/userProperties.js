@@ -33,5 +33,7 @@ router.post("/show-by-type-buyer-properties", jwt_verify_token, UserPropertiesCo
 //shows all properties and fillter if needed to admin in ViewAllProperties page
 router.post("/show-by-type-admin-properties", jwt_verify_token, UserPropertiesController.showByTypeAdminPropertyController);
 
+router.put("/edit-property/:propertyId", jwt_verify_token, UserPropertiesController.editPropertyController);
+
 
 module.exports = router;

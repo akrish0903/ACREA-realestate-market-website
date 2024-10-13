@@ -7,6 +7,7 @@ const userPropertySchema = new mongoose.Schema({
     },
     usrPropertyTime: {
         type: Date,
+        default: Date.now,
     },
     usrPropertyFavorites: {
         type: Number

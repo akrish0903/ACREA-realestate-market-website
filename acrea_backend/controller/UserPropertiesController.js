@@ -275,6 +275,57 @@ const showByTypeAdminPropertyController = async (req, res, next) => {
     }
 };
 
+const editPropertyController = async (req, res) => {
+    const agentId = req.user.agentId;
+    const propertyId = req.params.propertyId;
+    const {
+      usrListingName,
+      usrListingDescription,
+      usrListingSquareFeet,
+      location,
+      usrAmenities,
+      usrExtraFacilities,
+      usrPrice,
+      userListingImage,
+      userListingType
+    } = req.body;
+  
+    try {
+      const property = await Property.findOne({ _id: propertyId, agentId });
+      if (!property) {
+        return res.status(403).json({ message: "You do not have permission to edit this property." });
+      }
+  
+      const updateData = {
+        usrListingName,
+        usrListingDescription,
+        usrListingSquareFeet,
+        location,
+        usrAmenities,
+        usrExtraFacilities,
+        usrPrice,
+        userListingImage,
+        userListingType
+      };
+  
+      const updatedProperty = await Property.findByIdAndUpdate(propertyId, updateData, { new: true });
+      
+      if (!updatedProperty) {
+        return res.status(404).json({ message: "Property not found." });
+      }
+  
+      res.status(200).json({
+        message: "Property updated successfully.",
+        property_details: updatedProperty
+      });
+    } catch (error) {
+      console.error("Error updating property:", error);
+      res.status(500).json({ message: "Failed to update property. Please try again." });
+    }
+  };
+  
+  
+
 module.exports = { addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
       showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
-      showByTypeBuyerPropertyController, showByTypeAdminPropertyController }
+      showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController }

@@ -8,7 +8,7 @@ async function useApi({
 }) {
     try {
         var headers_default = { 'Content-Type': 'application/json' }
-        if(authRequired){
+        if(authRequired && authToken){
             headers_default["Authorization"] = `Bearer ${authToken}`
         }
         var rawRes = await fetch(`${import.meta.env.VITE_BASE_API_URL}${url}`, {
