@@ -54,6 +54,7 @@ function App() {
 
         {authUserDetails.usrType === "admin" && (<Route path='/BuyerList' element={<BuyerList />} />)}
         {authUserDetails.usrType === "admin" && (<Route path='/AgentList' element={<AgentList />} />)}
+        {authUserDetails.usrType === "admin" && (<Route path='/EditProperty' element={<EditProperty /> }/>)}
         
         <Route path='/FavoritedProperties' element={<FavoritedProperties />} />
         <Route path='/PropertyPage' element={<PropertyPage />} />

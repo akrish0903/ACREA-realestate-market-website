@@ -43,4 +43,7 @@ router.put('/admin-updateagent/:agentId', jwt_verify_token, UserAuthController.u
 // Route to delete an agent's profile by admin
 router.delete('/admin-deleteagent/:agentId', jwt_verify_token, UserAuthController.deleteAgentProfileAuthController);
 
+// Route to show agents details to admin in propertypage
+router.post ("/show-agent-data", jwt_verify_token, UserAuthController.showAgentDataController);
+
 module.exports = router;

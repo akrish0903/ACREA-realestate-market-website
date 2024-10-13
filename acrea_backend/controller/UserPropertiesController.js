@@ -231,7 +231,6 @@ const showByTypeBuyerPropertyController = async (req, res, next) => {
     }
 };
 
-
 const showByTypeAdminPropertyController = async (req, res, next) => {
     const userId = req.payload.aud;
     const { type, searchText } = req.body; // Capture both type and searchText
@@ -275,8 +274,8 @@ const showByTypeAdminPropertyController = async (req, res, next) => {
     }
 };
 
-const editPropertyController = async (req, res) => {
-    const agentId = req.payload.aud;
+const editPropertyController = async (req, res, next) => {
+    const agentId = req.payload.aud;  // The agent's ID (could also be admin's ID)
     const {
         userId,
         usrListingName,
@@ -291,43 +290,50 @@ const editPropertyController = async (req, res) => {
     } = req.body;
 
     try {
+        // Fetch user data to determine if they are an agent or admin
         var fetchedUserData = await UserAuthModel.findById(agentId);
-        
-        if (fetchedUserData.usrType === "agent") {
-            const property = await UserPropertiesModel.findOne({ _id: userId, agentId });
-            console.log(property);
+
+        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType === "admin") {
+            // Admin can edit any property, agent can only edit their own
+            let property;
+            if (fetchedUserData.usrType === "admin") {
+                // Admin: Find the property regardless of the agentId
+                property = await UserPropertiesModel.findById(userId);
+            } else if (fetchedUserData.usrType === "agent") {
+                // Agent: Only allow editing properties where the agentId matches
+                property = await UserPropertiesModel.findOne({ _id: userId, agentId });
+            }
+
             if (!property) {
                 return res.status(404).json({ message: "Property not found." });
-            } else {
-                property.usrListingName = usrListingName || property.usrListingName;
-                property.usrListingDescription = usrListingDescription || property.usrListingDescription;
-                property.usrListingSquareFeet = usrListingSquareFeet || property.usrListingSquareFeet;
-                property.location = location || property.location;
-                property.usrAmenities = usrAmenities || property.usrAmenities;
-                property.usrExtraFacilities = usrExtraFacilities || property.usrExtraFacilities;
-                property.usrPrice = usrPrice || property.usrPrice;
-                property.userListingImage = userListingImage || property.userListingImage;
-                property.userListingType = userListingType || property.userListingType;
-                
-                // Save the updated property
-                var savedUserDetails = await property.save();
-
-                res.status(200).json({
-                    message: "Property updated successfully.",
-                    property_details: savedUserDetails,
-                });
             }
+
+            // Update property fields if provided in the request
+            property.usrListingName = usrListingName || property.usrListingName;
+            property.usrListingDescription = usrListingDescription || property.usrListingDescription;
+            property.usrListingSquareFeet = usrListingSquareFeet || property.usrListingSquareFeet;
+            property.location = location || property.location;
+            property.usrAmenities = usrAmenities || property.usrAmenities;
+            property.usrExtraFacilities = usrExtraFacilities || property.usrExtraFacilities;
+            property.usrPrice = usrPrice || property.usrPrice;
+            property.userListingImage = userListingImage || property.userListingImage;
+            property.userListingType = userListingType || property.userListingType;
+            
+            // Save the updated property
+            var savedUserDetails = await property.save();
+
+            res.status(200).json({
+                message: "Property updated successfully.",
+                property_details: savedUserDetails,
+            });
         } else {
-            next(httpErrors.Unauthorized("Invalid UserType"))
+            next(httpErrors.Unauthorized("Invalid UserType"));
         }
-
-
     } catch (error) {
         console.error("Error updating property:", error);
         res.status(500).json({ message: "Failed to update property. Please try again." });
     }
 };
-
 
 
 const showAllUsersFourRecentPropertyController = async (req, res, next) => {
@@ -344,8 +350,6 @@ const showAllUsersFourRecentPropertyController = async (req, res, next) => {
         next(httpErrors.BadRequest())
     }
 }
-
-
 
 const showAllUsersTwoFeaturesPropertyController = async (req, res, next) => {
     var { limit } = req.body;
@@ -370,5 +374,6 @@ const showAllUsersTwoFeaturesPropertyController = async (req, res, next) => {
 module.exports = {
     addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
     showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
-    showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController, showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController
+    showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController,
+    showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController
 }

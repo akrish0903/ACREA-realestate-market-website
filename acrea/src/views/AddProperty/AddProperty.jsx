@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Styles from "./css/AddProperty.module.css"
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Config } from '../../config/Config';
 import { toast } from 'react-toastify';
 import useApi from '../../utils/useApi';
@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 
 function AddProperty() {
   var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
+  const navigate = useNavigate();
 
   var [usrProperty, setUsrProperty] = useState({
     userListingType: "Land",
@@ -95,6 +96,7 @@ function AddProperty() {
             usrPrice: 0,
             userListingImage: ""
           });
+          navigate(-1);
           return data.message || "Property added successfully!";
         },
       },

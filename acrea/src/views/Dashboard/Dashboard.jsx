@@ -20,8 +20,6 @@ function Dashboard() {
 
     var navigation = useNavigate();
 
-
-    const [allUsersRecentProperties, setAllUsersRecentProperties] = useState([]);
     const [buyerRecentProperties, setBuyerRecentProperties] = useState([]);
     async function fetchBuyerRecentProperties() {
         var buyerRecentPropertiesFetched = await useApi({
@@ -35,6 +33,8 @@ function Dashboard() {
         })
         setBuyerRecentProperties(buyerRecentPropertiesFetched.user_property_arr)
     }
+
+    const [allUsersRecentProperties, setAllUsersRecentProperties] = useState([]);
     async function fetchAllUsersRecentProperties() {
         var allUsersRecentPropertiesFetched = await useApi({
             url: "/show-allUsers-four-recent-properties",

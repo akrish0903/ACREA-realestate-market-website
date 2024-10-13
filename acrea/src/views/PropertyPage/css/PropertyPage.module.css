@@ -251,7 +251,7 @@ a {
 
 .editBtn{
   background-color: #1e3a8a;
-   width:20rem;
+   width:21rem;
    font-weight: bold;
 }
 .editBtn:hover{
@@ -270,4 +270,28 @@ a {
 }
 .btn:hover{
   background-color: rgb(0, 0, 128);
+}
+
+.agentinfo {
+  flex-direction: column;
+  margin: auto;
+}
+
+.agentContainer {
+  flex-direction: column;
+  background-color: white;
+  padding: 1rem;
+  margin-top: 2rem;
+  width: 21rem;
+  justify-items: center;
+  border-radius: 2rem;
+}
+
+.ProfileContainerImage{
+  height: 8rem;
+  width: 8rem;
+  border-radius: 20px;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+  object-fit: fill;
+  margin-top: .5rem;
 }

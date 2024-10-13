@@ -91,7 +91,6 @@ const signinUserAuthController = async (req, res, next) => {
 
 };
 
-
 const updateUserProfileAuthController = async function (req, res, next) {
 
     var userId = req.payload.aud;
@@ -419,7 +418,25 @@ const deleteAgentProfileAuthController = async (req, res, next) => {
     }
 };
 
+const showAgentDataController = async (req, res, next) => {
+    var { agentId } = req.body;
 
+    try {
+        const fetchedAgentData = await UserAuthModel.findById(agentId);  // Assuming agent data is in UserAuthModel
+
+        if (!fetchedAgentData) {
+            return res.status(404).json({ message: "Agent not found." });
+        }
+
+        res.status(200).json({
+            message: "Agent record fetched successfully.",
+            user_agentdata_arr: fetchedAgentData
+        });
+    } catch (error) {
+        console.error("Error fetching agent data:", error);
+        next(httpErrors.BadRequest("Failed to fetch agent data."));
+    }
+};
 
 
 
@@ -427,4 +444,5 @@ module.exports = { signupUserAuthController, signinUserAuthController, updateUse
     resetPasswordAuthController, refreshTokenUserAuthController, logoutUserAuthController,
     forgotPasswordAuthController, showBuyerListController, showAgentListController,
     showRecentBuyerstoAdminController, showRecentAgentstoAdminController,updateBuyerProfileByAdminController,
-    deleteBuyerProfileAuthController, updateAgentProfileByAdminController, deleteAgentProfileAuthController };
+    deleteBuyerProfileAuthController, updateAgentProfileByAdminController, deleteAgentProfileAuthController,
+    showAgentDataController };

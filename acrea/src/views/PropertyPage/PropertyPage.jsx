@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react'
 import Header from '../../components/Header';
 import SecondHeader from '../../components/SecondHeader';
 import Footer from '../../components/Footer';
@@ -15,12 +15,38 @@ import { Config } from '../../config/Config';
 import CheckIcon from '@mui/icons-material/Check';
 import SendIcon from '@mui/icons-material/Send';
 import EditIcon from '@mui/icons-material/Edit';
+import useApi from '../../utils/useApi';
 
 function PropertyPage() {
     const location = useLocation();
     const propertyData = location.state; // Get the passed data
     const userAuthData = useSelector(data => data.AuthUserDetailsSlice); // Select auth data from Redux store
     const navigation = useNavigate();
+    const agentId = propertyData.agentId;
+
+    const [agentData, setAgentData] = useState();
+    async function fetchAgentData() {
+        try {
+            const agentDatasFetched = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: "/show-agent-data",
+                method: "POST",
+                data: { agentId }
+            });
+            console.log("Fetched Agent Data: ", agentDatasFetched);
+            setAgentData(agentDatasFetched.user_agentdata_arr);
+        } catch (error) {
+            console.error("Failed to fetch agent data", error);
+        }
+    }
+    
+
+    useEffect(() => {
+        if (userAuthData.usrType === 'admin') {
+            fetchAgentData();
+        }
+    }, [agentId, userAuthData]);
 
     // Check if userAuthData is defined to avoid potential errors
     if (!userAuthData) {
@@ -52,6 +78,19 @@ function PropertyPage() {
                     <main>
                         <div className={Styles.propertyDetails}>
                             <div className={Styles.propertyType}>{propertyData.userListingType}</div>
+                            <p className={Styles.propertyType}
+                             style={{
+                                backgroundColor: Config.color.primaryColor900,
+                                position: 'absolute',
+                                fontSize: Config.fontSize.regular,
+                                fontWeight: 'bolder',
+                                color: Config.color.background,
+                                borderRadius: '5px',
+                                margin: '.8rem',
+                                paddingLeft: '.5rem',
+                                paddingRight: '.5rem',
+                                alignSelf: 'flex-end',
+                            }}>₹{propertyData.usrPrice}</p>
                             <h1>{propertyData.usrListingName}</h1>
                             <div className={Styles.propertyAddress} style={{ color: Config.color.primaryColor800 }}>
                                 <PlaceIcon />
@@ -126,8 +165,27 @@ function PropertyPage() {
                             >
                                 <EditIcon /> EDIT
                             </button>
+                            {(userAuthData.usrType === 'admin' && agentData && agentData.usrFullName) && (
+                                <div className={Styles.agentContainer}>
+                                    <div className={Styles.agentinfo}>
+                                        <center>
+                                        <h3 style={{textDecoration:"underline"}}>Agent Details</h3>
+                                        <img
+                                            src={agentData.usrProfileUrl ? agentData.usrProfileUrl : Config.imagesPaths.user_null}
+                                            className={Styles.ProfileContainerImage}
+                                            alt="Agent Profile"
+                                        />
+                                        </center>
+                                        <p style={{marginTop:'1rem', fontWeight: 'bold'}}>Agent ID:<i> {agentData._id}</i></p>
+                                        <p style={{marginTop:'.5rem', fontWeight: 'bold'}}>Agent Name:<i> {agentData.usrFullName}</i></p>
+                                        <p style={{marginTop:'.5rem', fontWeight: 'bold'}}>Agent Email: <i>{agentData.usrEmail}</i></p>
+                                        <p style={{marginTop:'.5rem', fontWeight: 'bold'}}>Agent Mobile Num.: <i>{agentData.usrMobileNumber}</i></p>
+                                    </div>
+                                </div>
+                            )}
                         </aside>
                     )}
+                    
                 </div>
             </div>
             <Footer />
