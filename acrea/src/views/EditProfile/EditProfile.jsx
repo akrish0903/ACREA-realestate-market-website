@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../../components/Header';
-import Footer from '../../components/Footer'
+import Footer from '../../components/Footer';
 import Styles from "./css/EditProfile.module.css";
 import { Config } from '../../config/Config';
 import { useNavigate } from 'react-router-dom';

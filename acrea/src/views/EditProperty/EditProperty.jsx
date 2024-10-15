@@ -147,9 +147,6 @@ function EditProperty() {
         console.log("Sign in err ---> ", error);
       }
     }
-
-
-
   };
 
   const handleAmenityChange = (e) => {
@@ -299,9 +296,37 @@ function EditProperty() {
             {/* Amenities */}
             <div className={Styles.amenitiesSection}>
               <label>Amenities</label>
+              <div className={Styles.selectAllContainer}>
+                <input
+                  type="checkbox"
+                  id="selectAllAmenities"
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    if (isChecked) {
+                      setUsrProperty((prevState) => ({
+                        ...prevState,
+                        usrAmenities: [
+                          'Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 
+                          'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 
+                          'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'
+                        ]
+                      }));
+                    } else {
+                      setUsrProperty((prevState) => ({
+                        ...prevState,
+                        usrAmenities: []
+                      }));
+                    }
+                  }}
+                  checked={usrProperty.usrAmenities.length === 12}
+                />
+                <label htmlFor="selectAllAmenities" className={Styles.selectAllLabel}>Select All</label>
+              </div>
+
+              {/* Individual Amenities Checkboxes */}
               <div className={Styles.amenitiesGrid}>
                 {['Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'].map((amenity) => (
-                  <div key={amenity}>
+                  <div className={Styles.amenityItem} key={amenity}>
                     <input
                       type="checkbox"
                       id={`amenity_${amenity}`}
@@ -310,11 +335,12 @@ function EditProperty() {
                       checked={usrProperty.usrAmenities.includes(amenity)}
                       onChange={handleAmenityChange}
                     />
-                    <label htmlFor={`amenity_${amenity}`}>{amenity}</label>
+                    <label htmlFor={`amenity_${amenity}`} className={Styles.amenityLabel}>{amenity}</label>
                   </div>
                 ))}
               </div>
             </div>
+
 
             {/* Extra Facilities */}
             <div className={Styles.formGroup}>
@@ -358,6 +384,17 @@ function EditProperty() {
                 required
               />
             </div>
+            <div className={Styles.formGroup}>
+              <label htmlFor="image">Images</label>
+              <br/>
+              <input
+                type="text"
+                id="image"
+                name="image"
+                value={usrProperty.userListingImage}
+                onChange={(e) => setUsrProperty({ ...usrProperty, userListingImage: e.target.value })} />
+            </div>
+
 
             {/* Submit Button */}
             <div className={Styles.formGroup}>

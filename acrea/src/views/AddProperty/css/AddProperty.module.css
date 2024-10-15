@@ -126,4 +126,16 @@
   .amenitiesGrid input {
     margin-right: 8px;
   }
+
+  .selectAllContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .selectAllLabel {
+    margin-left: 1px;
+    font-weight: 500;
+    cursor: pointer;
+  }
   

@@ -110,21 +110,32 @@ function AddProperty() {
     });
   }
   
-  function handleAmenityChange(e) {
-    const { value, checked } = e.target;
+  // function handleAmenityChange(e) {
+  //   const { value, checked } = e.target;
     
-    if (checked) {
-      setUsrProperty({
-        ...usrProperty,
-        usrAmenities: [...usrProperty.usrAmenities, value],
-      });
-    } else {
-      setUsrProperty({
-        ...usrProperty,
-        usrAmenities: usrProperty.usrAmenities.filter((amenity) => amenity !== value),
-      });
-    }
-  }
+  //   if (checked) {
+  //     setUsrProperty({
+  //       ...usrProperty,
+  //       usrAmenities: [...usrProperty.usrAmenities, value],
+  //     });
+  //   } else {
+  //     setUsrProperty({
+  //       ...usrProperty,
+  //       usrAmenities: usrProperty.usrAmenities.filter((amenity) => amenity !== value),
+  //     });
+  //   }
+  // }
+
+  const handleAmenityChange = (e) => {
+    const value = e.target.value;
+    const checked = e.target.checked;
+    setUsrProperty((prevState) => {
+      const updatedAmenities = checked
+        ? [...prevState.usrAmenities, value]
+        : prevState.usrAmenities.filter(amenity => amenity !== value);
+      return { ...prevState, usrAmenities: updatedAmenities };
+    });
+  };
   
 
 
@@ -253,165 +264,212 @@ function AddProperty() {
               </div>
             </div>
 
+            {/* <div className={Styles.amenitiesSection}>
+              <label htmlFor="amenities">Amenities</label>
+              <div className={Styles.amenitiesGrid}>
+                <div  className={Styles.selectAllContainer}>
+                  <input
+                    type="checkbox"
+                    id="select_all_amenities"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setUsrProperty({
+                          ...usrProperty,
+                          usrAmenities: [
+                            "Wifi", "Full Kitchen", "Washer & Dryer", "Free Parking", 
+                            "Swimming Pool", "Hot Tub", "24/7 Security", "Wheelchair Accessible", 
+                            "Elevator Access", "Dishwasher", "Gym/Fitness Center", "Air Conditioning"
+                          ]
+                        });
+                      } else {
+                        setUsrProperty({ ...usrProperty, usrAmenities: [] });
+                      }
+                    }}
+                    checked={usrProperty.usrAmenities.length === 12}
+                  />
+                  <label htmlFor="select_all_amenities" className={Styles.selectAllLabel}>Select All</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_wifi"
+                    name="amenities"
+                    value="Wifi"
+                    checked={usrProperty.usrAmenities.includes("Wifi")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_wifi">Wifi</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_kitchen"
+                    name="amenities"
+                    value="Full Kitchen"
+                    checked={usrProperty.usrAmenities.includes("Full Kitchen")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_kitchen">Full Kitchen</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_washer_dryer"
+                    name="amenities"
+                    value="Washer & Dryer"
+                    checked={usrProperty.usrAmenities.includes("Washer & Dryer")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_washer_dryer">Washer & Dryer</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_free_parking"
+                    name="amenities"
+                    value="Free Parking"
+                    checked={usrProperty.usrAmenities.includes("Free Parking")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_free_parking">Free Parking</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_pool"
+                    name="amenities"
+                    value="Swimming Pool"
+                    checked={usrProperty.usrAmenities.includes("Swimming Pool")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_pool">Swimming Pool</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_hot_tub"
+                    name="amenities"
+                    value="Hot Tub"
+                    checked={usrProperty.usrAmenities.includes("Hot Tub")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_hot_tub">Hot Tub</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_24_7_security"
+                    name="amenities"
+                    value="24/7 Security"
+                    checked={usrProperty.usrAmenities.includes("24/7 Security")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_24_7_security">24/7 Security</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_wheelchair_accessible"
+                    name="amenities"
+                    value="Wheelchair Accessible"
+                    checked={usrProperty.usrAmenities.includes("Wheelchair Accessible")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_wheelchair_accessible">Wheelchair Accessible</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_elevator_access"
+                    name="amenities"
+                    value="Elevator Access"
+                    checked={usrProperty.usrAmenities.includes("Elevator Access")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_elevator_access">Elevator Access</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_dishwasher"
+                    name="amenities"
+                    value="Dishwasher"
+                    checked={usrProperty.usrAmenities.includes("Dishwasher")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_dishwasher">Dishwasher</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_gym_fitness_center"
+                    name="amenities"
+                    value="Gym/Fitness Center"
+                    checked={usrProperty.usrAmenities.includes("Gym/Fitness Center")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_gym_fitness_center">Gym/Fitness Center</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="amenity_air_conditioning"
+                    name="amenities"
+                    value="Air Conditioning"
+                    checked={usrProperty.usrAmenities.includes("Air Conditioning")}
+                    onChange={(e) => handleAmenityChange(e)}
+                  />
+                  <label htmlFor="amenity_air_conditioning">Air Conditioning</label>
+                </div>
+              </div>
+            </div> */}
+            {/* Amenities */}
             <div className={Styles.amenitiesSection}>
-  <label htmlFor="amenities">Amenities</label>
-  <div>
-    <input
-      type="checkbox"
-      id="select_all_amenities"
-      onChange={(e) => {
-        if (e.target.checked) {
-          setUsrProperty({
-            ...usrProperty,
-            usrAmenities: [
-              "Wifi", "Full Kitchen", "Washer & Dryer", "Free Parking", 
-              "Swimming Pool", "Hot Tub", "24/7 Security", "Wheelchair Accessible", 
-              "Elevator Access", "Dishwasher", "Gym/Fitness Center", "Air Conditioning"
-            ]
-          });
-        } else {
-          setUsrProperty({ ...usrProperty, usrAmenities: [] });
-        }
-      }}
-      checked={usrProperty.usrAmenities.length === 12}
-    />
-    <label htmlFor="select_all_amenities">Select All</label>
-  </div>
-  <div className={Styles.amenitiesGrid}>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_wifi"
-        name="amenities"
-        value="Wifi"
-        checked={usrProperty.usrAmenities.includes("Wifi")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_wifi">Wifi</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_kitchen"
-        name="amenities"
-        value="Full Kitchen"
-        checked={usrProperty.usrAmenities.includes("Full Kitchen")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_kitchen">Full Kitchen</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_washer_dryer"
-        name="amenities"
-        value="Washer & Dryer"
-        checked={usrProperty.usrAmenities.includes("Washer & Dryer")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_washer_dryer">Washer & Dryer</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_free_parking"
-        name="amenities"
-        value="Free Parking"
-        checked={usrProperty.usrAmenities.includes("Free Parking")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_free_parking">Free Parking</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_pool"
-        name="amenities"
-        value="Swimming Pool"
-        checked={usrProperty.usrAmenities.includes("Swimming Pool")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_pool">Swimming Pool</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_hot_tub"
-        name="amenities"
-        value="Hot Tub"
-        checked={usrProperty.usrAmenities.includes("Hot Tub")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_hot_tub">Hot Tub</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_24_7_security"
-        name="amenities"
-        value="24/7 Security"
-        checked={usrProperty.usrAmenities.includes("24/7 Security")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_24_7_security">24/7 Security</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_wheelchair_accessible"
-        name="amenities"
-        value="Wheelchair Accessible"
-        checked={usrProperty.usrAmenities.includes("Wheelchair Accessible")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_wheelchair_accessible">Wheelchair Accessible</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_elevator_access"
-        name="amenities"
-        value="Elevator Access"
-        checked={usrProperty.usrAmenities.includes("Elevator Access")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_elevator_access">Elevator Access</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_dishwasher"
-        name="amenities"
-        value="Dishwasher"
-        checked={usrProperty.usrAmenities.includes("Dishwasher")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_dishwasher">Dishwasher</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_gym_fitness_center"
-        name="amenities"
-        value="Gym/Fitness Center"
-        checked={usrProperty.usrAmenities.includes("Gym/Fitness Center")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_gym_fitness_center">Gym/Fitness Center</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="amenity_air_conditioning"
-        name="amenities"
-        value="Air Conditioning"
-        checked={usrProperty.usrAmenities.includes("Air Conditioning")}
-        onChange={(e) => handleAmenityChange(e)}
-      />
-      <label htmlFor="amenity_air_conditioning">Air Conditioning</label>
-    </div>
-  </div>
-</div>
+              <label>Amenities</label>
+              <div className={Styles.selectAllContainer}>
+                <input
+                  type="checkbox"
+                  id="selectAllAmenities"
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    if (isChecked) {
+                      setUsrProperty((prevState) => ({
+                        ...prevState,
+                        usrAmenities: [
+                          'Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 
+                          'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 
+                          'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'
+                        ]
+                      }));
+                    } else {
+                      setUsrProperty((prevState) => ({
+                        ...prevState,
+                        usrAmenities: []
+                      }));
+                    }
+                  }}
+                  checked={usrProperty.usrAmenities.length === 12}
+                />
+                <label htmlFor="selectAllAmenities" className={Styles.selectAllLabel}>Select All</label>
+              </div>
+
+              {/* Individual Amenities Checkboxes */}
+              <div className={Styles.amenitiesGrid}>
+                {['Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'].map((amenity) => (
+                  <div className={Styles.amenityItem} key={amenity}>
+                    <input
+                      type="checkbox"
+                      id={`amenity_${amenity}`}
+                      name="amenities"
+                      value={amenity}
+                      checked={usrProperty.usrAmenities.includes(amenity)}
+                      onChange={handleAmenityChange}
+                    />
+                    <label htmlFor={`amenity_${amenity}`} className={Styles.amenityLabel}>{amenity}</label>
+                  </div>
+                ))}
+              </div>
+            </div>
 
 
             <div className={Styles.formGroup}>

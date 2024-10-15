@@ -141,4 +141,23 @@
 .amenitiesGrid input {
     margin-right: 8px;
     }
+  
+  .selectAllLabel {
+    margin-left: 10px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  /* Amenity Item */
+  .amenityItem {
+    display: flex;
+    align-items: center;
+  }
+  
+  .amenityLabel {
+    margin-left: 8px;
+    font-weight: 400;
+    cursor: pointer;
+  }
+  
     
