@@ -57,6 +57,9 @@
   .locationGroup  input {
     margin-bottom: 10px;
   }
+  .stateOption{
+    margin-bottom: 10px;
+  }
   .flexRow {
     display: flex;
     justify-content: space-between;
