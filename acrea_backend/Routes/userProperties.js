@@ -43,5 +43,6 @@ router.post('/show-by-type-all-user-properties', UserPropertiesController.showBy
 // To edit property redirect to EditProperty Page
 router.post("/edit-property", jwt_verify_token, UserPropertiesController.editPropertyController);
 
+router.post('/toggle-favorite', jwt_verify_token, UserPropertiesController.toggleFavoriteController);
 
 module.exports = router;

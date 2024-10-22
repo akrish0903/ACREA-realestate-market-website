@@ -59,7 +59,6 @@ function ViewAllProperties() {
                 method: "POST",
                 data: { type, searchText }
             });
-    
             console.log("Fetched buyer properties:", fetchedProperties);
     
             if (fetchedProperties?.user_property_arr) {

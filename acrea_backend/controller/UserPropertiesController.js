@@ -55,7 +55,7 @@ const showBuyerFourRecentPropertyController = async (req, res, next) => {
     var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
 
-    if (fetchedUserData.usrType === "buyer" || fetchedUserData.usrType === null) {
+    if (fetchedUserData.usrType === "buyer") {
 
         try {
             const usrPropertiesArr = limit
@@ -401,9 +401,47 @@ const showByTypeAllUserPropertyController = async (req, res, next) => {
    }
 };
 
+const toggleFavoriteController = async (req, res, next) => {
+    try {
+        const userId = req.userId;
+        const { propertyId } = req.body;
+
+        const user = await UserAuthModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const property = await UserPropertiesModel.findById(propertyId);
+        if (!property) {
+            return res.status(404).json({ message: "Property not found" });
+        }
+
+        const isFavorited = user.userFavProperty.includes(propertyId);
+
+        if (isFavorited) {
+            // Remove property from favorites
+            user.userFavProperty = user.userFavProperty.filter(id => id.toString() !== propertyId.toString());
+            property.usrPropertyFavorites -= 1; // Decrease count
+        } else {
+            // Add property to favorites
+            user.userFavProperty.push(propertyId);
+            property.usrPropertyFavorites += 1; // Increase count
+        }
+
+        await user.save();
+        await property.save();
+
+        res.status(200).json({ favoritesCount: property.usrPropertyFavorites });
+    } catch (error) {
+        console.error("Error toggling favorite:", error);
+        next(error);
+    }
+};
+
 module.exports = {
     addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
     showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
     showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController,
-    showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController, showByTypeAllUserPropertyController
+    showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController, showByTypeAllUserPropertyController,
+    toggleFavoriteController
 }

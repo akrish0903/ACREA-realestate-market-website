@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Header from '../../components/Header';
 import SecondHeader from '../../components/SecondHeader';
 import Footer from '../../components/Footer';
@@ -24,6 +24,8 @@ function PropertyPage() {
     const navigation = useNavigate();
     const agentId = propertyData.agentId;
 
+    const [favoritesCount, setFavoritesCount] = useState(propertyData.usrPropertyFavorites || 0);
+
     const [agentData, setAgentData] = useState();
     async function fetchAgentData() {
         try {
@@ -40,6 +42,24 @@ function PropertyPage() {
             console.error("Failed to fetch agent data", error);
         }
     }
+
+    const toggleFavorite = async () => {
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: '/toggle-favorite',
+                method: 'POST',
+                data: { propertyId: propertyData._id }
+            });
+            
+            if (response && response.favoritesCount !== undefined) {
+                setFavoritesCount(response.favoritesCount);
+            }
+        } catch (error) {
+            console.error('Failed to toggle favorite:', error);
+        }
+    };
     
 
     useEffect(() => {
@@ -122,9 +142,14 @@ function PropertyPage() {
                     {/* Only render if the user is a buyer */}
                     {userAuthData.usrType === 'buyer' && (
                         <aside className={Styles.sidebar}>
-                            <button className={Styles.favoriteButton} style={{ color: Config.color.background }}>
-                                <BookmarkIcon /> Favorite Property
+                            <button
+                                className={Styles.favoriteButton}
+                                onClick={toggleFavorite}
+                                style={{ color: Config.color.background }}
+                            >
+                                <BookmarkIcon /> Favorite Property ({favoritesCount})
                             </button>
+
 
                             <div className={Styles.contactFormSection}>
                                 <h3>Contact Property Agent</h3>
