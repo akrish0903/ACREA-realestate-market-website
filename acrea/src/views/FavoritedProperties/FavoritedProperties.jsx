@@ -10,39 +10,39 @@ import Styles from './css/FavoritedProperties.module.css';
 function FavoritedProperties() {
     const userAuthData = useSelector(state => state.AuthUserDetailsSlice);
     const [favoritedProperties, setFavoritedProperties] = useState([]);
-    const [loading, setLoading] = useState(true);
-    
-    async function fetchFavorites() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    async function fetchFavoriteProperties() {
+        setIsLoading(true);
+        setError(null);
         try {
-            setLoading(true);
-            const favoritedPropertiesFetched = await useApi({
-                url: '/show-buyer-favorite',
-                method: 'GET',
+            const response = await useApi({
                 authRequired: true,
                 authToken: userAuthData.usrAccessToken,
+                url: "/show-buyer-favorite",
+                method: "GET",
             });
-            console.log(userAuthData.user)
-            console.log("Fetched favorite properties: ", favoritedPropertiesFetched); // Debugging line
-    
-            if (favoritedPropertiesFetched && favoritedPropertiesFetched.user_favid_arr) {
-                // Update this key to match the backend response structure
-                setFavoritedProperties(favoritedPropertiesFetched.user_favid_arr);
+
+            console.log("API Response:", response);
+
+            if (response && Array.isArray(response.user_fav_property_arr)) {
+                setFavoritedProperties(response.user_fav_property_arr);
             } else {
-                console.error('Error fetching favorited properties:', favoritedPropertiesFetched);
+                setError("Invalid response structure from API");
             }
         } catch (error) {
-            console.error('Error fetching favorited properties:', error);
+            console.error("Error fetching favorite properties:", error);
+            setError("Failed to fetch favorite properties");
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     }
 
     useEffect(() => {
-        if (userAuthData.usrType !== "buyer") {
-            console.log('User is not a buyer');
-            return; // Early exit if the user is not a buyer
+        if (userAuthData.usrType === "buyer") {
+            fetchFavoriteProperties();
         }
-        fetchFavorites();
     }, [userAuthData]);
 
     return (
@@ -50,14 +50,20 @@ function FavoritedProperties() {
             <Header />
             <SecondHeader />
             <div className={Styles.favoritedPropertiesScreenContainer}>
-                {loading ? (
-                    <p>Loading favorites...</p>
-                ) : favoritedProperties.length > 0 ? (
-                    favoritedProperties.map(property => (
-                        <PropertiesCardVertical key={property._id} property={property} />
-                    ))
+                {isLoading ? (
+                    <div>Loading...</div>
+                ) : error ? (
+                    <div>Error: {error}</div>
+                ) : userAuthData.usrType === 'buyer' ? (
+                    favoritedProperties.length > 0 ? (
+                        favoritedProperties.map((item, index) => (
+                            <PropertiesCardVertical key={index} propertiesData={item} />
+                        ))
+                    ) : (
+                        <div>No favorited properties yet.</div>
+                    )
                 ) : (
-                    <p>No favorited properties yet.</p>
+                    <div>Only buyers can view favorited properties.</div>
                 )}
             </div>
             <Footer />

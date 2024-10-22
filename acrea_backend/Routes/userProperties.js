@@ -45,4 +45,7 @@ router.post("/edit-property", jwt_verify_token, UserPropertiesController.editPro
 
 router.post('/toggle-favorite', jwt_verify_token, UserPropertiesController.toggleFavoriteController);
 
+// Show buyer's favorite properties
+router.get('/show-buyer-favorite', jwt_verify_token, UserPropertiesController.showFavoriteController);
+
 module.exports = router;

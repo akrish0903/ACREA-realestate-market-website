@@ -179,6 +179,7 @@ function SignIn() {
                       onBlur={() => { setFieldTouched("usrEmail") }}
                       onFocus={() => { setFieldTouched("usrEmail", true, true); }}
                       onChange={handleChange("usrEmail")}
+                      id='email'
                     />
                     {touched.usrEmail && errors.usrEmail && (
                       <p
@@ -209,6 +210,7 @@ function SignIn() {
                         onChange={handleChange("usrPassword")}
                         onFocus={() => { setFieldTouched("usrPassword", true, true); }} // Validate on focus
                         onBlur={() => { setFieldTouched("usrPassword") }}
+                        id='password'
                       />
                       {touched.usrPassword && errors.usrPassword && (
                         <p
@@ -256,6 +258,7 @@ function SignIn() {
                   }}
                   onMouseEnter={() => { setIsHovered(true) }}
                   onMouseLeave={() => { setIsHovered(false) }}
+                  id='login'
                 >Login</button>
                 <Link to={"/signup"} style={{ textDecoration: "none" }}>
                   <p style={{

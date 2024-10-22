@@ -517,6 +517,7 @@ function AddProperty() {
               type="submit"
               className={Styles.submitBtn}
               onClick={(e) => { addPropertyHandler(e) }}
+              id='submit'
             >Add Property</button>
             <p className={Styles.textSmallall}>By adding a property, you agree to our terms and conditions.</p>
           </form>

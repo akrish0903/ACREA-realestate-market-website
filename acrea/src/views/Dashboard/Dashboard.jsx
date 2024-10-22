@@ -237,6 +237,7 @@ function Dashboard() {
                             fontSize: Config.fontSize.regular,
                             alignSelf: "flex-end",
                         }}
+                        id='addProperty'
                     >Add Property</button>
                 </div>
             </div>)}
