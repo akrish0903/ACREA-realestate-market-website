@@ -1,101 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { useFormik } from 'formik';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Styles from "./css/AddProperty.module.css"
-import { useNavigate } from 'react-router-dom';
+import Styles from "./css/AddProperty.module.css";
 import { Config } from '../../config/Config';
-import { toast } from 'react-toastify';
 import useApi from '../../utils/useApi';
-import { useSelector } from 'react-redux';
-// import { propertyValidationSchema } from '../../utils/propertyValidationSchema';
-
+import propertyValidationSchema from '../../utils/propertyValidationSchema';
 
 function AddProperty() {
-  var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
+  const authUserDetails = useSelector(data => data.AuthUserDetailsSlice);
   const navigate = useNavigate();
 
-  var [usrProperty, setUsrProperty] = useState({
-    userListingType: "Land",
-    usrListingName: "",
-    usrListingDescription: "",
-    usrListingSquareFeet: 0,
-    location: {
-      street: "",
-      city: "",
-      state: "",
-      pinCode: 0
+  const formik = useFormik({
+    initialValues: {
+      userListingType: "Land",
+      usrListingName: "",
+      usrListingDescription: "",
+      usrListingSquareFeet: 0,
+      location: {
+        street: "",
+        city: "",
+        state: "",
+        pinCode: 0
+      },
+      usrAmenities: [],
+      usrExtraFacilities: {
+        beds: 0,
+        bath: 0
+      },
+      usrPrice: 0,
+      userListingImage: ""
     },
-    usrAmenities: [],
-    usrExtraFacilities: {
-      beds: 0,
-      bath: 0
-    },
-    usrPrice: 0, 
-    userListingImage: ""
-  })
+    validationSchema: propertyValidationSchema,
+    onSubmit: addPropertyHandler
+  });
 
-  async function addPropertyHandler(e) {
-    e.preventDefault();
-    
+  async function addPropertyHandler(values) {
     const apiCallPromise = new Promise(async (resolve, reject) => {
       const apiResponse = await useApi({
         url: "/add-properties",
         authRequired: true,
         method: "POST",
         authToken: authUserDetails.usrAccessToken,
-        data: {
-          userListingType: usrProperty.userListingType,
-          usrListingName: usrProperty.usrListingName,
-          usrListingDescription: usrProperty.usrListingDescription,
-          usrListingSquareFeet: usrProperty.usrListingSquareFeet,
-          usrPrice: usrProperty.usrPrice,
-          location: {
-            street: usrProperty.location.street,
-            city: usrProperty.location.city,
-            state: usrProperty.location.state,
-            pinCode: usrProperty.location.pinCode
-          },
-          usrAmenities: usrProperty.usrAmenities,
-          usrExtraFacilities: {
-            beds: usrProperty.usrExtraFacilities.beds,
-            bath: usrProperty.usrExtraFacilities.bath
-          },
-          userListingImage: usrProperty.userListingImage
-        },
+        data: values,
       });
-  
+
       if (apiResponse && apiResponse.error) {
         reject(apiResponse.error.message);
       } else {
         resolve(apiResponse);
       }
     });
-  
-    // Reset the form upon successful property addition
+
     await toast.promise(apiCallPromise, {
       pending: "Adding new property...!",
       success: {
         render({ data }) {
-          // Reset the form values here after successful response
-          setUsrProperty({
-            userListingType: "Land",
-            usrListingName: "",
-            usrListingDescription: "",
-            usrListingSquareFeet: 0,
-            location: {
-              street: "",
-              city: "",
-              state: "",
-              pinCode: 0
-            },
-            usrAmenities: [],
-            usrExtraFacilities: {
-              beds: 0,
-              bath: 0
-            },
-            usrPrice: 0,
-            userListingImage: ""
-          });
+          formik.resetForm();
           navigate(-1);
           return data.message || "Property added successfully!";
         },
@@ -109,112 +73,110 @@ function AddProperty() {
       position: 'bottom-right',
     });
   }
-  
-  // function handleAmenityChange(e) {
-  //   const { value, checked } = e.target;
-    
-  //   if (checked) {
-  //     setUsrProperty({
-  //       ...usrProperty,
-  //       usrAmenities: [...usrProperty.usrAmenities, value],
-  //     });
-  //   } else {
-  //     setUsrProperty({
-  //       ...usrProperty,
-  //       usrAmenities: usrProperty.usrAmenities.filter((amenity) => amenity !== value),
-  //     });
-  //   }
-  // }
 
   const handleAmenityChange = (e) => {
     const value = e.target.value;
     const checked = e.target.checked;
-    setUsrProperty((prevState) => {
-      const updatedAmenities = checked
-        ? [...prevState.usrAmenities, value]
-        : prevState.usrAmenities.filter(amenity => amenity !== value);
-      return { ...prevState, usrAmenities: updatedAmenities };
-    });
+    let updatedAmenities = [...formik.values.usrAmenities];
+    if (checked) {
+      updatedAmenities.push(value);
+    } else {
+      updatedAmenities = updatedAmenities.filter(amenity => amenity !== value);
+    }
+    formik.setFieldValue('usrAmenities', updatedAmenities);
   };
-  
-
 
   return (
     <div className={`screen ${Styles.addPropertyScreen}`} style={{ backgroundColor: Config.color.secondaryColor200 }}>
       <Header />
       <div className={Styles.card1}>
         <div className={Styles.formContainer}>
-          <form>
+          <form onSubmit={formik.handleSubmit}>
             <h2 className={Styles.formTitle}>Add Property</h2>
 
             <div className={Styles.formGroup}>
-              <label htmlFor="type">Property Type</label>
-              <div className={Styles.formGroup}>
-                <select
-                  id="type" name="type"
-                  value={usrProperty.userListingType}
-                  onChange={(e) => setUsrProperty({ ...usrProperty, userListingType: e.target.value })}
-                  required>
-                  <option value="Land">Land</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="House">House</option>
-                  <option value="Room">Room</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+              <label htmlFor="userListingType">Property Type</label>
+              <select
+                id="userListingType"
+                name="userListingType"
+                {...formik.getFieldProps('userListingType')}
+              >
+                <option value="Land">Land</option>
+                <option value="Apartment">Apartment</option>
+                <option value="House">House</option>
+                <option value="Room">Room</option>
+                <option value="Other">Other</option>
+              </select>
+              {formik.touched.userListingType && formik.errors.userListingType ? (
+                <div className={Styles.errorMessage}>{formik.errors.userListingType}</div>
+              ) : null}
             </div>
 
-            <div className={Styles.formGroup}>
-              <label htmlFor="name">Listing Name</label>
-              <input type="text"
-                id="name" name="name"
+            <div className={`${Styles.formGroup}  ${formik.touched.usrListingName && formik.errors.usrListingName ? Styles.hasError : ''}`}>
+              <label htmlFor="usrListingName">Listing Name</label>
+              <input
+                type="text"
+                id="usrListingName"
+                {...formik.getFieldProps('usrListingName')}
                 placeholder="eg. Beautiful Apartment In Mumbai"
-                value={usrProperty.usrListingName}
-                onChange={(e) => setUsrProperty({ ...usrProperty, usrListingName: e.target.value })}
-                required />
+              />
+              {formik.touched.usrListingName && formik.errors.usrListingName ? (
+                <div className={Styles.errorMessage}>{formik.errors.usrListingName}</div>
+              ) : null}
             </div>
 
-            <div className={Styles.formGroup}>
-              <label htmlFor="description">Description</label>
+            <div className={`${Styles.formGroup}  ${formik.touched.usrListingDescription && formik.errors.usrListingDescription ? Styles.hasError : ''}`}>
+              <label htmlFor="usrListingDescription">Description</label>
               <textarea
-                id="description" name="description"
+                id="usrListingDescription"
+                {...formik.getFieldProps('usrListingDescription')}
                 rows="4"
                 placeholder="Add an optional description of your property"
-                value={usrProperty.usrListingDescription}
-                onChange={(e) => setUsrProperty({ ...usrProperty, usrListingDescription: e.target.value })}
               ></textarea>
+              {formik.touched.usrListingDescription && formik.errors.usrListingDescription ? (
+                <div className={Styles.errorMessage}>{formik.errors.usrListingDescription}</div>
+              ) : null}
+            </div>
+
+            <div className={`${Styles.formGroup}  ${formik.touched.usrListingSquareFeet && formik.errors.usrListingSquareFeet ? Styles.hasError : ''}`}>
+              <label htmlFor="usrListingSquareFeet">Square Feet</label>
+              <input
+                type="number"
+                id="usrListingSquareFeet"
+                {...formik.getFieldProps('usrListingSquareFeet')}
+              />
+              {formik.touched.usrListingSquareFeet && formik.errors.usrListingSquareFeet ? (
+                <div className={Styles.errorMessage}>{formik.errors.usrListingSquareFeet}</div>
+              ) : null}
             </div>
 
             <div className={Styles.formGroup}>
-              <label htmlFor="square_feet">Square Feet</label>
-              <input type="number"
-                id="square_feet" name="square_feet"
-                value={usrProperty.usrListingSquareFeet}
-                onChange={(e) => setUsrProperty({ ...usrProperty, usrListingSquareFeet: e.target.value })}
-                required />
-            </div>
-
-            <div className={Styles.formGroup}>
-              <div className={Styles.locationGroup}>
+              <div className={Styles.locationGroup}> 
                 <label>Location</label>
-                <input type="text"
-                  id="street" name="location.street"
+                <input
+                  type="text"
+                  id="street"
+                  {...formik.getFieldProps('location.street')}
                   placeholder="Street"
-                  value={usrProperty.location.street}
-                  onChange={(e) => { setUsrProperty({ ...usrProperty, location: { ...usrProperty.location, street: e.target.value } }) }}
                 />
-                <input type="text"
-                  id="city" name="location.city"
+                {formik.touched.location?.street && formik.errors.location?.street ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.street}</div>
+                ) : null}
+              
+                <input
+                  type="text"
+                  id="city"
+                  {...formik.getFieldProps('location.city')}
                   placeholder="City"
-                  required
-                  value={usrProperty.location.city}
-                  onChange={(e) => { setUsrProperty({ ...usrProperty, location: { ...usrProperty.location, city: e.target.value } }) }}
                 />
-                <select className={Styles.stateOption}
-                  id="state" name="location.state"
-                  value={usrProperty.location.state}
-                  onChange={(e) => { setUsrProperty({ ...usrProperty, location: { ...usrProperty.location, state: e.target.value } }) }}
-                  required
+                {formik.touched.location?.city && formik.errors.location?.city ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.city}</div>
+                ) : null}
+              
+                <select
+                  className={Styles.stateOption}
+                  id="state"
+                  {...formik.getFieldProps('location.state')}
                 >
                   <option value="" disabled>Select State</option>
                   <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -254,176 +216,21 @@ function AddProperty() {
                   <option value="Ladakh">Ladakh</option>
                   <option value="Puducherry">Puducherry</option>
                 </select>
-
-                <input type="number"
-                  id="zipcode" name="location.zipcode"
-                  placeholder="Zipcode"
-                  value={usrProperty.location.pinCode}
-                  onChange={(e) => { setUsrProperty({ ...usrProperty, location: { ...usrProperty.location, pinCode: e.target.value } }) }}
+                {formik.touched.location?.state && formik.errors.location?.state ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.state}</div>
+                ) : null}
+                <input
+                  type="number"
+                  id="pinCode"
+                  {...formik.getFieldProps('location.pinCode')}
+                  placeholder="Pin Code"
                 />
+                {formik.touched.location?.pinCode && formik.errors.location?.pinCode ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.pinCode}</div>
+                ) : null}
               </div>
             </div>
 
-            {/* <div className={Styles.amenitiesSection}>
-              <label htmlFor="amenities">Amenities</label>
-              <div className={Styles.amenitiesGrid}>
-                <div  className={Styles.selectAllContainer}>
-                  <input
-                    type="checkbox"
-                    id="select_all_amenities"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setUsrProperty({
-                          ...usrProperty,
-                          usrAmenities: [
-                            "Wifi", "Full Kitchen", "Washer & Dryer", "Free Parking", 
-                            "Swimming Pool", "Hot Tub", "24/7 Security", "Wheelchair Accessible", 
-                            "Elevator Access", "Dishwasher", "Gym/Fitness Center", "Air Conditioning"
-                          ]
-                        });
-                      } else {
-                        setUsrProperty({ ...usrProperty, usrAmenities: [] });
-                      }
-                    }}
-                    checked={usrProperty.usrAmenities.length === 12}
-                  />
-                  <label htmlFor="select_all_amenities" className={Styles.selectAllLabel}>Select All</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_wifi"
-                    name="amenities"
-                    value="Wifi"
-                    checked={usrProperty.usrAmenities.includes("Wifi")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_wifi">Wifi</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_kitchen"
-                    name="amenities"
-                    value="Full Kitchen"
-                    checked={usrProperty.usrAmenities.includes("Full Kitchen")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_kitchen">Full Kitchen</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_washer_dryer"
-                    name="amenities"
-                    value="Washer & Dryer"
-                    checked={usrProperty.usrAmenities.includes("Washer & Dryer")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_washer_dryer">Washer & Dryer</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_free_parking"
-                    name="amenities"
-                    value="Free Parking"
-                    checked={usrProperty.usrAmenities.includes("Free Parking")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_free_parking">Free Parking</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_pool"
-                    name="amenities"
-                    value="Swimming Pool"
-                    checked={usrProperty.usrAmenities.includes("Swimming Pool")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_pool">Swimming Pool</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_hot_tub"
-                    name="amenities"
-                    value="Hot Tub"
-                    checked={usrProperty.usrAmenities.includes("Hot Tub")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_hot_tub">Hot Tub</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_24_7_security"
-                    name="amenities"
-                    value="24/7 Security"
-                    checked={usrProperty.usrAmenities.includes("24/7 Security")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_24_7_security">24/7 Security</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_wheelchair_accessible"
-                    name="amenities"
-                    value="Wheelchair Accessible"
-                    checked={usrProperty.usrAmenities.includes("Wheelchair Accessible")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_wheelchair_accessible">Wheelchair Accessible</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_elevator_access"
-                    name="amenities"
-                    value="Elevator Access"
-                    checked={usrProperty.usrAmenities.includes("Elevator Access")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_elevator_access">Elevator Access</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_dishwasher"
-                    name="amenities"
-                    value="Dishwasher"
-                    checked={usrProperty.usrAmenities.includes("Dishwasher")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_dishwasher">Dishwasher</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_gym_fitness_center"
-                    name="amenities"
-                    value="Gym/Fitness Center"
-                    checked={usrProperty.usrAmenities.includes("Gym/Fitness Center")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_gym_fitness_center">Gym/Fitness Center</label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="amenity_air_conditioning"
-                    name="amenities"
-                    value="Air Conditioning"
-                    checked={usrProperty.usrAmenities.includes("Air Conditioning")}
-                    onChange={(e) => handleAmenityChange(e)}
-                  />
-                  <label htmlFor="amenity_air_conditioning">Air Conditioning</label>
-                </div>
-              </div>
-            </div> */}
-            {/* Amenities */}
             <div className={Styles.amenitiesSection}>
               <label>Amenities</label>
               <div className={Styles.selectAllContainer}>
@@ -431,38 +238,25 @@ function AddProperty() {
                   type="checkbox"
                   id="selectAllAmenities"
                   onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    if (isChecked) {
-                      setUsrProperty((prevState) => ({
-                        ...prevState,
-                        usrAmenities: [
-                          'Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 
-                          'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 
-                          'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'
-                        ]
-                      }));
-                    } else {
-                      setUsrProperty((prevState) => ({
-                        ...prevState,
-                        usrAmenities: []
-                      }));
-                    }
+                    const amenities = ['Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 
+                      'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 
+                      'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'];
+                    formik.setFieldValue('usrAmenities', e.target.checked ? amenities : []);
                   }}
-                  checked={usrProperty.usrAmenities.length === 12}
+                  checked={formik.values.usrAmenities.length === 12}
                 />
                 <label htmlFor="selectAllAmenities" className={Styles.selectAllLabel}>Select All</label>
               </div>
 
-              {/* Individual Amenities Checkboxes */}
               <div className={Styles.amenitiesGrid}>
                 {['Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'].map((amenity) => (
                   <div className={Styles.amenityItem} key={amenity}>
                     <input
                       type="checkbox"
                       id={`amenity_${amenity}`}
-                      name="amenities"
+                      name="usrAmenities"
                       value={amenity}
-                      checked={usrProperty.usrAmenities.includes(amenity)}
+                      checked={formik.values.usrAmenities.includes(amenity)}
                       onChange={handleAmenityChange}
                     />
                     <label htmlFor={`amenity_${amenity}`} className={Styles.amenityLabel}>{amenity}</label>
@@ -471,53 +265,66 @@ function AddProperty() {
               </div>
             </div>
 
-
             <div className={Styles.formGroup}>
               <div className={Styles.locationGroup}>
                 <label>Number of (Leave blank if not applicable)</label>
                 <div className={Styles.flexRow}>
-                  <div className={Styles.formGroup}>
+                  <div className={`${Styles.formGroup}  ${formik.touched.usrExtraFacilities?.beds && formik.errors.usrExtraFacilities?.beds ? Styles.hasError : ''}`}>
                     <label htmlFor="beds">Beds</label>
-                    <input type="number" id="beds" name="beds"
-                      value={usrProperty.usrExtraFacilities.beds}
-                      onChange={(e) => { setUsrProperty({ ...usrProperty, usrExtraFacilities: { ...usrProperty.usrExtraFacilities, beds: e.target.value } }) }}
+                    <input
+                      type="number"
+                      id="beds"
+                      {...formik.getFieldProps('usrExtraFacilities.beds')}
                     />
+                  {formik.touched.usrExtraFacilities?.beds && formik.errors.usrExtraFacilities?.beds ? (
+                    <div className={Styles.errorMessage}>{formik.errors.usrExtraFacilities.beds}</div>
+                  ) : null}
                   </div>
-                  <div className={Styles.formGroup}>
+                  <div className={`${Styles.formGroup}  ${formik.touched.usrExtraFacilities?.bath && formik.errors.usrExtraFacilities?.bath ? Styles.hasError : ''}`}>
                     <label htmlFor="baths">Baths</label>
-                    <input type="number" id="baths" name="baths"
-                      value={usrProperty.usrExtraFacilities.bath}
-                      onChange={(e) => { setUsrProperty({ ...usrProperty, usrExtraFacilities: { ...usrProperty.usrExtraFacilities, bath: e.target.value } }) }}
+                    <input
+                      type="number"
+                      id="baths"
+                      {...formik.getFieldProps('usrExtraFacilities.bath')}
                     />
+              {formik.touched.usrExtraFacilities?.bath && formik.errors.usrExtraFacilities?.bath ? (
+                <div className={Styles.errorMessage}>{formik.errors.usrExtraFacilities.bath}</div>
+              ) : null}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className={Styles.formGroup}>
-              <label htmlFor="price">Price</label>
-              <input  type="number" 
-                id="price" name="price" 
-                placeholder="Enter the price of the property" 
-                value={usrProperty.usrPrice || ''} 
-                onChange={(e) => setUsrProperty({ ...usrProperty, usrPrice: e.target.value })} 
-                required 
+            <div className={`${Styles.formGroup}  ${formik.touched.usrPrice && formik.errors.usrPrice ? Styles.hasError : ''}`}>
+              <label htmlFor="usrPrice">Price</label>
+              <input
+                type="number"
+                id="usrPrice"
+                {...formik.getFieldProps('usrPrice')}
+                placeholder="Enter the price of the property"
               />
+              {formik.touched.usrPrice && formik.errors.usrPrice ? (
+                <div className={Styles.errorMessage}>{formik.errors.usrPrice}</div>
+              ) : null}
             </div>
 
-            <div className={Styles.formGroup}>
-              <label htmlFor="image">Images</label>
-              <br/>
-              <input type="text" id="image" name="image"
-                value={usrProperty.userListingImage}
-                onChange={(e) => setUsrProperty({ ...usrProperty, userListingImage: e.target.value })} />
+            <div className={`${Styles.formGroup}  ${formik.touched.userListingImage && formik.errors.userListingImage ? Styles.hasError : ''}`}>
+              <label htmlFor="userListingImage">Images</label>
+              <input
+                type="text"
+                id="userListingImage"
+                {...formik.getFieldProps('userListingImage')}
+              />
+              {formik.touched.userListingImage && formik.errors.userListingImage ? (
+                <div className={Styles.errorMessage}>{formik.errors.userListingImage}</div>
+              ) : null}
             </div>
             
             <button
               type="submit"
               className={Styles.submitBtn}
-              onClick={(e) => { addPropertyHandler(e) }}
               id='submit'
+  disabled={!(formik.isValid && formik.dirty)}
             >Add Property</button>
             <p className={Styles.textSmallall}>By adding a property, you agree to our terms and conditions.</p>
           </form>
@@ -526,6 +333,6 @@ function AddProperty() {
       <Footer />
     </div>
   );
-};
+}
 
 export default AddProperty;

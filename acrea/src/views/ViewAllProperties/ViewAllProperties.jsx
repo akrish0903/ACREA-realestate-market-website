@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom'; // import useLocation for query params
+import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -8,6 +8,7 @@ import SecondHeader from '../../components/SecondHeader';
 import PropertiesCardVertical from '../../components/PropertiesCardVertical';
 import useApi from '../../utils/useApi';
 import { toast } from 'react-toastify';
+import { Config } from '../../config/Config';
 
 function ViewAllProperties() {
     const userAuthData = useSelector(data => data.AuthUserDetailsSlice);
@@ -153,7 +154,7 @@ function ViewAllProperties() {
     }, [location.search, userAuthData]);
 
     if (isLoading) {
-        return <div className={Styles.loader}>Loading...</div>;
+        return <div style={{marginLeft:'10rem'}}> <img src={Config.imagesPaths.loading} style={{width:'80rem', height:'60rem',backgroundColor:'black'}}/></div>//<div className={Styles.loader}>Loading...</div>;%
     }
 
     if (error) {

@@ -187,6 +187,7 @@ function PropertyPage() {
                                 className={Styles.editBtn}
                                 style={{ color: Config.color.background }}
                                 onClick={() => { navigation('/EditProperty', { state: propertyData }) }}
+                                id='edit'
                             >
                                 <EditIcon /> EDIT
                             </button>

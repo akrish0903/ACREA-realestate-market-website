@@ -2,7 +2,7 @@ import React from 'react'
 import { Config } from '../../config/Config';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Styles from './NoPageFound.module.css'
+import Styles from './css/NoPageFound.module.css'
 import { NavLink } from 'react-router-dom';
 
 function NoPageFound() {

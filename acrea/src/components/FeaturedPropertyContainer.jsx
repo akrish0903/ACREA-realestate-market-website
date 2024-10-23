@@ -121,7 +121,9 @@ function FeaturedPropertyContainer({propertiesData}){
                                 paddingRight: ".8rem",
                                 fontSize: Config.fontSize.small,
                                 borderRadius: "5px"
-                            }}>Details</button>
+                            }}
+                            id='details'
+                        >Details</button>
                     </div>
                 </div>
             </div>
