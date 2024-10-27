@@ -1,93 +1,178 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import { useFormik } from 'formik';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Styles from "./css/EditProperty.module.css";
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Config } from '../../config/Config';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 import useApi from '../../utils/useApi';
+import { useFormik } from 'formik';
 import propertyValidationSchema from '../../utils/propertyValidationSchema';
 
 function EditProperty() {
   const authUserDetails = useSelector(data => data.AuthUserDetailsSlice);
+
   const location = useLocation();
   const navigate = useNavigate();
+  const propertyId = location.state?._id;
   const propertyData = location.state;
-
-  const formik = useFormik({
-    initialValues: {
-      propertyId: propertyData._id,
-      userListingType: propertyData.userListingType,
-      usrListingName: propertyData.usrListingName,
-      usrListingDescription: propertyData.usrListingDescription,
-      usrListingSquareFeet: propertyData.usrListingSquareFeet,
-      location: {
-        street: propertyData.location.street,
-        city: propertyData.location.city,
-        state: propertyData.location.state,
-        pinCode: propertyData.location.pinCode
-      },
-      usrAmenities: [...propertyData.usrAmenities],
-      usrExtraFacilities: {
-        beds: propertyData.usrExtraFacilities.beds,
-        bath: propertyData.usrExtraFacilities.bath
-      },
-      usrPrice: propertyData.usrPrice,
-      userListingImage: propertyData.userListingImage
+  const [usrProperty, setUsrProperty] = useState({
+    propertyId: propertyData._id,
+    userListingType: propertyData.userListingType,
+    usrListingName: propertyData.usrListingName,
+    usrListingDescription: propertyData.usrListingDescription,
+    usrListingSquareFeet: propertyData.usrListingSquareFeet,
+    location: {
+      street: propertyData.location.street,
+      city: propertyData.location.city,
+      state: propertyData.location.state,
+      pinCode: propertyData.location.pinCode
     },
-    validationSchema: propertyValidationSchema,
-    onSubmit: editPropertyHandler
+    usrAmenities: [...propertyData.usrAmenities],
+    usrExtraFacilities: {
+      beds: propertyData.usrExtraFacilities.beds,
+      bath: propertyData.usrExtraFacilities.bath
+    },
+    usrPrice: propertyData.usrPrice,
+    userListingImage: propertyData.userListingImage
   });
 
-  async function editPropertyHandler(values) {
-    const apiCallPromise = new Promise(async (resolve, reject) => {
-      const apiResponse = await useApi({
-        url: "/edit-property",
-        authRequired: true,
-        method: "POST",
-        authToken: authUserDetails.usrAccessToken,
-        data: values,
-      });
+  const editPropertyHandler = async (e) => {
+    e.preventDefault();
 
-      if (apiResponse && apiResponse.error) {
-        reject(apiResponse.error.message);
-      } else {
-        resolve(apiResponse);
+    if (!Config.apiBaseUrl) {
+      console.error("API base URL is not defined");
+      toast.error("Application configuration error. Please contact support.");
+      return;
+    } else if (!propertyId) {
+      console.error("Property ID is not defined");
+      toast.error("Property ID is missing. Please try again or contact support.");
+      return;
+    } else {
+      try {
+        // toast notification
+        const apiCallPromise = new Promise(async (resolve, reject) => {
+          const apiResponse = await useApi({
+            authRequired: true,
+            authToken: authUserDetails.usrAccessToken,
+            url: "/edit-property",
+            method: "POST",
+            data: {
+              userId: usrProperty.propertyId,
+              userListingType: usrProperty.userListingType,
+              usrListingName: usrProperty.usrListingName,
+              usrListingDescription: usrProperty.usrListingDescription,
+              usrListingSquareFeet: usrProperty.usrListingSquareFeet,
+              usrPrice: usrProperty.usrPrice,
+              location: {
+                street: usrProperty.location.street,
+                city: usrProperty.location.city,
+                state: usrProperty.location.state,
+                pinCode: usrProperty.location.pinCode
+              },
+              usrAmenities: usrProperty.usrAmenities,
+              usrExtraFacilities: {
+                beds: usrProperty.usrExtraFacilities.beds,
+                bath: usrProperty.usrExtraFacilities.bath
+              },
+              userListingImage: usrProperty.userListingImage
+            },
+          });
+          if (apiResponse && apiResponse.error) {
+            reject(apiResponse.error.message);
+          } else {
+            resolve(apiResponse);
+          }
+        });
+
+        // Reset the form upon successful property addition
+        await toast.promise(apiCallPromise, {
+          pending: "Editing property...!",
+          success: {
+            render({ data }) {
+              // Reset the form values here after successful response
+              setTimeout(() => {
+                navigate(-2);
+                setUsrProperty({
+                  userListingType: "Land",
+                  usrListingName: "",
+                  usrListingDescription: "",
+                  usrListingSquareFeet: 0,
+                  location: {
+                    street: "",
+                    city: "",
+                    state: "",
+                    pinCode: 0
+                  },
+                  usrAmenities: [],
+                  usrExtraFacilities: {
+                    beds: 0,
+                    bath: 0
+                  },
+                  usrPrice: 0,
+                  userListingImage: ""
+                });
+              }, 1000);
+
+              return data.message || "Property edited successfully!";
+            },
+          },
+          error: {
+            render({ data }) {
+              return data;
+            },
+          },
+        }, {
+          position: 'bottom-right',
+        });
+
+      } catch (error) {
+        console.log("Sign in err ---> ", error);
       }
-    });
-
-    await toast.promise(apiCallPromise, {
-      pending: "Editing property...",
-      success: {
-        render({ data }) {
-          setTimeout(() => {
-            navigate(-2);
-          }, 1000);
-          return data.message || "Property edited successfully!";
-        },
-      },
-      error: {
-        render({ data }) {
-          return data;
-        },
-      },
-    }, {
-      position: 'bottom-right',
-    });
-  }
+    }
+  };
 
   const handleAmenityChange = (e) => {
     const value = e.target.value;
     const checked = e.target.checked;
-    let updatedAmenities = [...formik.values.usrAmenities];
-    if (checked) {
-      updatedAmenities.push(value);
-    } else {
-      updatedAmenities = updatedAmenities.filter(amenity => amenity !== value);
-    }
-    formik.setFieldValue('usrAmenities', updatedAmenities);
+    setUsrProperty((prevState) => {
+      const updatedAmenities = checked
+        ? [...prevState.usrAmenities, value]
+        : prevState.usrAmenities.filter(amenity => amenity !== value);
+      return { ...prevState, usrAmenities: updatedAmenities };
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUsrProperty(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleLocationChange = (e) => {
+    const { name, value } = e.target;
+    setUsrProperty(prevState => ({
+      ...prevState,
+      location: {
+        ...prevState.location,
+        [name]: value
+      }
+    }));
+  };
+
+  const handleExtraFacilitiesChange = (e) => {
+    const { name, value } = e.target;
+    setUsrProperty(prevState => ({
+      ...prevState,
+      usrExtraFacilities: {
+        ...prevState.usrExtraFacilities,
+        [name]: value
+      }
+    }));
   };
 
   return (
@@ -95,7 +180,7 @@ function EditProperty() {
       <Header />
       <div className={Styles.card1}>
         <div className={Styles.formContainer}>
-          <form onSubmit={formik.handleSubmit}>
+          <form onSubmit={editPropertyHandler}>
             <h2 className={Styles.formTitle}>Edit Property</h2>
 
             {/* Property Type */}
@@ -104,17 +189,17 @@ function EditProperty() {
               <select
                 id="userListingType"
                 name="userListingType"
-                {...formik.getFieldProps('userListingType')}
+                value={usrProperty.userListingType}
+                onChange={handleInputChange}
+                required
               >
+                <option value="">Select Type</option>
                 <option value="Land">Land</option>
                 <option value="Apartment">Apartment</option>
                 <option value="House">House</option>
                 <option value="Room">Room</option>
                 <option value="Other">Other</option>
               </select>
-              {formik.touched.userListingType && formik.errors.userListingType ? (
-                <div className={Styles.errorMessage}>{formik.errors.userListingType}</div>
-              ) : null}
             </div>
 
             {/* Listing Name */}
@@ -123,12 +208,12 @@ function EditProperty() {
               <input
                 type="text"
                 id="usrListingName"
-                {...formik.getFieldProps('usrListingName')}
+                name="usrListingName"
                 placeholder="e.g. Beautiful Apartment In Mumbai"
+                value={usrProperty.usrListingName}
+                onChange={handleInputChange}
+                required
               />
-              {formik.touched.usrListingName && formik.errors.usrListingName ? (
-                <div className={Styles.errorMessage}>{formik.errors.usrListingName}</div>
-              ) : null}
             </div>
 
             {/* Description */}
@@ -136,13 +221,12 @@ function EditProperty() {
               <label htmlFor="usrListingDescription">Description</label>
               <textarea
                 id="usrListingDescription"
-                {...formik.getFieldProps('usrListingDescription')}
+                name="usrListingDescription"
                 rows="4"
                 placeholder="Write a description of your property"
-              ></textarea>
-              {formik.touched.usrListingDescription && formik.errors.usrListingDescription ? (
-                <div className={Styles.errorMessage}>{formik.errors.usrListingDescription}</div>
-              ) : null}
+                value={usrProperty.usrListingDescription}
+                onChange={handleInputChange}
+              />
             </div>
 
             {/* Square Feet */}
@@ -151,11 +235,12 @@ function EditProperty() {
               <input
                 type="number"
                 id="usrListingSquareFeet"
-                {...formik.getFieldProps('usrListingSquareFeet')}
+                name="usrListingSquareFeet"
+                placeholder="Enter size in square feet"
+                value={usrProperty.usrListingSquareFeet}
+                onChange={handleInputChange}
+                required
               />
-              {formik.touched.usrListingSquareFeet && formik.errors.usrListingSquareFeet ? (
-                <div className={Styles.errorMessage}>{formik.errors.usrListingSquareFeet}</div>
-              ) : null}
             </div>
 
             {/* Location */}
@@ -164,43 +249,32 @@ function EditProperty() {
                 <label>Location</label>
                 <input
                   type="text"
-                  id="street"
-                  {...formik.getFieldProps('location.street')}
+                  name="street"
                   placeholder="Street"
+                  value={usrProperty.location.street}
+                  onChange={handleLocationChange}
                 />
-                {formik.touched.location?.street && formik.errors.location?.street ? (
-                  <div className={Styles.errorMessage}>{formik.errors.location.street}</div>
-                ) : null}
-                
                 <input
                   type="text"
-                  id="city"
-                  {...formik.getFieldProps('location.city')}
+                  name="city"
                   placeholder="City"
+                  value={usrProperty.location.city}
+                  onChange={handleLocationChange}
                 />
-                {formik.touched.location?.city && formik.errors.location?.city ? (
-                  <div className={Styles.errorMessage}>{formik.errors.location.city}</div>
-                ) : null}
-                
                 <input
                   type="text"
-                  id="state"
-                  {...formik.getFieldProps('location.state')}
+                  name="state"
                   placeholder="State"
+                  value={usrProperty.location.state}
+                  onChange={handleLocationChange}
                 />
-                {formik.touched.location?.state && formik.errors.location?.state ? (
-                  <div className={Styles.errorMessage}>{formik.errors.location.state}</div>
-                ) : null}
-                
                 <input
-                  type="number"
-                  id="pinCode"
-                  {...formik.getFieldProps('location.pinCode')}
+                  type="text"
+                  name="pinCode"
                   placeholder="Pin Code"
+                  value={usrProperty.location.pinCode}
+                  onChange={handleLocationChange}
                 />
-                {formik.touched.location?.pinCode && formik.errors.location?.pinCode ? (
-                  <div className={Styles.errorMessage}>{formik.errors.location.pinCode}</div>
-                ) : null}
               </div>
             </div>
 
@@ -214,16 +288,22 @@ function EditProperty() {
                   onChange={(e) => {
                     const isChecked = e.target.checked;
                     if (isChecked) {
-                      formik.setFieldValue('usrAmenities', [
-                        'Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 
-                        'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 
-                        'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'
-                      ]);
+                      setUsrProperty((prevState) => ({
+                        ...prevState,
+                        usrAmenities: [
+                          'Wifi', 'Full Kitchen', 'Washer & Dryer', 'Free Parking', 
+                          'Swimming Pool', 'Hot Tub', '24/7 Security', 'Wheelchair Accessible', 
+                          'Elevator Access', 'Dishwasher', 'Gym/Fitness Center', 'Air Conditioning'
+                        ]
+                      }));
                     } else {
-                      formik.setFieldValue('usrAmenities', []);
+                      setUsrProperty((prevState) => ({
+                        ...prevState,
+                        usrAmenities: []
+                      }));
                     }
                   }}
-                  checked={formik.values.usrAmenities.length === 12}
+                  checked={usrProperty.usrAmenities.length === 12}
                 />
                 <label htmlFor="selectAllAmenities" className={Styles.selectAllLabel}>Select All</label>
               </div>
@@ -237,7 +317,7 @@ function EditProperty() {
                       id={`amenity_${amenity}`}
                       name="amenities"
                       value={amenity}
-                      checked={formik.values.usrAmenities.includes(amenity)}
+                      checked={usrProperty.usrAmenities.includes(amenity)}
                       onChange={handleAmenityChange}
                     />
                     <label htmlFor={`amenity_${amenity}`} className={Styles.amenityLabel}>{amenity}</label>
@@ -245,6 +325,7 @@ function EditProperty() {
                 ))}
               </div>
             </div>
+
 
             {/* Extra Facilities */}
             <div className={Styles.formGroup}>
@@ -256,22 +337,20 @@ function EditProperty() {
                     <input
                       type="number"
                       id="beds"
-                      {...formik.getFieldProps('usrExtraFacilities.beds')}
+                      name="beds"
+                      value={usrProperty.usrExtraFacilities.beds}
+                      onChange={handleExtraFacilitiesChange}
                     />
-                    {formik.touched.usrExtraFacilities?.beds && formik.errors.usrExtraFacilities?.beds ? (
-                      <div className={Styles.errorMessage}>{formik.errors.usrExtraFacilities.beds}</div>
-                    ) : null}
                   </div>
                   <div className={Styles.formGroup}>
                     <label htmlFor="bath">Baths</label>
                     <input
                       type="number"
                       id="bath"
-                      {...formik.getFieldProps('usrExtraFacilities.bath')}
+                      name="bath"
+                      value={usrProperty.usrExtraFacilities.bath}
+                      onChange={handleExtraFacilitiesChange}
                     />
-                    {formik.touched.usrExtraFacilities?.bath && formik.errors.usrExtraFacilities?.bath ? (
-                      <div className={Styles.errorMessage}>{formik.errors.usrExtraFacilities.bath}</div>
-                    ) : null}
                   </div>
                 </div>
               </div>
@@ -283,37 +362,28 @@ function EditProperty() {
               <input
                 type="number"
                 id="usrPrice"
-                {...formik.getFieldProps('usrPrice')}
+                name="usrPrice"
                 placeholder="Price"
+                value={usrProperty.usrPrice}
+                onChange={handleInputChange}
+                required
               />
-              {formik.touched.usrPrice && formik.errors.usrPrice ? (
-                <div className={Styles.errorMessage}>{formik.errors.usrPrice}</div>
-              ) : null}
             </div>
-
-            {/* Images */}
             <div className={Styles.formGroup}>
-              <label htmlFor="userListingImage">Images</label>
+              <label htmlFor="image">Images</label>
+              <br/>
               <input
                 type="text"
-                id="userListingImage"
-                {...formik.getFieldProps('userListingImage')}
-              />
-              {formik.touched.userListingImage && formik.errors.userListingImage ? (
-                <div className={Styles.errorMessage}>{formik.errors.userListingImage}</div>
-              ) : null}
+                id="image"
+                name="image"
+                value={usrProperty.userListingImage}
+                onChange={(e) => setUsrProperty({ ...usrProperty, userListingImage: e.target.value })} />
             </div>
+
 
             {/* Submit Button */}
             <div className={Styles.formGroup}>
-              <button
-                className={Styles.submitBtn}
-                type="submit"
-                id='submit'
-                disabled={!(formik.isValid && formik.dirty)}
-              >
-                Update Property
-              </button>
+              <button className={Styles.submitBtn} type="submit">Update Property</button>
             </div>
           </form>
         </div>
