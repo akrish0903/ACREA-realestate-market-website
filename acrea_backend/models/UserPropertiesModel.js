@@ -50,6 +50,12 @@ const userPropertySchema = new mongoose.Schema({
         pinCode: {
             type: Number,
         },
+        latitude: {
+            type: Number,
+        },
+        longitude: {
+            type: Number,
+        },
     },
     usrAmenities: {
         type: [String],

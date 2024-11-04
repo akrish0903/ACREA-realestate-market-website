@@ -16,6 +16,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import SendIcon from '@mui/icons-material/Send';
 import EditIcon from '@mui/icons-material/Edit';
 import useApi from '../../utils/useApi';
+import PropertyMap from '../../components/PropertyMap';
 
 function PropertyPage() {
     const location = useLocation();
@@ -135,6 +136,12 @@ function PropertyPage() {
                                     <li key={index}><CheckIcon /> {amenity}</li>
                                 ))}
                             </ul>
+                        </div>
+
+                        {/* Add Map Section */}
+                        <div className={Styles.mapSection}>
+                            <h3>Location</h3>
+                            <PropertyMap location={propertyData.location} />
                         </div>
                     </main>
 

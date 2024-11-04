@@ -24,7 +24,9 @@ function AddProperty() {
         street: "",
         city: "",
         state: "",
-        pinCode: 0
+        pinCode: 0,
+        latitude:0,
+        longitude:0,
       },
       usrAmenities: [],
       usrExtraFacilities: {
@@ -227,6 +229,28 @@ function AddProperty() {
                 />
                 {formik.touched.location?.pinCode && formik.errors.location?.pinCode ? (
                   <div className={Styles.errorMessage}>{formik.errors.location.pinCode}</div>
+                ) : null}
+
+                </div>
+                <div className={Styles.locationGroup}> 
+                <label>Map</label>
+                <input
+                  type="text"
+                  id="latitudet"
+                  {...formik.getFieldProps('location.latitude')}
+                  placeholder="Latitude"
+                />
+                {formik.touched.location?.latitude && formik.errors.location?.latitude ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.latitude}</div>
+                ) : null}
+                <input
+                  type="text"
+                  id="longitude"
+                  {...formik.getFieldProps('location.longitude')}
+                  placeholder="Longitude"
+                />
+                {formik.touched.location?.latitude && formik.errors.location?.latitude ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.latitude}</div>
                 ) : null}
               </div>
             </div>
