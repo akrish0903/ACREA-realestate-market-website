@@ -64,7 +64,7 @@ function PropertyPage() {
     
 
     useEffect(() => {
-        if (userAuthData.usrType === 'admin') {
+        if (userAuthData.usrType === 'admin' || userAuthData.usrType === 'buyer') {
             fetchAgentData();
         }
     }, [agentId, userAuthData]);
@@ -184,6 +184,15 @@ function PropertyPage() {
                                     </center>
                                 </form>
                             </div>
+                            <button
+                                className={Styles.editBtn}
+                                style={{ color: Config.color.background }}
+                                onClick={() => {
+                                    console.log({propertyData,agentData})
+                                    navigation('/Schedule', { state: { propertyData, agentData } });
+                                }}
+                                id='schedule'
+                            ></button>
                         </aside>
                     )}
 
