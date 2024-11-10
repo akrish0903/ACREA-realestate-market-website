@@ -18,8 +18,6 @@ const Schedule = () => {
   const [buyerName, setBuyerName] = useState(userAuthData?.usrFullName || '');
   const [contact, setContact] = useState(userAuthData?.usrMobileNumber || '');
   const [notes, setNotes] = useState('');
-//   const pID =propertyData.userId;
-//   const agentId= agentData.agentId
 
   const handleSchedule = async () => {
     const scheduleData = { propertyData, agentData, date, time, buyerName, contact, notes };

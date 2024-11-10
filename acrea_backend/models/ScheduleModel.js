@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const { default: mongoose } = require('mongoose');
 
 const ScheduleSchema = new mongoose.Schema({
   propertyId: {
@@ -38,4 +38,6 @@ const ScheduleSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Schedule', ScheduleSchema);
+const SchedulesModel = mongoose.model(process.env.MONGO_TABLE_Schedule_PROPERTIES_visit, ScheduleSchema);
+console.log("-------------working properties-----")
+module.exports = SchedulesModel;
