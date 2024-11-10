@@ -1,0 +1,86 @@
+.scheduleScreen {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.scheduleContainer {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.scheduleTable {
+    background-color: white;
+    border-radius: 20px;
+    width: 90%;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    border-collapse: collapse;
+    overflow: hidden;
+}
+
+.scheduleTable thead {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 8px;
+    background-color: white;
+    color: #BC0000;
+    text-align: center;
+}
+
+.scheduleTable th, .scheduleTable td {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+.scheduleTable tr {
+    width: 100%;
+}
+
+.scheduleTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.scheduleTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+.scheduleTable th {
+    font-weight: bold;
+    background-color: white;
+    border-bottom: 2px solid #ddd;
+}
+
+.scheduleTable td {
+    border-bottom: none;
+}
+
+/* Additional styling to ensure rounded corners look nice */
+.scheduleTable th:first-child,
+.scheduleTable td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.scheduleTable th:last-child,
+.scheduleTable td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.editBtn {
+    cursor: pointer;
+    width: 4rem;
+    border-radius: 1rem;
+}
+
+.deleteBtn {
+    cursor: pointer;
+    width: 4rem;
+    margin-left: 10px;
+    border-radius: 1rem;
+}
+
+input {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}

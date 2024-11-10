@@ -154,7 +154,22 @@ function Dashboard() {
         }
     }
 
-
+    const [agentData, setAgentData] = useState();
+    async function fetchAgentData() {
+        try {
+            const agentDatasFetched = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: "/show-agent-data",
+                method: "POST",
+                data: { agentId }
+            });
+            console.log("Fetched Agent Data: ", agentDatasFetched);
+            setAgentData(agentDatasFetched.user_agentdata_arr);
+        } catch (error) {
+            console.error("Failed to fetch agent data", error);
+        }
+    }
 
     useEffect(() => {
         if (userAuthData.usrType === null) {
@@ -173,6 +188,7 @@ function Dashboard() {
             fetchAdminRecentProperties()
             fetchBuyersList()
             fetchAgentsList()
+            fetchAgentData
         }
 
     }, [userAuthData])
@@ -552,7 +568,10 @@ function Dashboard() {
                                             <p>{agent.usrMobileNumber}</p>
                                         </div>
                                         <div className={Styles.featuredPropertyContainerCardRightBottom}>
-                                            <button onClick={() => { navigation('/PropertyPage', { state: agentData }) }}
+                                            <button 
+                                            onClick={() => {
+                                                console.log({agent})
+                                                navigation('/AgentDetails', { state: agent }) }}
                                                 style={{
                                                     color: Config.color.background,
                                                     backgroundColor: Config.color.primaryColor900,

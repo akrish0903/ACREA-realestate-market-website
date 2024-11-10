@@ -21,6 +21,7 @@ function Header() {
         // Only add "My Properties" if the user is an agent
         ...(userAuthData.usrType === 'agent' ? [{ title: "My Properties", navigate: "/ViewAllProperties" }] : []),
         ...(userAuthData.usrType === 'buyer' ? [{ title: "Favorites", navigate: "/FavoritedProperties" }] : []),
+        ...((userAuthData.usrType === 'agent' )? [{ title: "Scheduled visit", navigate: "/ScheduleList" }] : []),
         { 
             title: "Help Center",
             navigate: "/help-center"
@@ -87,7 +88,14 @@ function Header() {
                 }
 
                 {( userAuthData.usrType==='buyer' ) &&
-                    <h6 style={{ color: Config.color.background }}>AGENTS</h6>
+                    <h6 style={{ color: Config.color.background }}>
+                        <NavLink
+                            to="/AgentList"
+                            style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
+                        >
+                            AGENTS
+                        </NavLink>
+                    </h6>
                 }
                 {(userAuthData.usrType==='agent' ) &&
                     <h6 style={{width:'8rem'}}>

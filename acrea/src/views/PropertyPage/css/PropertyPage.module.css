@@ -80,7 +80,7 @@ a {
 .propertyInfoContainer {
   flex: 1;
   gap: 1.5rem;
-  padding-right: 1rem;
+  /* padding-right: 1rem; */
 }
 
 .propertyDetails {
@@ -258,6 +258,23 @@ a {
   background-color: #0e2a6b;
 }
 
+
+.scheduleButton {
+  background-color: #b51c1c;
+  color: white;
+  padding: 1rem;
+  border-radius: 40px;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  width: 28rem;
+  margin-bottom: 1rem;
+  margin: 1rem;
+}
+
+.scheduleButton:hover {
+  background-color: #960b0b;
+}
 
 
 .btn{

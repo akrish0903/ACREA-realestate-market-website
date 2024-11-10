@@ -1,0 +1,53 @@
+.agentScreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .agentInfoContainer {
+    flex: 1;
+    gap: 1.5rem;
+    /* padding-right: 1rem; */
+      justify-content: space-evenly;
+      /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+      background-color: rgb(169, 16, 16);
+  }
+  .viewAllScreenContainer{
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-evenly;
+      padding: 1.5rem;
+      /* border: 1px solid; */
+  }
+
+  
+
+.agentinfo {
+    flex-direction: column;
+    margin: auto;
+    /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+    padding: 1rem;
+    /* border-radius: 2rem; */
+  }
+  
+  .agentContainer {
+    flex-direction: column;
+    background-color: white;
+    padding: 1rem;
+    margin-top: 2rem;
+    width: 27rem;
+    justify-items: center;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .ProfileContainerImage{
+    height: 8rem;
+    width: 8rem;
+    border-radius: 20px;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    object-fit: fill;
+    margin-top: .5rem;
+  }

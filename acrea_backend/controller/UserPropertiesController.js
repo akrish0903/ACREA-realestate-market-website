@@ -461,11 +461,39 @@ const showFavoriteController = async (req, res, next) => {
     }
 };
 
+const showAgentPropertytoOthersController = async (req, res, next) => {
+    const agent = req.body;
+    // console.log('Received agent:', agent);
+
+    try {
+        console.log('AgentId:',agent.agent._id);
+        const fetchedUserData = await UserAuthModel.findById(agent.agent._id);
+        agentId= agent.agent._id;
+
+        if (fetchedUserData) {
+            const usrPropertiesArr = await UserPropertiesModel.find({ agentId: agentId }).sort({ usrPropertyTime: -1 });
+            // console.log(usrPropertiesArr)
+            res.status(200).json({
+                message: "All property records fetched successfully.",
+                user_property_arr: usrPropertiesArr
+            });
+        } else {
+            return next(httpErrors.Unauthorized("You are not authorized to view these properties."));
+        }
+    } catch (error) {
+        console.error("Error fetching properties: ", error);
+        next(httpErrors.BadRequest("Error fetching properties."));
+    }
+};
+
+
+
+
 
 module.exports = {
     addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
     showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
     showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController,
     showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController, showByTypeAllUserPropertyController,
-    toggleFavoriteController, showFavoriteController
+    toggleFavoriteController, showFavoriteController, showAgentPropertytoOthersController
 }

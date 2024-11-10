@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import { Config } from '../../config/Config';
+import { useNavigate } from 'react-router-dom';
 
 function AgentList() {
     const [agents, setAgents] = useState([]);
@@ -17,6 +18,7 @@ function AgentList() {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [agentToDelete, setAgentToDelete] = useState(null);
     const userAuthData = useSelector((data) => data.AuthUserDetailsSlice);
+    var navigation = useNavigate();
     console.log("user auth data ---> ", userAuthData);
 
     // Fetch agents list
@@ -88,7 +90,7 @@ function AgentList() {
     }
 
     useEffect(() => {
-        if (userAuthData.usrType === "admin") {
+        if (userAuthData.usrType === "admin"|| userAuthData.usrType === 'buyer') {
             fetchAgentsList();
         }
     }, [userAuthData]);
@@ -156,6 +158,7 @@ function AgentList() {
                                         )}
                                     </td>
                                     <td>
+                                    {userAuthData.usrType === 'admin' && ( <>
                                         {editMode === agent._id ? (
                                             <>
                                                 <button
@@ -185,6 +188,22 @@ function AgentList() {
                                                 />
                                             </>
                                         )}
+                                        </>
+                                    )}
+                                    <button 
+                                            onClick={() => {
+                                                console.log({agent})
+                                                navigation('/AgentDetails', { state: agent }) }}
+                                                style={{
+                                                    color: Config.color.background,
+                                                    backgroundColor: Config.color.primaryColor900,
+                                                    width: "fit-content",
+                                                    padding: ".2rem",
+                                                    paddingLeft: ".8rem",
+                                                    paddingRight: ".8rem",
+                                                    fontSize: Config.fontSize.small,
+                                                    borderRadius: "5px"
+                                                }}>Details</button>
                                     </td>
                                 </tr>
                             ))

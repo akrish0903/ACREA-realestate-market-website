@@ -246,9 +246,6 @@ const showAgentListController = async (req, res, next) => {
     const userId = req.payload.aud;
     try {
         const fetchedUserData = await UserAuthModel.findById(userId);
-        if (fetchedUserData.usrType !== "admin") {
-            return res.status(403).json({ message: "Unauthorized access" });
-        }
         const usrAgentListArr = await UserAuthModel.find({ usrType: "agent" }).sort({ usrFullName: 1 });
         console.log("Fetched agents: ", usrAgentListArr);
         res.status(200).json({
@@ -420,9 +417,10 @@ const deleteAgentProfileAuthController = async (req, res, next) => {
 
 const showAgentDataController = async (req, res, next) => {
     var { agentId } = req.body;
+    console.log(agentId);
 
     try {
-        const fetchedAgentData = await UserAuthModel.findById(agentId);  // Assuming agent data is in UserAuthModel
+        const fetchedAgentData = await UserAuthModel.findById(agentId);
 
         if (!fetchedAgentData) {
             return res.status(404).json({ message: "Agent not found." });

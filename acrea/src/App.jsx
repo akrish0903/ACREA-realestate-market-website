@@ -21,6 +21,8 @@ import BuyerList from './views/UsersList/BuyerList'
 import AgentList from './views/UsersList/AgentList'
 import { AuthUserDetailsSliceAction } from './store/AuthUserDetailsSlice'
 import Schedule from './views/Schedule/Schedule'
+import ScheduleList from './views/ScheduleList/ScheduleList'
+import AgentDetails from './views/AgentDetails/AgentDetails'
 
 function App() {
   var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
@@ -52,12 +54,16 @@ function App() {
 
         {authUserDetails.usrType === "agent" && (<Route path='/AddProperty' element={<AddProperty />} />)}
         {authUserDetails.usrType === "agent" && (<Route path='/EditProperty' element={<EditProperty /> }/>)}
+        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "buyer" )&& (<Route path='/ScheduleList' element={<ScheduleList /> }/>)}
 
         {authUserDetails.usrType === "admin" && (<Route path='/BuyerList' element={<BuyerList />} />)}
-        {authUserDetails.usrType === "admin" && (<Route path='/AgentList' element={<AgentList />} />)}
+        {(authUserDetails.usrType === "admin" || authUserDetails.usrType === "buyer")&& (<Route path='/AgentList' element={<AgentList />} />)}
         {authUserDetails.usrType === "admin" && (<Route path='/EditProperty' element={<EditProperty /> }/>)}
 
         <Route path='/Schedule' element={<Schedule/>} />
+        <Route path='/AgentDetails' element={<AgentDetails />} />
+
+        
         
         <Route path='/FavoritedProperties' element={<FavoritedProperties />} />
         <Route path='/PropertyPage' element={<PropertyPage />} />

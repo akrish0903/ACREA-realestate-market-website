@@ -48,4 +48,7 @@ router.post('/toggle-favorite', jwt_verify_token, UserPropertiesController.toggl
 // Show buyer's favorite properties
 router.get('/show-buyer-favorite', jwt_verify_token, UserPropertiesController.showFavoriteController);
 
+///shows all properties of agent to buyer or admin login in ViewAllProperties page
+router.post('/show-agent-properties-to-others', jwt_verify_token, UserPropertiesController.showAgentPropertytoOthersController)
+
 module.exports = router;

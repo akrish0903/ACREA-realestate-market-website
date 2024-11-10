@@ -19,21 +19,29 @@ const Schedule = () => {
   const [contact, setContact] = useState(userAuthData?.usrMobileNumber || '');
   const [notes, setNotes] = useState('');
 
+
   const handleSchedule = async () => {
     const scheduleData = { propertyData, agentData, date, time, buyerName, contact, notes };
 
     try {
-        const response = await useApi({
-            authRequired: true,
-            authToken: userAuthData.usrAccessToken,
-            url: '/schedule',
+        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/schedule`, {
             method: "POST",
-            data: scheduleData
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userAuthData.usrAccessToken}`
+            },
+            body: JSON.stringify(scheduleData)
         });
 
-        if (response.data && response.data.redirectUrl) {
+        const result = await response.json();
+
+        console.log("Response from backend:", result);
+        const razorpayLink = import.meta.env.razorlink;
+        if (result.redirectUrl) {
             // Open payment link in a new tab
-            const paymentWindow = window.open(response.data.redirectUrl, '_blank');
+            
+
+            const paymentWindow = window.open(result.redirectUrl, '_blank');
 
             // Check if the payment window has closed after successful payment
             const checkPaymentWindow = setInterval(() => {
@@ -45,7 +53,7 @@ const Schedule = () => {
             }, 1000);
         } else {
             alert('Payment link not found. Please try again.');
-        }
+        }      
     } catch (error) {
         console.error('Failed to schedule visit:', error);
         alert('There was an error scheduling the visit.');
