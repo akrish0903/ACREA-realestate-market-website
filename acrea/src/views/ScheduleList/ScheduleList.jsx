@@ -128,8 +128,11 @@ function ScheduleList() {
     }
 
     useEffect(() => {
-        fetchAgentSchedulesList();
-        fetchBuyerSchedulesList
+        if (userAuthData.usrType === 'agent') {
+            fetchAgentSchedulesList();
+        } else if (userAuthData.usrType === 'buyer') {
+            fetchBuyerSchedulesList();
+        }
     }, [userAuthData]);
 
     const handleEdit = (schedule) => {

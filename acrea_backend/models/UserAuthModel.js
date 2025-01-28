@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
     userBio: {
         type: String,
     }
+    ,
+    usrStatus: {
+        type: Boolean,
+    }
 })
 
 userSchema.pre("save", async function (next) {

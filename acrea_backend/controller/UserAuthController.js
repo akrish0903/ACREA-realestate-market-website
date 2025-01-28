@@ -8,7 +8,7 @@ const httpErrors = require("http-errors");
 const signupUserAuthController = async (req, res, next) => {
     // getting from frontend
     console.log("----> ", req.body);
-    const { usrFullName, usrEmail, usrMobileNumber, usrPassword, usrType, usrProfileUrl, userBio } = req.body;
+    const { usrFullName, usrEmail, usrMobileNumber, usrPassword, usrType, usrProfileUrl, userBio, usrStatus } = req.body;
     // previous user finding
     var previousUserFound;
     try {
@@ -31,7 +31,8 @@ const signupUserAuthController = async (req, res, next) => {
                 usrPassword,
                 usrType,
                 usrProfileUrl,
-                userBio
+                userBio,
+                usrStatus: usrStatus || true  // Set default value if not provided
             });
 
             var savedUserDetails = await newUserSetup.save();
@@ -45,6 +46,7 @@ const signupUserAuthController = async (req, res, next) => {
                     usrType: savedUserDetails.usrType,
                     usrProfileUrl: savedUserDetails.usrProfileUrl,
                     userBio: savedUserDetails.userBio,
+                    usrStatus: savedUserDetails.usrStatus,
                 }
             });
         } catch (err) {

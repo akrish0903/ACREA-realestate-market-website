@@ -18,6 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import useApi from '../../utils/useApi';
 import PropertyMap from '../../components/PropertyMap';
+import PropertyQuestions from '../../components/PropertyQuestions'
 
 function PropertyPage() {
     const location = useLocation();
@@ -65,9 +66,9 @@ function PropertyPage() {
     
 
     useEffect(() => {
-        if (userAuthData.usrType === 'admin' || userAuthData.usrType === 'buyer') {
+        // if (userAuthData.usrType === 'admin' || userAuthData.usrType === 'buyer') {
             fetchAgentData();
-        }
+        // }
     }, [agentId, userAuthData]);
 
     // Check if userAuthData is defined to avoid potential errors
@@ -144,6 +145,9 @@ function PropertyPage() {
                             <h3>Location</h3>
                             <PropertyMap location={propertyData.location} />
                         </div>
+                        <div>
+                            <PropertyQuestions propertyData={propertyData} />
+                        </div>
                     </main>
 
                     {/* Sidebar */}
@@ -200,8 +204,8 @@ function PropertyPage() {
                         </aside>
                     )}
 
-                    {/* Only render if the user is an agent or admin */}
-                    {(userAuthData.usrType === 'agent' || userAuthData.usrType === 'admin') && (
+                    {/* Only render if the user is an agent, owner or admin */}
+                    {(userAuthData.usrType === 'agent' || userAuthData.usrType === 'admin' || userAuthData.usrType==='owner') && (
                         <aside className={Styles.sidebar}>
                             <button
                                 className={Styles.editBtn}

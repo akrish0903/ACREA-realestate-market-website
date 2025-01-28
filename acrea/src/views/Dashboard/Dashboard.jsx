@@ -180,7 +180,7 @@ function Dashboard() {
             fetchBuyerRecentProperties()
             fetchBuyerFeaturesProperties()
         }
-        if (userAuthData.usrType === "agent") {
+        if (userAuthData.usrType === "agent" || userAuthData.usrType==='owner') {
             fetchAgentRecentProperties()
             fetchAgentRecentProperties2()
         }
@@ -235,7 +235,7 @@ function Dashboard() {
                         fontWeight: "bolder",
                         fontSize: Config.fontSize.medium,
                         color: Config.color.textColor
-                    }}>For Property Agents</p>
+                    }}>For Property Agents/Owners</p>
                     <p style={{
                         fontSize: Config.fontSize.small,
                         color: Config.color.textColor
@@ -258,8 +258,8 @@ function Dashboard() {
                 </div>
             </div>)}
 
-            {/*Shown Only in Agent's page */}
-            {userAuthData.usrType === 'agent' && (<div className={Styles.optionalAuthCard}>
+            {/*Shown Only in Agent's or Owner's page */}
+            {(userAuthData.usrType === 'agent' || userAuthData.usrType==='owner')&& (<div className={Styles.optionalAuthCard}>
                 <div
                     style={{ backgroundColor: Config.color.secondaryColor300 }}
                     className={Styles.optionalAuthCardRight}
@@ -268,7 +268,7 @@ function Dashboard() {
                         fontWeight: "bolder",
                         fontSize: Config.fontSize.medium,
                         color: Config.color.textColor
-                    }}>For Property Agents</p>
+                    }}>For Property Agents/Owners</p>
                     <p style={{
                         fontSize: Config.fontSize.small,
                         color: Config.color.textColor
@@ -350,8 +350,8 @@ function Dashboard() {
             </div>
             )}
 
-            {/* Shown only when logged in as Agent */}
-            {userAuthData.usrType === 'agent' && (<div style={{ display: 'flex', flexDirection: 'column' }}>
+            {/* Shown only when logged in as Agent or Owner */}
+            {(userAuthData.usrType === 'agent' || userAuthData.usrType==='owner')&& (<div style={{ display: 'flex', flexDirection: 'column' }}>
                 {/* Recently Added Properties */}
                 <div className={Styles.featuredProperty} style={{ backgroundColor: Config.color.secondaryColor200 }}>
                     <h4 style={{

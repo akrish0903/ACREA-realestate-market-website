@@ -35,10 +35,13 @@ export var Config = {
         logo: "/assets/logo.png",
         logo2: "/assets/logo2.png",
         logo3: "/assets/logo3.png",
+        logo4:"/assets/logo4.png",
         user_null: "/assets/user_null.png",
         error404:"/assets/404error.gif",
         loading:"/assets/loading.gif",
 
     },
     apiBaseUrl: 'http://localhost:4500',
+    // apiBaseUrl: 'https://real-estate-marketplace-1-ojvt.onrender.com', for hosting
+
 };

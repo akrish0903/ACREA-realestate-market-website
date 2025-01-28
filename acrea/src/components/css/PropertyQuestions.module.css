@@ -1,0 +1,119 @@
+.propertyquestionsScreen {
+    display: flex;
+    flex-direction: column;
+    /* background-color: #fbf8f7; */
+     margin: 2rem 0;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-height: fit-content !important; 
+
+}
+.propertyQuestionsContainer {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.propertyQuestionsContainer h3 {
+    font-size: 1.5em;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.questionForm {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.questionForm input[type="text"] {
+    margin-top: 1rem;
+    flex: 1;
+    padding: 8px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+}
+
+.questionForm button {
+    padding: 8px 15px;
+    font-size: 1em;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.questionForm button:hover {
+    background-color: #0056b3;
+}
+
+.questionsList {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.questionItem {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.questionItem p {
+    margin: 5px 0;
+}
+
+.questionItem strong {
+    color: #333;
+}
+
+.answerInput {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.answerInput input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.answerInput button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.answerInput button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.questionMeta {
+    margin-top: 10px;
+    font-size: 0.9em;
+    /* color: #666; */
+    display: flex;
+    justify-content: space-between;
+}
+
+.errorMessage {
+    color: #dc3545;
+    margin-bottom: 10px;
+}

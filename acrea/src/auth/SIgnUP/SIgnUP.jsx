@@ -93,6 +93,7 @@ function SIgnUP() {
             usrType: userObj.usrType,
             usrProfileUrl: null,
             userBio: null,
+            usrStatus: true
           },
         });
         if (apiResponse && apiResponse.error) {
@@ -184,7 +185,8 @@ function SIgnUP() {
           <div className={Styles.screenRightContainerMid}>
             <div className={Styles.screenRightContainerMidTopButtons}>
               <button type="button" onClick={() => setUserObj({ ...userObj, usrType: "buyer" })} className={`btn ${userObj.usrType === "buyer" ? "btn-danger" : "btn-outline-danger"}`}>Buyer</button>
-              <button type="button" onClick={() => setUserObj({ ...userObj, usrType: "agent" })} className={`btn ${userObj.usrType === "agent" ? "btn-danger" : "btn-outline-danger"}`}>Agent/Builder</button>
+              <button type="button" onClick={() => setUserObj({ ...userObj, usrType: "agent" })} className={`btn ${userObj.usrType === "agent" ? "btn-danger" : "btn-outline-danger"}`}>Agent</button>
+              <button type="button" onClick={() => setUserObj({ ...userObj, usrType: "owner" })} className={`btn ${userObj.usrType === "owner" ? "btn-danger" : "btn-outline-danger"}`}>Owner</button>
             </div>
 
             <form className={Styles.screenRightContainerMidForm}>

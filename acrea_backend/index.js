@@ -8,6 +8,7 @@ const httpErrors = require("http-errors");
 const authRoutes = require("./Routes/authUser");
 const userProperties = require("./Routes/userProperties");
 const scheduleRoutes = require("./Routes/scheduleRoutes");
+const questionRoutes = require("./Routes/questionRoutes")
 const MongoDBConnector = require("./db/MongoDBConnector");
 require("./utils/init_redis");
 
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(authRoutes);
 app.use(userProperties);
 app.use(scheduleRoutes);
+app.use(questionRoutes);
 
 // unknown route
 app.use("*", (req, res, next) => {
@@ -54,4 +56,3 @@ app.use((err, req, res, next) => {
 http.createServer(app).listen(process.env.PORT, () => {
     console.log("---------------------------Server is running---------------------------------------")
 })
-

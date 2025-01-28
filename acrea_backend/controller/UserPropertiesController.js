@@ -3,7 +3,7 @@ const UserPropertiesModel = require("../models/UserPropertiesModel");
 const UserFavoritePropertiesModel = require("../models/UserFavoritePropertiesModel");
 const httpErrors = require("http-errors");
 
-const addPropertyController = async (req, res, next) => {
+const addPropertyController = async (req, res, next) => {//done
     var userId = req.payload.aud;
     var {
         userListingType,
@@ -19,7 +19,7 @@ const addPropertyController = async (req, res, next) => {
 
     try {
         var fetchedUserData = await UserAuthModel.findById(userId);
-        if (fetchedUserData.usrType === "agent") {
+        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType ==='owner') {
             const newPropertySetup = new UserPropertiesModel({
                 agentId: userId,
                 userListingType,
@@ -122,13 +122,13 @@ const showAdimFourRecentPropertyController = async (req, res, next) => {
     }
 }
 
-const showAgentRecentPropertyController = async (req, res, next) => {
+const showAgentRecentPropertyController = async (req, res, next) => {//done
     var userId = req.payload.aud;
     var { limit } = req.body;
     var fetchedUserData = await UserAuthModel.findById(userId);
 
     try {
-        if (fetchedUserData.usrType === "agent") {
+        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType==='owner') {
             const agentId = userId;
             const usrPropertiesArr = limit
                 ? await UserPropertiesModel.find({ agentId }).sort({ usrPropertyTime: -1 }).limit(limit)
@@ -146,13 +146,13 @@ const showAgentRecentPropertyController = async (req, res, next) => {
     }
 };
 
-const showByTypeAgentPropertyController = async (req, res, next) => {
+const showByTypeAgentPropertyController = async (req, res, next) => {//done
     const userId = req.payload.aud;
     const { type, searchText } = req.body; // Capture both type and searchText
     const fetchedUserData = await UserAuthModel.findById(userId);
 
     try {
-        if (fetchedUserData.usrType === "agent") {
+        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType==='owner') {
             let query = { agentId: userId };
 
             // Add filtering by type
@@ -275,7 +275,7 @@ const showByTypeAdminPropertyController = async (req, res, next) => {
     }
 };
 
-const editPropertyController = async (req, res, next) => {
+const editPropertyController = async (req, res, next) => {//done
     const agentId = req.payload.aud;  // The agent's ID (could also be admin's ID)
     const {
         userId,
@@ -294,13 +294,13 @@ const editPropertyController = async (req, res, next) => {
         // Fetch user data to determine if they are an agent or admin
         var fetchedUserData = await UserAuthModel.findById(agentId);
 
-        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType === "admin") {
+        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType === "admin" || fetchedUserData.usrType==='owner') {
             // Admin can edit any property, agent can only edit their own
             let property;
             if (fetchedUserData.usrType === "admin") {
                 // Admin: Find the property regardless of the agentId
                 property = await UserPropertiesModel.findById(userId);
-            } else if (fetchedUserData.usrType === "agent") {
+            } else if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType==='owner') {
                 // Agent: Only allow editing properties where the agentId matches
                 property = await UserPropertiesModel.findOne({ _id: userId, agentId });
             }

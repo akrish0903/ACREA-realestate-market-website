@@ -52,9 +52,9 @@ function App() {
         <Route path='/ForgotPassword' element={<ForgotPassword />} />
         {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
 
-        {authUserDetails.usrType === "agent" && (<Route path='/AddProperty' element={<AddProperty />} />)}
-        {authUserDetails.usrType === "agent" && (<Route path='/EditProperty' element={<EditProperty /> }/>)}
-        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "buyer" )&& (<Route path='/ScheduleList' element={<ScheduleList /> }/>)}
+        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "owner" )&& (<Route path='/AddProperty' element={<AddProperty />} />)}
+        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "owner" )&& (<Route path='/EditProperty' element={<EditProperty /> }/>)}
+        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "buyer" || authUserDetails.usrType === "owner" )&& (<Route path='/ScheduleList' element={<ScheduleList /> }/>)}
 
         {authUserDetails.usrType === "admin" && (<Route path='/BuyerList' element={<BuyerList />} />)}
         {(authUserDetails.usrType === "admin" || authUserDetails.usrType === "buyer")&& (<Route path='/AgentList' element={<AgentList />} />)}

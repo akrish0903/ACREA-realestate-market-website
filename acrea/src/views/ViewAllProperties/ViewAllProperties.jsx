@@ -139,7 +139,7 @@ function ViewAllProperties() {
         const searchText = searchParams.get('searchText') || ''; // Capture the search text
 
         // Fetch properties based on user type
-        if (userAuthData?.usrType === "agent") {
+        if (userAuthData?.usrType === "agent" || userAuthData?.usrType==='owner') {
             fetchAgentPropertiesByTypeAndSearch(propertyType, searchText);
         }
         if (userAuthData?.usrType === "buyer") {
@@ -166,7 +166,7 @@ function ViewAllProperties() {
             <Header />
             <SecondHeader />
             <div className={Styles.viewAllScreenContainer}>
-                {userAuthData.usrType === 'agent' && ( properties.length > 0 ? (
+                {(userAuthData.usrType === 'agent' || userAuthData.usrType==='owner') && ( properties.length > 0 ? (
                     properties.map((item, index) => (
                         <PropertiesCardVertical key={index} propertiesData={item} />
                     ))

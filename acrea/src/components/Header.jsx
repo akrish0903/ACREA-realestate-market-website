@@ -18,10 +18,14 @@ function Header() {
             navigate: "/editProfile"
             // customDom: null
         },
-        // Only add "My Properties" if the user is an agent
-        ...(userAuthData.usrType === 'agent' ? [{ title: "My Properties", navigate: "/ViewAllProperties" }] : []),
+        // Only add "My Properties" if the user is an agent or owner
+        ...(userAuthData.usrType === 'agent' || userAuthData.usrType === "owner" ? [{ title: "My Properties", navigate: "/ViewAllProperties" }] : []),
         ...(userAuthData.usrType === 'buyer' ? [{ title: "Favorites", navigate: "/FavoritedProperties" }] : []),
-        ...((userAuthData.usrType === 'agent' )? [{ title: "Scheduled visit", navigate: "/ScheduleList" }] : []),
+        // ...((userAuthData.usrType === 'agent' || userAuthData.usrType === "owner" )? [{ title: "Scheduled visit", navigate: "/ScheduleList" }] : []),
+        { 
+            title: "Scheduled visit", 
+            navigate: "/ScheduleList" 
+        },
         { 
             title: "Help Center",
             navigate: "/help-center"
@@ -97,7 +101,7 @@ function Header() {
                         </NavLink>
                     </h6>
                 }
-                {(userAuthData.usrType==='agent' ) &&
+                {(userAuthData.usrType==='agent' || userAuthData.usrType==='owner') &&
                     <h6 style={{width:'8rem'}}>
                         <NavLink
                             to="/ViewAllProperties"

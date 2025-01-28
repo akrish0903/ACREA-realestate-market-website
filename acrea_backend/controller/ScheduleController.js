@@ -28,17 +28,18 @@ exports.getSchedulesList = async (req, res, next) => {
 
     try {
         if (fetchedUserData.usrType === "agent") {
-        const schedules = await ScheduleModel.find({agentId: userId});
-        
-        if (schedules.length === 0) {
-            return res.status(200).json({ schedule_list: [], message: "No schedules found" });
-        }
+            const schedules = await ScheduleModel.find({agentId: userId})
+                .sort({ createdAt: -1 });
+            
+            if (schedules.length === 0) {
+                return res.status(200).json({ schedule_list: [], message: "No schedules found" });
+            }
 
-        res.status(200).json({ schedule_list: schedules });
-    } else {
-        return next(httpErrors.Unauthorized("Unauthorized access."));
-    }
-} catch (error) {
+            res.status(200).json({ schedule_list: schedules });
+        } else {
+            return next(httpErrors.Unauthorized("Unauthorized access."));
+        }
+    } catch (error) {
         next(httpErrors(500, "Failed to fetch schedules"));
     }
 };
@@ -49,17 +50,17 @@ exports.updateSchedule = async (req, res, next) => {
     const updatedData = req.body;
 
     try {
-        const updatedSchedule = await Schedule.findByIdAndUpdate(scheduleId, updatedData, {
+        const updatedSchedule = await ScheduleModel.findByIdAndUpdate(scheduleId, updatedData, {
             new: true,
         });
 
         if (!updatedSchedule) {
-            return next(createError(404, "Schedule not found"));
+            return next(httpErrors(404, "Schedule not found"));
         }
 
         res.status(200).json({ message: "Schedule updated successfully", updatedSchedule });
     } catch (error) {
-        next(createError(500, "Failed to update schedule"));
+        next(httpErrors(500, "Failed to update schedule"));
     }
 };
 
@@ -70,17 +71,18 @@ exports.getBuyerSchedulesList = async (req, res, next) => {
 
     try {
         if (fetchedUserData.usrType === "buyer") {
-        const schedules = await ScheduleModel.find({buyerId: userId});
-        
-        if (schedules.length === 0) {
-            return res.status(200).json({ schedule_list: [], message: "No schedules found" });
-        }
+            const schedules = await ScheduleModel.find({buyerId: userId})
+                .sort({ createdAt: -1 });
+            
+            if (schedules.length === 0) {
+                return res.status(200).json({ schedule_list: [], message: "No schedules found" });
+            }
 
-        res.status(200).json({ schedule_list: schedules });
-    } else {
-        return next(httpErrors.Unauthorized("Unauthorized access."));
-    }
-} catch (error) {
+            res.status(200).json({ schedule_list: schedules });
+        } else {
+            return next(httpErrors.Unauthorized("Unauthorized access."));
+        }
+    } catch (error) {
         next(httpErrors(500, "Failed to fetch schedules"));
     }
 };
@@ -91,17 +93,17 @@ exports.updateBuyerSchedule = async (req, res, next) => {
     const updatedData = req.body;
 
     try {
-        const updatedSchedule = await Schedule.findByIdAndUpdate(scheduleId, updatedData, {
+        const updatedSchedule = await ScheduleModel.findByIdAndUpdate(scheduleId, updatedData, {
             new: true,
         });
 
         if (!updatedSchedule) {
-            return next(createError(404, "Schedule not found"));
+            return next(httpErrors(404, "Schedule not found"));
         }
 
         res.status(200).json({ message: "Schedule updated successfully", updatedSchedule });
     } catch (error) {
-        next(createError(500, "Failed to update schedule"));
+        next(httpErrors(500, "Failed to update schedule"));
     }
 };
 
@@ -110,14 +112,14 @@ exports.deleteSchedule = async (req, res, next) => {
     const { scheduleId } = req.params;
 
     try {
-        const deletedSchedule = await Schedule.findByIdAndDelete(scheduleId);
+        const deletedSchedule = await ScheduleModel.findByIdAndDelete(scheduleId);
 
         if (!deletedSchedule) {
-            return next(createError(404, "Schedule not found"));
+            return next(httpErrors(404, "Schedule not found"));
         }
 
         res.status(200).json({ message: "Schedule deleted successfully" });
     } catch (error) {
-        next(createError(500, "Failed to delete schedule"));
+        next(httpErrors(500, "Failed to delete schedule"));
     }
 };
