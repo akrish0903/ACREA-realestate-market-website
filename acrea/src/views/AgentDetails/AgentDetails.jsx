@@ -67,7 +67,7 @@ function AgentDetails() {
 
             {/* Agent Info */}
             {agent ? (
-                <div className={Styles.agentInfo}>
+                <div className={Styles.agentInfo}  style={{ backgroundColor: Config.color.secondaryColor200 }}>
                     <div className={Styles.agentInfoContainer}>
                         <div className={Styles.agentContainer}>
                             <div className={Styles.agentinfo}>

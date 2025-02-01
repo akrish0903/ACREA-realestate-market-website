@@ -2,7 +2,9 @@ const express = require('express');
 const httpErrors = require("http-errors");
 const router = express.Router();
 const UserAuthController = require("../controller/UserAuthController");
+const upload = require("../config/multerStorage");
 const { jwt_verify_token } = require('../utils/jwt_utils');
+const cloudinary = require("../config/cloudinaryConfig")
 
 // User authentication routes
 router.post("/signup", UserAuthController.signupUserAuthController);
@@ -10,6 +12,17 @@ router.post("/signin", UserAuthController.signinUserAuthController);
 
 // Protected route to update user profile
 router.post("/updateUserProfile", jwt_verify_token, UserAuthController.updateUserProfileAuthController);
+
+router.post("/uploadProfileImage", upload.single("profileImage"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: "No file uploaded" });
+        }
+        res.json({ profileUrl: req.file.path }); // Cloudinary returns the file URL
+    } catch (error) {
+        res.status(500).json({ error: "Failed to upload image" });
+    }
+});
 
 // New route to reset password (protected)
 router.post("/resetPassword", jwt_verify_token, UserAuthController.resetPasswordAuthController);

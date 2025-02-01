@@ -5,12 +5,12 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "teachers", // Folder in Cloudinary where files will be stored
-    allowed_formats: ["pdf,jpeg"], // Allowable formats
+    folder: "profile_pictures",
+    allowed_formats: ["jpg", "png", "jpeg"],
     access_mode:"public",
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
-module.exports = upload;
+module.exports = upload;

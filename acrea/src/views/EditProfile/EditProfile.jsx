@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Styles from "./css/EditProfile.module.css";
@@ -31,66 +31,80 @@ function EditProfile() {
         confirmNewPassword: "",
     });
 
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("profileImage", file);
+
+        try {
+            const response = await fetch(`${Config.apiBaseUrl}/uploadProfileImage`, {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await response.json();
+            if (data.profileUrl) {
+                setUserEditObj({ ...userEditObj, usrProfileUrl: data.profileUrl });
+                toast.success("Profile image updated!");
+            } else {
+                toast.error("Failed to upload image");
+            }
+        } catch (error) {
+            console.error("Image upload error:", error);
+            toast.error("Error uploading image");
+        }
+    };
+
     async function editUserDetailsHandler(e) {
         e.preventDefault();
-        if (userEditObj.usrEmail === "" || userEditObj.usrFullName === "" || userEditObj.usrMobileNumber === "") {
+    
+        if (!userEditObj.usrFullName || !userEditObj.usrMobileNumber) {
             toast.error("Please fill all fields.", {
                 position: 'bottom-right',
                 theme: "dark",
             });
-        } else {
-
-            // toast notification
-            const apiCallPromise = new Promise(async (resolve, reject) => {
-                const apiResponse = await useApi({
-                    url: "/updateUserProfile",
-                    method: "POST",
-                    authRequired: true,
-                    authToken: userAuthDetails.usrAccessToken,
-                    data: {
-                        usrFullName: userEditObj.usrFullName,
-                        usrEmail: userEditObj.usrEmail,
-                        usrMobileNumber: userEditObj.usrMobileNumber,
-                        usrProfileUrl: userEditObj.usrProfileUrl === "" ? null : userEditObj.usrProfileUrl,
-                        userBio: userEditObj.userBio === "" ? null : userEditObj.userBio,
-                    },
-                });
-
-                if (apiResponse && apiResponse.error) {
-                    reject(apiResponse.error.message);
-                } else {
-                    resolve(apiResponse);
-                }
-            });
-
-            await toast.promise(apiCallPromise, {
-                pending: "Editing user details..!!",
-                success: {
-                    render({ toastProps, closeToast, data }) {
-                        dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrEmail));
-                        localStorage.setItem("usrEmail", data.user_details.usrEmail);
-                        dispatch(AuthUserDetailsSliceAction.setUsrFullName(data.user_details.usrFullName));
-                        localStorage.setItem("usrFullName", data.user_details.usrFullName);
-                        dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(data.user_details.usrMobileNumber));
-                        localStorage.setItem("usrMobileNumber", data.user_details.usrMobileNumber);
-                        dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(data.user_details.usrProfileUrl));
-                        localStorage.setItem("usrProfileUrl", data.user_details.usrProfileUrl);
-                        dispatch(AuthUserDetailsSliceAction.setUserBio(data.user_details.userBio));
-                        localStorage.setItem("userBio", data.user_details.userBio);
-                        return data.message || "Account details updated successfully.";
-                    },
+            return;
+        }
+    
+        try {
+            const response = await fetch(`${Config.apiBaseUrl}/updateUserProfile`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${userAuthDetails.usrAccessToken}`
                 },
-                error: {
-                    render({ toastProps, closeToast, data }) {
-                        return data;
-                    },
-                },
-            }, {
-                position: 'bottom-right',
-                theme: "dark",
+                body: JSON.stringify(userEditObj),
             });
+    
+            const apiResponse = await response.json();
+            console.log("API Response:", apiResponse);  // Debugging
+    
+            if (!response.ok) {
+                throw new Error(apiResponse.message || "Failed to update profile");
+            }
+    
+            // Update Redux and Local Storage
+            dispatch(AuthUserDetailsSliceAction.setUsrFullName(apiResponse.user_details.usrFullName));
+            dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(apiResponse.user_details.usrMobileNumber));
+            dispatch(AuthUserDetailsSliceAction.setUsrProfileUrl(apiResponse.user_details.usrProfileUrl));
+            dispatch(AuthUserDetailsSliceAction.setUserBio(apiResponse.user_details.userBio));
+    
+            localStorage.setItem("usrFullName", apiResponse.user_details.usrFullName);
+            localStorage.setItem("usrMobileNumber", apiResponse.user_details.usrMobileNumber);
+            localStorage.setItem("usrProfileUrl", apiResponse.user_details.usrProfileUrl);
+            localStorage.setItem("userBio", apiResponse.user_details.userBio);
+    
+            toast.success("Profile updated successfully!");
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            toast.error(error.message || "Error updating profile");
         }
     }
+    
+
+    
 
     // Password change handler
     async function changePasswordHandler(e) {
@@ -156,6 +170,17 @@ function EditProfile() {
             confirmNewPassword: "",
         });
     }
+    useEffect(() => {
+        console.log("Redux State Updated:", userAuthDetails);
+        setUserEditObj({
+            usrFullName: userAuthDetails.usrFullName,
+            usrEmail: userAuthDetails.usrEmail,
+            usrMobileNumber: userAuthDetails.usrMobileNumber,
+            usrProfileUrl: userAuthDetails.usrProfileUrl,
+            userBio: userAuthDetails.userBio,
+        });
+    }, [userAuthDetails]);
+    
 
     return (
         <div className={Styles.editProfileScreen}>
@@ -164,35 +189,39 @@ function EditProfile() {
                 <div className={Styles.editProfileContainer}>
                     <div className={Styles.editProfileContainerLeft} style={{ backgroundColor: Config.color.primaryColor100 }}>
                         <img
-                            src={userAuthDetails.usrProfileUrl ? userAuthDetails.usrProfileUrl : Config.imagesPaths.user_null}
+                            src={userEditObj.usrProfileUrl || Config.imagesPaths.user_null}
                             className={Styles.editProfileContainerLeftImage}
+                            alt="Profile"
                         />
                         <form className={Styles.editProfileContainerLeftForm}>
                             <input
-                                type='url'
-                                placeholder='Enter profile image URL.'
-                                style={{ fontSize: Config.fontSize.small, color: Config.color.textColor }}
-                                value={userEditObj.usrProfileUrl === null ? "" : userEditObj.usrProfileUrl}
-                                onChange={(e) => setUserEditObj({ ...userEditObj, usrProfileUrl: e.target.value })}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
                             />
                             <textarea
                                 placeholder='Enter your bio.'
                                 rows={8}
                                 maxLength={250}
-                                value={userEditObj.userBio === null ? "" : userEditObj.userBio}
+                                value={userEditObj.userBio || ""}
                                 style={{ fontSize: Config.fontSize.small, color: Config.color.textColor }}
-                                onChange={(e) => setUserEditObj({ ...userEditObj, userBio: e.target.value })}
-                            />
+                                 onChange={(e) => setUserEditObj({ ...userEditObj, userBio: e.target.value })} />
                         </form>
                     </div>
                     <div className={Styles.editProfileContainerRight}>
                         <form className={Styles.editProfileContainerRightForm}>
-                        <h3>Edit Profile</h3>
+                            <h3>Edit Profile</h3>
                             <input
                                 placeholder='Edit your name.'
                                 type={"text"}
                                 value={userEditObj.usrFullName}
                                 onChange={(e) => setUserEditObj({ ...userEditObj, usrFullName: e.target.value })}
+                                style={{width: '30rem',
+                                    height: '2.5rem',
+                                    padding: '1rem',
+                                    border: 'none',
+                                    boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px',
+                                    borderRadius: '50px'}}
                             />
                             <input
                                 placeholder='Edit your email.'
@@ -211,7 +240,7 @@ function EditProfile() {
                         <div className={Styles.editProfileContainerRightButtonsDiv}>
                             <button className="btn btn-primary" onClick={(e) => { editUserDetailsHandler(e) }}>Save</button>
                             <button className="btn btn-danger" onClick={() => navigate("/")}>Cancel</button>
-                        </div>  
+                        </div>
                     </div>
                 </div>
 
@@ -223,7 +252,7 @@ function EditProfile() {
                             alignItems: "center",
                             justifyContent: "right"
                         }}>
-                            <div style={{ flexDirection: 'column' }}>
+                            <div style={{ flexDirection: 'column'}}>
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     placeholder="Current Password"
