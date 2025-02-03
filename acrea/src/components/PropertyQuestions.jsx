@@ -131,42 +131,46 @@ const PropertyQuestions = ({ propertyData }) => {
             )}
 
             <div className={Styles.questionsList}>
-                {questions.map((question) => (
-                    <div key={question._id} className={Styles.questionItem}>
-                        <p><strong>Q:</strong> {question.questionText}</p>
-                        {question.answer ? (
-                            <p><strong>Answer:</strong> {question.answer}</p>
-                        ) : (
-                            (userAuthData?.usrType === 'agent' || userAuthData?.usrType === 'owner') && (
-                                <div className={Styles.answerInput}>
-                                    <input
-                                        type="text"
-                                        value={newAnswer[question._id] || ''}
-                                        onChange={(e) =>
-                                            setNewAnswer((prev) => ({
-                                                ...prev,
-                                                [question._id]: e.target.value,
-                                            }))
-                                        }
-                                        placeholder="Provide an answer..."
-                                    />
-                                    <button 
-                                        onClick={() => handleAnswerSubmit(question._id)}
-                                        disabled={!newAnswer[question._id]?.trim()}
-                                    >
-                                        Submit Answer
-                                    </button>
-                                </div>
-                            )
-                        )}
-                        <div className={Styles.questionMeta}>
-                            <small>Asked by: {question.userId?.usrFullName}</small>
-                            {question.answeredBy && (
-                                <small>Answered by: {question.answeredBy?.usrFullName}</small>
+                {questions.length > 0 ? (
+                    questions.map((question) => (
+                        <div key={question._id} className={Styles.questionItem}>
+                            <p><strong>Q:</strong> {question.questionText}</p>
+                            {question.answer ? (
+                                <p><strong>Answer:</strong> {question.answer}</p>
+                            ) : (
+                                (userAuthData?.usrType === 'agent' || userAuthData?.usrType === 'owner') && (
+                                    <div className={Styles.answerInput}>
+                                        <input
+                                            type="text"
+                                            value={newAnswer[question._id] || ''}
+                                            onChange={(e) =>
+                                                setNewAnswer((prev) => ({
+                                                    ...prev,
+                                                    [question._id]: e.target.value,
+                                                }))
+                                            }
+                                            placeholder="Provide an answer..."
+                                        />
+                                        <button 
+                                            onClick={() => handleAnswerSubmit(question._id)}
+                                            disabled={!newAnswer[question._id]?.trim()}
+                                        >
+                                            Submit Answer
+                                        </button>
+                                    </div>
+                                )
                             )}
+                            <div className={Styles.questionMeta}>
+                                <small>Asked by: {question.userId?.usrFullName}</small>
+                                {question.answeredBy && (
+                                    <small>Answered by: {question.answeredBy?.usrFullName}</small>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p>No questions available. Please ask a question above.</p>
+                )}
             </div>
         </div>
     );
