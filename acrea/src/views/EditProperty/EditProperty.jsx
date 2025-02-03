@@ -38,6 +38,7 @@ function EditProperty() {
     usrPrice: propertyData.usrPrice,
     userListingImage: propertyData.userListingImage
   });
+  const [imageUrls, setImageUrls] = useState([]);
 
   const editPropertyHandler = async (e) => {
     e.preventDefault();
@@ -173,6 +174,38 @@ function EditProperty() {
         [name]: value
       }
     }));
+  };
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const formData = new FormData();
+    files.forEach((file) => {
+        formData.append("userListingImage", file);
+    });
+
+    try {
+        const response = await fetch(`${Config.apiBaseUrl}/upload-photos`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${authUserDetails.usrAccessToken}`,
+            },
+            body: formData,
+        });
+
+        const data = await response.json();
+        if (data.imageUrls) {
+            setImageUrls(data.imageUrls);
+            setUsrProperty(prevState => ({ ...prevState, userListingImage: data.imageUrls }));
+            toast.success("Images uploaded successfully!");
+        } else {
+            toast.error("Failed to upload images");
+        }
+    } catch (error) {
+        console.error("Image upload error:", error);
+        toast.error("Error uploading images");
+    }
   };
 
   return (
@@ -370,14 +403,15 @@ function EditProperty() {
               />
             </div>
             <div className={Styles.formGroup}>
-              <label htmlFor="image">Images</label>
-              <br/>
+              <label htmlFor="userListingImage">Images</label>
               <input
-                type="text"
-                id="image"
-                name="image"
-                value={usrProperty.userListingImage}
-                onChange={(e) => setUsrProperty({ ...usrProperty, userListingImage: e.target.value })} />
+                type="file"
+                id="userListingImage"
+                name="userListingImage"
+                multiple
+                onChange={handleImageUpload}
+                accept="image/*"
+              />
             </div>
 
 

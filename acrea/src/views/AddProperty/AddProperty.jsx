@@ -13,6 +13,7 @@ import propertyValidationSchema from '../../utils/propertyValidationSchema';
 function AddProperty() {
   const authUserDetails = useSelector(data => data.AuthUserDetailsSlice);
   const navigate = useNavigate();
+  const [imageUrls, setImageUrls] = useState([]);
 
   const formik = useFormik({
     initialValues: {
@@ -25,8 +26,8 @@ function AddProperty() {
         city: "",
         state: "",
         pinCode: 0,
-        latitude:0,
-        longitude:0,
+        latitude: 0,
+        longitude: 0,
       },
       usrAmenities: [],
       usrExtraFacilities: {
@@ -34,47 +35,74 @@ function AddProperty() {
         bath: 0
       },
       usrPrice: 0,
-      userListingImage: ""
+      userListingImage: [] // This should be an array to hold multiple images
     },
     validationSchema: propertyValidationSchema,
     onSubmit: addPropertyHandler
   });
 
-  async function addPropertyHandler(values) {
-    const apiCallPromise = new Promise(async (resolve, reject) => {
-      const apiResponse = await useApi({
-        url: "/add-properties",
-        authRequired: true,
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+  
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("userListingImage", file); // Append each file to the FormData
+    });
+  
+    try {
+      const response = await fetch(`${Config.apiBaseUrl}/upload-photos`, {
         method: "POST",
-        authToken: authUserDetails.usrAccessToken,
-        data: values,
+        headers: {
+          Authorization: `Bearer ${authUserDetails.usrAccessToken}`, // Include the authorization token
+        },
+        body: formData,
       });
-
-      if (apiResponse && apiResponse.error) {
-        reject(apiResponse.error.message);
+  
+      const data = await response.json();
+      if (data.imageUrls) {
+        setImageUrls(data.imageUrls); // Update the state with the uploaded image URLs
+        formik.setFieldValue('userListingImage', data.imageUrls); // Set Formik field value
+        toast.success("Images uploaded successfully!");
       } else {
-        resolve(apiResponse);
+        toast.error("Failed to upload images");
       }
-    });
+    } catch (error) {
+      console.error("Image upload error:", error);
+      toast.error("Error uploading images");
+    }
+  };
 
-    await toast.promise(apiCallPromise, {
-      pending: "Adding new property...!",
-      success: {
-        render({ data }) {
-          formik.resetForm();
-          navigate(-1);
-          return data.message || "Property added successfully!";
-        },
-      },
-      error: {
-        render({ data }) {
-          return data;
-        },
-      },
-    }, {
-      position: 'bottom-right',
-    });
-  }
+  async function addPropertyHandler(values) {
+    const propertyData = {
+        ...values,
+        userListingImage: imageUrls // Ensure this is set to the array of image URLs
+    };
+
+    try {
+        const apiResponse = await useApi({
+            url: "/add-properties",
+            method: "POST",
+            authRequired: true,
+            authToken: authUserDetails.usrAccessToken,
+            data: propertyData,
+        });
+
+        // Check if the response indicates success
+        if (apiResponse && apiResponse.message === "Property added Success.") {
+            // Handle success case
+            formik.resetForm();
+            navigate(-1);
+            toast.success(apiResponse.message); // Show success message
+        } else {
+            // Handle error case
+            throw new Error(apiResponse.message || 'Failed to add property');
+        }
+    } catch (error) {
+        console.error('Error adding property:', error);
+        toast.error(error.message || 'An error occurred while adding the property.');
+    }
+}
 
   const handleAmenityChange = (e) => {
     const value = e.target.value;
@@ -332,16 +360,16 @@ function AddProperty() {
               ) : null}
             </div>
 
-            <div className={`${Styles.formGroup}  ${formik.touched.userListingImage && formik.errors.userListingImage ? Styles.hasError : ''}`}>
+            <div className={Styles.formGroup}>
               <label htmlFor="userListingImage">Images</label>
               <input
-                type="text"
+                type="file"
                 id="userListingImage"
-                {...formik.getFieldProps('userListingImage')}
+                name="userListingImage"
+                multiple
+                onChange={handleImageUpload}
+                accept="image/*"
               />
-              {formik.touched.userListingImage && formik.errors.userListingImage ? (
-                <div className={Styles.errorMessage}>{formik.errors.userListingImage}</div>
-              ) : null}
             </div>
             
             <button

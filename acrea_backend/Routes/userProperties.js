@@ -3,6 +3,7 @@ const httpErrors = require("http-errors");
 const router = express.Router();
 const { jwt_verify_token } = require('../utils/jwt_utils');
 const UserPropertiesController = require("../controller/UserPropertiesController")
+const upload = require('../config/propertyMulterStorage');
 
 // To add property redirect to AddProperty Page
 router.post("/add-properties", jwt_verify_token, UserPropertiesController.addPropertyController)
@@ -50,5 +51,29 @@ router.get('/show-buyer-favorite', jwt_verify_token, UserPropertiesController.sh
 
 ///shows all properties of agent to buyer or admin login in ViewAllProperties page
 router.post('/show-agent-properties-to-others', jwt_verify_token, UserPropertiesController.showAgentPropertytoOthersController)
+
+router.post("/upload-photos", jwt_verify_token, upload.array('userListingImage', 10), async (req, res) => {
+    try {
+        // Check if files are uploaded
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ message: "No files uploaded." });
+        }
+
+        // Map the uploaded files to their paths (URLs)
+        const imageUrls = req.files.map(file => file.path); // Assuming multer stores the file path in `file.path`
+
+        // Log the uploaded image URLs for debugging
+        console.log("Uploaded image URLs:", imageUrls);
+
+        // Respond with the uploaded image URLs
+        res.status(200).json({
+            message: "Images uploaded successfully.",
+            imageUrls: imageUrls
+        });
+    } catch (error) {
+        console.error("Error uploading images:", error); // Log the error for debugging
+        res.status(500).json({ error: "Failed to upload images" });
+    }
+});
 
 module.exports = router;

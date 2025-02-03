@@ -19,6 +19,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import useApi from '../../utils/useApi';
 import PropertyMap from '../../components/PropertyMap';
 import PropertyQuestions from '../../components/PropertyQuestions'
+import PropertyImages from '../../components/PropertyImages';
 
 function PropertyPage() {
     const location = useLocation();
@@ -140,11 +141,19 @@ function PropertyPage() {
                             </ul>
                         </div>
 
-                        {/* Add Map Section */}
+                        {/*Image Section */}
+                        <div className={Styles.imageSection}>
+                            <h3>Images</h3>
+                            <PropertyImages images={propertyData.userListingImage} />
+                        </div>
+
+                        {/*Map Section */}
                         <div className={Styles.mapSection}>
                             <h3>Location</h3>
                             <PropertyMap location={propertyData.location} />
                         </div>
+
+                        {/*Question Section */}
                         <div>
                             <PropertyQuestions propertyData={propertyData} />
                         </div>

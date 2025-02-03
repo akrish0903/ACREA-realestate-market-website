@@ -1,0 +1,50 @@
+.imageGalleryScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+}
+
+.imageContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    max-width: 60rem;
+    margin: 0 auto;
+    height: 40rem;
+}
+
+.propertyImage {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.arrowButton {
+    background-color: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #000;
+    z-index: 1;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.arrowButton:first-child {
+    left: -30px;
+}
+
+.arrowButton:last-child {
+    right: -30px;
+}
+
+.arrowButton:hover {
+    color: #ff0000;
+}

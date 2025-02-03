@@ -76,7 +76,7 @@ const userPropertySchema = new mongoose.Schema({
         default: 0,
     },
     userListingImage: {
-        type: String,
+        type: [String],
     },
     
 });

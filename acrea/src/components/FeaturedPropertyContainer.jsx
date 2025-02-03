@@ -18,7 +18,7 @@ function FeaturedPropertyContainer({propertiesData}){
             <div className={Styles.featuredPropertyContainerCard}>
                 <div className={Styles.featuredPropertyContainerCardLeft}>
                     <img
-                        src={propertiesData.userListingImage && !imgError ? propertiesData.userListingImage : fallbackImage}
+                        src={propertiesData.userListingImage && propertiesData.userListingImage.length > 0 && !imgError ? propertiesData.userListingImage[0] : fallbackImage}
                         onError={() => setImgError(true)}
                         style={{
                             width: '100%',
