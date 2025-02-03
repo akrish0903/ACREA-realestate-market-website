@@ -169,7 +169,7 @@ const PropertyQuestions = ({ propertyData }) => {
                         </div>
                     ))
                 ) : (
-                    <p>No questions available. Please ask a question above.</p>
+                    <p>{userAuthData?.usrAccessToken ? 'No questions available. Please ask a question above.' : 'No questions available. Please log in to see questions.'}</p>
                 )}
             </div>
         </div>

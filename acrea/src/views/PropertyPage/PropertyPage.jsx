@@ -91,7 +91,7 @@ function PropertyPage() {
             {/* Go Back */}
             <div className={Styles.goBackSection}>
                 <div className={Styles.goBackContainer}>
-                    <a onClick={() => { navigation(-1)}} style={{ color: Config.color.primaryColor800, cursor: 'pointer' }}>
+                    <a className={Styles.goBackLink} onClick={() => { navigation(-1)}} style={{ cursor: 'pointer' }}>
                         <ArrowBackIcon /> Back to Properties
                     </a>
                 </div>
@@ -136,7 +136,7 @@ function PropertyPage() {
                             <h3>Amenities</h3>
                             <ul className={Styles.amenitiesList}>
                                 {propertyData.usrAmenities.map((amenity, index) => (
-                                    <li key={index}><CheckIcon /> {amenity}</li>
+                                    <li key={index}><CheckIcon  style={{color: Config.color.primaryColor900}}/> {amenity}</li>
                                 ))}
                             </ul>
                         </div>
@@ -154,7 +154,7 @@ function PropertyPage() {
                         </div>
 
                         {/*Question Section */}
-                        <div>
+                        <div className={Styles.questionSection}>
                             <PropertyQuestions propertyData={propertyData} />
                         </div>
                     </main>

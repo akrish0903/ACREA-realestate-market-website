@@ -30,7 +30,7 @@ return(
     
           {/* Right Section */}
           <div >
-            &copy; 2024 Acred All rights reserved.
+            &copy; 2024 Acrea All rights reserved.
           </div>
         </footer>
 )
