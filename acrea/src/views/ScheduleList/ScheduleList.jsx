@@ -8,6 +8,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from 'react-redux';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import { Config } from '../../config/Config';
+import { saveAs } from 'file-saver';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 
 function ScheduleList() {
     const [schedules, setSchedules] = useState([]);
@@ -127,8 +129,17 @@ function ScheduleList() {
         }
     }
 
+    // Handle download receipt
+    const handleDownloadReceipt = async (receiptFileName) => {
+        // Construct the URL to fetch the receipt from the backend
+        const downloadUrl = `${import.meta.env.VITE_BASE_API_URL}/receipts/${receiptFileName}`; // Construct the full URL
+
+        // Use file-saver to download the receipt
+        saveAs(downloadUrl, receiptFileName); // This will now fetch the file from the backend
+    };
+
     useEffect(() => {
-        if (userAuthData.usrType === 'agent') {
+        if (userAuthData.usrType === 'agent' || userAuthData.usrType === 'owner') {
             fetchAgentSchedulesList();
         } else if (userAuthData.usrType === 'buyer') {
             fetchBuyerSchedulesList();
@@ -154,9 +165,10 @@ function ScheduleList() {
                         <tr>
                             <th>Date</th>
                             <th>Time</th>
-                            <th>Buyer Name</th>
+                            <th>{userAuthData.usrType === 'buyer' ? 'Agent Name' : 'Buyer Name'}</th>
                             <th>Contact</th>
                             <th>Notes</th>
+                            <th>Receipt</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -182,8 +194,8 @@ function ScheduleList() {
                                     ) : (
                                         schedule.time
                                     )}</td>
-                                    <td>{schedule.buyerName}</td>
-                                    <td>{schedule.contact}</td>
+                                    <td>{userAuthData.usrType === 'buyer' ? schedule.agentName : schedule.buyerName}</td>
+                                    <td>{userAuthData.usrType === 'buyer' ? schedule.agentPhone : schedule.contact}</td>
                                     <td>{editMode === schedule._id ? (
                                         <input
                                             type="text"
@@ -193,6 +205,13 @@ function ScheduleList() {
                                     ) : (
                                         schedule.notes
                                     )}</td>
+                                    <td>
+                                        {schedule.receipt && (
+                                            <button onClick={() => handleDownloadReceipt(schedule.receipt)} style={{backgroundColor:Config.color.primaryColor900, color:Config.color.secondaryColor100, borderRadius:'0.4rem',padding:'.2rem'}}>
+                                                <ReceiptIcon />Download Receipt
+                                            </button>
+                                        )}
+                                    </td>
                                     <td>
                                     {userAuthData.usrType === 'agent' && (
                                         <>
@@ -215,10 +234,13 @@ function ScheduleList() {
                                             </>
                                         ) : (
                                             <>
-                                                <EditIcon
-                                                    style={{ cursor: 'pointer', color: 'blue' }}
-                                                    onClick={() => handleEdit(schedule)}
-                                                />
+                                                <div style={{ cursor: 'pointer', color: 'white',fontWeight:'bold',
+                                                        backgroundColor:Config.color.primary, textAlign:'center',
+                                                        padding:'.2rem',borderRadius:'.4rem',maxWidth:'5rem' }}
+                                                        onClick={() => handleEdit(schedule)}>
+                                                    <EditIcon
+                                                    />Edit
+                                                </div>
                                                 {/* <DeleteIcon
                                                     style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }}
                                                     onClick={() => handleDeleteClick(schedule)}
@@ -227,9 +249,9 @@ function ScheduleList() {
                                         )}
                                     </>)}
                                     {userAuthData.usrType === 'buyer' && (
-                                        <>
+                                        <div>
                                         {editMode === schedule._id ? (
-                                            <>
+                                            <div>
                                                 <button
                                                     onClick={() => updateBuyerSchedule(schedule._id)}
                                                     className={Styles.editBtn}
@@ -244,22 +266,25 @@ function ScheduleList() {
                                                 >
                                                     Cancel
                                                 </button> */}
-                                            </>
+                                            </div>
                                         ) : (
-                                            <>
-                                                <EditIcon
-                                                    style={{ cursor: 'pointer', color: 'blue' }}
-                                                    onClick={() => handleEdit(schedule)}
-                                                />
-                                            </>
+                                            <div>
+                                                <div style={{ cursor: 'pointer', color: 'white',fontWeight:'bold',
+                                                        backgroundColor:Config.color.primary, textAlign:'center',
+                                                        padding:'.2rem',borderRadius:'.4rem',maxWidth:'5rem' }}
+                                                        onClick={() => handleEdit(schedule)}>
+                                                    <EditIcon
+                                                    />Edit
+                                                </div> 
+                                            </div>
                                         )}
-                                    </>)}
+                                    </div>)}
                                     </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="6">No schedules found</td>
+                                <td colSpan="7">No schedules found</td>
                             </tr>
                         )}
                     </tbody>

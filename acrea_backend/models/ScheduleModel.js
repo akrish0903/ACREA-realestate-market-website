@@ -32,6 +32,17 @@ const ScheduleSchema = new mongoose.Schema({
   notes: {
     type: String,
   },
+  receipt: {
+    type: String,
+  },
+  agentName: {
+    type: String,
+    required: true,
+  },
+  agentPhone: {
+    type: String,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

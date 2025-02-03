@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const ScheduleController = require('../controller/ScheduleController');
 const { jwt_verify_token } = require('../utils/jwt_utils');
+const path = require('path');
 
 // Schedule a visit and redirect to payment
 router.post('/schedule',jwt_verify_token, ScheduleController.scheduleVisit);
@@ -21,5 +22,16 @@ router.put('/update-buyer-schedule/:scheduleId',jwt_verify_token, ScheduleContro
 
 // Route to delete a specific schedule by its ID
 router.delete('/delete-schedule/:scheduleId',jwt_verify_token, ScheduleController.deleteSchedule);
+
+// Route to serve receipt files
+router.get('/receipts/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '../receipts', filename); // Ensure this path is correct
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            res.status(404).send('File not found');
+        }
+    });
+});
 
 module.exports = router;

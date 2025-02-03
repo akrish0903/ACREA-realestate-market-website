@@ -36,21 +36,35 @@ const Schedule = () => {
         const result = await response.json();
 
         console.log("Response from backend:", result);
-        const razorpayLink = import.meta.env.razorlink;
-        if (result.redirectUrl) {
-            // Open payment link in a new tab
-            
+        const { razorpayKeyId } = result;
 
-            const paymentWindow = window.open(result.redirectUrl, '_blank');
-
-            // Check if the payment window has closed after successful payment
-            const checkPaymentWindow = setInterval(() => {
-                if (paymentWindow && paymentWindow.closed) {
-                    clearInterval(checkPaymentWindow);
-                    // Navigate to the home page
-                    navigate('/');
-                }
-            }, 1000);
+        if (razorpayKeyId) {
+            // Check if Razorpay is loaded
+            if (window.Razorpay) {
+                const options = {
+                    key: razorpayKeyId,
+                    amount: 50000,
+                    currency: "INR",
+                    name: "Property Visit",
+                    description: "Schedule Payment",
+                    handler: function (response) {
+                        console.log(response);
+                        navigate('/');
+                    },
+                    prefill: {
+                        name: buyerName,
+                        contact: contact,
+                    },
+                    theme: {
+                        color: "#F37254"
+                    }
+                };
+                const paymentWindow = new window.Razorpay(options);
+                paymentWindow.open();
+            } else {
+                console.error("Razorpay SDK not loaded.");
+                alert('Razorpay SDK not loaded. Please try again later.');
+            }
         } else {
             alert('Payment link not found. Please try again.');
         }      
