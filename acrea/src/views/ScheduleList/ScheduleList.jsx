@@ -268,15 +268,13 @@ function ScheduleList() {
                                                 </button> */}
                                             </div>
                                         ) : (
-                                            <div>
-                                                <div style={{ cursor: 'pointer', color: 'white',fontWeight:'bold',
-                                                        backgroundColor:Config.color.primary, textAlign:'center',
-                                                        padding:'.2rem',borderRadius:'.4rem',maxWidth:'5rem' }}
-                                                        onClick={() => handleEdit(schedule)}>
-                                                    <EditIcon
-                                                    />Edit
-                                                </div> 
-                                            </div>
+                                            <div style={{ cursor: 'pointer', color: 'white',fontWeight:'bold',
+                                                    backgroundColor:Config.color.primary, textAlign:'center',
+                                                    padding:'.2rem',borderRadius:'.4rem',maxWidth:'5rem' }}
+                                                    onClick={() => handleEdit(schedule)}>
+                                                <EditIcon
+                                                />Edit
+                                            </div> 
                                         )}
                                     </div>)}
                                     </td>

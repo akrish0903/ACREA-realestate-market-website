@@ -248,15 +248,15 @@ const showAgentListController = async (req, res, next) => {
     const userId = req.payload.aud;
     try {
         const fetchedUserData = await UserAuthModel.findById(userId);
-        const usrAgentListArr = await UserAuthModel.find({ usrType: "agent" }).sort({ usrFullName: 1 });
-        console.log("Fetched agents: ", usrAgentListArr);
+        const usrAgentListArr = await UserAuthModel.find({ $or: [{ usrType: "agent" }, { usrType: 'owner' }] }).sort({ usrFullName: 1 });
+        console.log("Fetched agents and owners: ", usrAgentListArr);
         res.status(200).json({
             message: "All user records fetched successfully.",
             user_agentlist_arr: usrAgentListArr
         });
     } catch (error) {
-        console.error("Failed to fetch agents list:", error);
-        next(httpErrors.BadRequest("Failed to fetch agents list"));
+        console.error("Failed to fetch agents and owners list:", error);
+        next(httpErrors.BadRequest("Failed to fetch agents and owners list"));
     }
 };
 
@@ -289,15 +289,15 @@ const showRecentAgentstoAdminController = async (req, res, next) => {
         if (fetchedUserData.usrType !== "admin") {
             return res.status(403).json({ message: "Unauthorized access" });
         }
-        const usrAgentListArr = await UserAuthModel.find({ usrType: "agent" }).sort({ createdAt: -1 }) .limit(4); 
-        console.log("Fetched agents: ", usrAgentListArr);
+        const usrAgentListArr = await UserAuthModel.find({ $or: [{ usrType: "agent" }, { usrType: 'owner' }] }).sort({ createdAt: -1 }) .limit(4); 
+        console.log("Fetched agents and owners: ", usrAgentListArr);
         res.status(200).json({
-            message: "All agents records fetched successfully.",
+            message: "All agents and owners records fetched successfully.",
             user_agentlist_arr: usrAgentListArr
         });
     } catch (error) {
-        console.error("Failed to fetch agents list:", error);
-        next(httpErrors.BadRequest("Failed to fetch agents list"));
+        console.error("Failed to fetch agents and owners list:", error);
+        next(httpErrors.BadRequest("Failed to fetch agents and owners list"));
     }
 };
 
@@ -374,7 +374,7 @@ const updateAgentProfileByAdminController = async function (req, res, next) {
         // Fetch the agent's data using agentId
         const agent = await UserAuthModel.findById(agentId);
         if (!agent) {
-            return next(httpErrors.NotFound("Agent not found."));
+            return next(httpErrors.NotFound("Agent/Owner not found."));
         }
 
         // Update agent's details
@@ -387,7 +387,7 @@ const updateAgentProfileByAdminController = async function (req, res, next) {
         const updatedAgent = await agent.save();
 
         res.status(200).json({
-            message: "Agent profile updated successfully by admin.",
+            message: "Agent/Owner profile updated successfully by admin.",
             agent_details: {
                 usrFullName: updatedAgent.usrFullName,
                 usrEmail: updatedAgent.usrEmail,
@@ -397,7 +397,7 @@ const updateAgentProfileByAdminController = async function (req, res, next) {
             },
         });
     } catch (error) {
-        next(httpErrors.InternalServerError("Error updating agent profile."));
+        next(httpErrors.InternalServerError("Error updating agent/owner profile."));
     }
 };
 
@@ -408,12 +408,12 @@ const deleteAgentProfileAuthController = async (req, res, next) => {
         // Find and delete the agent by ID
         const agent = await UserAuthModel.findByIdAndDelete(agentId);
         if (!agent) {
-            return next(httpErrors.NotFound("Agent not found."));
+            return next(httpErrors.NotFound("Agent/Owner not found."));
         }
 
-        res.status(200).json({ message: "Agent deleted successfully." });
+        res.status(200).json({ message: "Agent/Owner deleted successfully." });
     } catch (error) {
-        next(httpErrors.InternalServerError("Error deleting agent."));
+        next(httpErrors.InternalServerError("Error deleting agent/owner."));
     }
 };
 
@@ -425,16 +425,16 @@ const showAgentDataController = async (req, res, next) => {
         const fetchedAgentData = await UserAuthModel.findById(agentId);
 
         if (!fetchedAgentData) {
-            return res.status(404).json({ message: "Agent not found." });
+            return res.status(404).json({ message: "Agent/Owner not found." });
         }
 
         res.status(200).json({
-            message: "Agent record fetched successfully.",
+            message: "Agent/Owner record fetched successfully.",
             user_agentdata_arr: fetchedAgentData
         });
     } catch (error) {
         console.error("Error fetching agent data:", error);
-        next(httpErrors.BadRequest("Failed to fetch agent data."));
+        next(httpErrors.BadRequest("Failed to fetch agent/owner data."));
     }
 };
 

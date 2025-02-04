@@ -108,13 +108,14 @@ function AgentList() {
         <div className={`screen ${Styles.userlistScreen}`}>
             <Header />
             <div className={Styles.userListContainer}>
-                <h1 style={{ textAlign: 'center', margin: '2rem' }}>Agents List</h1>
+                <h1 style={{ textAlign: 'center', margin: '2rem' }}>Agents/Owners List</h1>
                 <table className={Styles.userListTable} style={{fontSize:Config.fontSize.regular}}>
                     <thead>
                         <tr>
                             <th>Full Name</th>
                             <th>Email</th>
                             <th>Mobile Number</th>
+                            <th>Type</th>
                             <th>Bio</th>
                             <th>Actions</th>
                         </tr>
@@ -145,6 +146,9 @@ function AgentList() {
                                         ) : (
                                             agent.usrMobileNumber
                                         )}
+                                    </td>
+                                    <td>
+                                        {agent.usrType}
                                     </td>
                                     <td>
                                         {editMode === agent._id ? (
