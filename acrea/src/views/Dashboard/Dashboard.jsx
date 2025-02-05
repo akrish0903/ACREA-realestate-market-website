@@ -14,6 +14,8 @@ import PropertiesCardVertical from '../../components/PropertiesCardVertical';
 import FeaturedPropertyContainer from '../../components/FeaturedPropertyContainer';
 import { useNavigate } from 'react-router-dom';
 import useApi from '../../utils/useApi';
+import Charts from '../../components/Charts'
+
 function Dashboard() {
     var userAuthData = useSelector(data => data.AuthUserDetailsSlice)
     console.log("user auth data ---> ", userAuthData);
@@ -667,6 +669,11 @@ function Dashboard() {
                                 return <PropertiesCardVertical propertiesData={item} />
                             })}
                         </div>
+                    </div>
+                    <div 
+                    // style={{flexDirection:"row",display:"block"}}
+                    >
+                        <Charts/>
                     </div>
                 </div>
             )}

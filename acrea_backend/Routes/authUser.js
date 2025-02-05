@@ -47,16 +47,13 @@ router.get("/show-agents-recent", jwt_verify_token, UserAuthController.showRecen
 // Route to update an buyer's profile by admin
 router.put("/admin-updatebuyer/:buyerId", jwt_verify_token, UserAuthController.updateBuyerProfileByAdminController);
 
-// Route to delete an buyer's profile by admin
-router.delete('/admin-deletebuyer/:buyerId', jwt_verify_token, UserAuthController.deleteBuyerProfileAuthController);
-
 // Route to update an agent's profile by admin
 router.put('/admin-updateagent/:agentId', jwt_verify_token, UserAuthController.updateAgentProfileByAdminController);
 
-// Route to delete an agent's profile by admin
-router.delete('/admin-deleteagent/:agentId', jwt_verify_token, UserAuthController.deleteAgentProfileAuthController);
-
 // Route to show agents details to admin in propertypage
 router.post ("/show-agent-data", jwt_verify_token, UserAuthController.showAgentDataController);
+
+// Route to Disable/Enable User By admin through AgentList/BuyerList
+router.put('/toggle-user-status/:userId', jwt_verify_token, UserAuthController.toggleUserStatusAuthController);
 
 module.exports = router;

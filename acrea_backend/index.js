@@ -11,6 +11,7 @@ const scheduleRoutes = require("./Routes/scheduleRoutes");
 const questionRoutes = require("./Routes/questionRoutes")
 const MongoDBConnector = require("./db/MongoDBConnector");
 require("./utils/init_redis");
+const chartRoutes = require("./Routes/chartRoutes");
 
 
 const app = express();
@@ -34,6 +35,8 @@ app.use(authRoutes);
 app.use(userProperties);
 app.use(scheduleRoutes);
 app.use(questionRoutes);
+app.use("/api/users", chartRoutes);
+app.use("/api/properties", chartRoutes);
 
 // unknown route
 app.use("*", (req, res, next) => {

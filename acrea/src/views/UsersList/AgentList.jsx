@@ -4,10 +4,8 @@ import Footer from '../../components/Footer';
 import Styles from './css/UsersList.module.css';
 import useApi from '../../utils/useApi';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from 'react-redux';
 import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import { Config } from '../../config/Config';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,8 +13,6 @@ function AgentList() {
     const [agents, setAgents] = useState([]);
     const [editMode, setEditMode] = useState(null);
     const [editedAgent, setEditedAgent] = useState({});
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [agentToDelete, setAgentToDelete] = useState(null);
     const userAuthData = useSelector((data) => data.AuthUserDetailsSlice);
     var navigation = useNavigate();
     console.log("user auth data ---> ", userAuthData);
@@ -62,32 +58,7 @@ function AgentList() {
         }
     }
 
-    // Handle delete dialog open
-    const handleDeleteClick = (agent) => {
-        setAgentToDelete(agent);
-        setOpenDeleteDialog(true);
-    };
-
-    // Confirm delete agent
-    async function confirmDeleteAgent() {
-        try {
-            const response = await useApi({
-                authRequired: true,
-                authToken: userAuthData.usrAccessToken,
-                url: `/admin-deleteagent/${agentToDelete._id}`,
-                method: "DELETE",
-            });
-
-            if (response && response.message) {
-                console.log("Agent deleted successfully");
-                fetchAgentsList();
-            }
-        } catch (error) {
-            console.error("Error deleting agent:", error);
-        } finally {
-            setOpenDeleteDialog(false);
-        }
-    }
+    
 
     useEffect(() => {
         if (userAuthData.usrType === "admin"|| userAuthData.usrType === 'buyer') {
@@ -102,6 +73,24 @@ function AgentList() {
 
     const handleInputChange = (e, field) => {
         setEditedAgent({ ...editedAgent, [field]: e.target.value });
+    };
+    
+    const toggleUserStatus = async (agentId, currentStatus) => {
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: `/toggle-user-status/${agentId}`,
+                method: "PUT",
+            });
+    
+            if (response && response.message) {
+                console.log(response.message);
+                fetchAgentsList(); // Refresh the list after toggling status
+            }
+        } catch (error) {
+            console.error("Error toggling user status:", error);
+        }
     };
 
     return (
@@ -168,32 +157,50 @@ function AgentList() {
                                                 <button
                                                     onClick={() => updateAgent(agent._id)}
                                                     className={Styles.editBtn}
-                                                    style={{ color: Config.color.background, backgroundColor:Config.color.success}}
+                                                    style={{ color: Config.color.background,
+                                                        backgroundColor:Config.color.success,
+                                                        marginLeft: '10px',
+                                                        padding: '0.5rem',
+                                                        borderRadius: '5px'}}
                                                 >
                                                     Save
                                                 </button>
                                                 <button
                                                     onClick={() => setEditMode(null)}  
                                                     className={Styles.deleteBtn}
-                                                    style={{ color: Config.color.background, backgroundColor:Config.color.primaryColor800}}
+                                                    style={{ color: Config.color.background,
+                                                        backgroundColor:Config.color.primaryColor800,
+                                                        marginLeft: '10px',
+                                                        padding: '0.5rem',
+                                                        borderRadius: '5px'}}
                                                 >
                                                     Cancel
                                                 </button>
                                             </>
                                         ) : (
                                             <>
-                                                <EditIcon
-                                                    style={{ cursor: 'pointer', color: 'blue' }}
-                                                    onClick={() => handleEdit(agent)}
-                                                />
-                                                <DeleteIcon
-                                                    style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }}
-                                                    onClick={() => handleDeleteClick(agent)}
-                                                />
-                                            </>
-                                        )}
-                                        </>
-                                    )}
+                                                <button style={{ cursor: 'pointer',
+                                                    color: Config.color.background,
+                                                    backgroundColor:Config.color.primary,
+                                                    marginLeft: '10px ',
+                                                    padding: '0.5rem',
+                                                    borderRadius: '5px' }}
+                                                    onClick={() => handleEdit(agent)}>
+                                                    <EditIcon/>Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => toggleUserStatus(agent._id, agent.usrStatus)}
+                                                    style={{
+                                                        color: Config.color.background,
+                                                        backgroundColor: agent.usrStatus ? Config.color.success : Config.color.warning,
+                                                        marginLeft: '10px ',
+                                                        marginRight:"10px",
+                                                        padding: '0.5rem',
+                                                        borderRadius: '5px'
+                                                    }}
+                                                >
+                                        {agent.usrStatus ? 'Disable' : 'Enable'}
+                                    </button>
                                     <button 
                                             onClick={() => {
                                                 console.log({agent})
@@ -202,12 +209,37 @@ function AgentList() {
                                                     color: Config.color.background,
                                                     backgroundColor: Config.color.primaryColor900,
                                                     width: "fit-content",
-                                                    padding: ".2rem",
+                                                    padding: ".5rem",
                                                     paddingLeft: ".8rem",
                                                     paddingRight: ".8rem",
                                                     fontSize: Config.fontSize.small,
                                                     borderRadius: "5px"
-                                                }}>Details</button>
+                                                }}
+                                        >
+                                            Details
+                                        </button>
+                                            </>
+                                        )}
+                                        </>
+                                    )}
+                                    {userAuthData.usrType === 'buyer' && ( <button 
+                                            onClick={() => {
+                                                console.log({agent})
+                                                navigation('/AgentDetails', { state: agent }) }}
+                                                style={{
+                                                    color: Config.color.background,
+                                                    backgroundColor: Config.color.primaryColor900,
+                                                    width: "fit-content",
+                                                    padding: ".5rem",
+                                                    paddingLeft: ".8rem",
+                                                    paddingRight: ".8rem",
+                                                    fontSize: Config.fontSize.small,
+                                                    borderRadius: "5px"
+                                                }}
+                                        >
+                                            Details
+                                        </button>
+                                    )}
                                     </td>
                                 </tr>
                             ))
@@ -220,29 +252,6 @@ function AgentList() {
                 </table>
             </div>
             <Footer />
-
-            {/* Dialog for delete confirmation */}
-            <Dialog
-                open={openDeleteDialog}
-                onClose={() => setOpenDeleteDialog(false)}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Are you sure you want to delete the agent <b>{agentToDelete?.usrFullName}</b>?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={confirmDeleteAgent} color="secondary" autoFocus>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </div>
     );
 }

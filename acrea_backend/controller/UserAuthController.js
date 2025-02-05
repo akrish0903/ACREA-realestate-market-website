@@ -64,14 +64,22 @@ const signinUserAuthController = async (req, res, next) => {
     try {
         var isEmailFound = await UserAuthModel.findOne({ usrEmail });
         if (isEmailFound) {
-            var isPasswordMatchedSchema = await isEmailFound.isValidPassword(usrPassword)
+            // Check if the account is disabled
+            if (!isEmailFound.usrStatus) {
+                return next(httpErrors.Unauthorized("Your account is disabled."));
+            }
+            var isPasswordMatchedSchema = await isEmailFound.isValidPassword(usrPassword);
             if (isPasswordMatchedSchema) {
                 // here user is logged in
                 // giving token back
+                // User is logged in successfully
                 const accessToken = await jwt_utils(isEmailFound.id);
                 const refreshToken = await jwt_refresh_token(isEmailFound.id);
                 res.status(201).json({
-                    message: "User signed in successfully", access_token: accessToken, refresh_token: refreshToken, user_details: {
+                    message: "User signed in successfully",
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                    user_details: {
                         usrFullName: isEmailFound.usrFullName,
                         usrEmail: isEmailFound.usrEmail,
                         usrMobileNumber: isEmailFound.usrMobileNumber,
@@ -81,16 +89,15 @@ const signinUserAuthController = async (req, res, next) => {
                     }
                 });
             } else {
-                next(httpErrors.Unauthorized("Invalid Email or Password"))
+                next(httpErrors.Unauthorized("Invalid Email or Password"));
             }
         } else {
-            next(httpErrors.BadRequest("Invalid Email or Password"))
+            next(httpErrors.BadRequest("Invalid Email or Password"));
         }
     } catch (error) {
-        console.log(error)
-        next(httpErrors.ServiceUnavailable())
+        console.log(error);
+        next(httpErrors.ServiceUnavailable());
     }
-
 };
 
 const updateUserProfileAuthController = async function (req, res, next) {
@@ -344,20 +351,6 @@ const updateBuyerProfileByAdminController = async function (req, res, next) {
     }
 };
 
-const deleteBuyerProfileAuthController = async (req, res, next) => {
-    const buyerId = req.params.buyerId;
-
-    try {
-        const buyer = await UserAuthModel.findByIdAndDelete(buyerId);
-        if (!buyer) {
-            return next(httpErrors.NotFound("Buyer not found."));
-        }
-        res.status(200).json({ message: "Buyer deleted successfully." });
-    } catch (error) {
-        next(httpErrors.InternalServerError("Error deleting buyer."));
-    }
-};
-
 const updateAgentProfileByAdminController = async function (req, res, next) {
     const adminId = req.payload.aud; // Admin ID from JWT token
     const agentId = req.params.agentId; // Agent ID from request params
@@ -401,22 +394,6 @@ const updateAgentProfileByAdminController = async function (req, res, next) {
     }
 };
 
-const deleteAgentProfileAuthController = async (req, res, next) => {
-    const agentId = req.params.agentId; // Agent ID from request params
-
-    try {
-        // Find and delete the agent by ID
-        const agent = await UserAuthModel.findByIdAndDelete(agentId);
-        if (!agent) {
-            return next(httpErrors.NotFound("Agent/Owner not found."));
-        }
-
-        res.status(200).json({ message: "Agent/Owner deleted successfully." });
-    } catch (error) {
-        next(httpErrors.InternalServerError("Error deleting agent/owner."));
-    }
-};
-
 const showAgentDataController = async (req, res, next) => {
     var { agentId } = req.body;
     console.log(agentId);
@@ -438,11 +415,30 @@ const showAgentDataController = async (req, res, next) => {
     }
 };
 
+const toggleUserStatusAuthController = async (req, res, next) => {
+    const userId = req.params.userId; // Get user ID from request parameters
 
+    try {
+        const user = await UserAuthModel.findById(userId);
+        if (!user) {
+            return next(httpErrors.NotFound("User not found."));
+        }
+
+        // Toggle the user's status
+        user.usrStatus = !user.usrStatus; // Enable if disabled, disable if enabled
+        await user.save();
+
+        res.status(200).json({
+            message: `User account ${user.usrStatus ? 'enabled' : 'disabled'} successfully.`,
+            userStatus: user.usrStatus
+        });
+    } catch (error) {
+        next(httpErrors.InternalServerError("Error toggling user status."));
+    }
+};
 
 module.exports = { signupUserAuthController, signinUserAuthController, updateUserProfileAuthController,
     resetPasswordAuthController, refreshTokenUserAuthController, logoutUserAuthController,
     forgotPasswordAuthController, showBuyerListController, showAgentListController,
     showRecentBuyerstoAdminController, showRecentAgentstoAdminController,updateBuyerProfileByAdminController,
-    deleteBuyerProfileAuthController, updateAgentProfileByAdminController, deleteAgentProfileAuthController,
-    showAgentDataController };
+    updateAgentProfileByAdminController, showAgentDataController, toggleUserStatusAuthController };

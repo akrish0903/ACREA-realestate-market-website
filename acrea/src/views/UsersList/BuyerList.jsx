@@ -4,17 +4,13 @@ import Footer from '../../components/Footer';
 import Styles from './css/UsersList.module.css';
 import useApi from '../../utils/useApi';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from 'react-redux';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import { Config } from '../../config/Config';
 
 function BuyerList() {
     const [buyers, setBuyers] = useState([]);
     const [editMode, setEditMode] = useState(null);
     const [editedBuyer, setEditedBuyer] = useState({});
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // State to manage dialog
-    const [buyerToDelete, setBuyerToDelete] = useState(null); // Store buyer to delete
     const userAuthData = useSelector((data) => data.AuthUserDetailsSlice);
 
     // Fetch buyers list
@@ -58,32 +54,25 @@ function BuyerList() {
         }
     }
 
-    // Handle delete dialog open
-    const handleDeleteClick = (buyer) => {
-        setBuyerToDelete(buyer); // Store the buyer to delete
-        setOpenDeleteDialog(true); // Open the dialog
-    };
+ 
 
-    // Confirm delete buyer
-    async function confirmDeleteBuyer() {
+    const toggleUserStatus = async (buyerId, currentStatus) => {
         try {
             const response = await useApi({
                 authRequired: true,
                 authToken: userAuthData.usrAccessToken,
-                url: `/admin-deletebuyer/${buyerToDelete._id}`,
-                method: "DELETE",
+                url: `/toggle-user-status/${buyerId}`,
+                method: "PUT",
             });
 
             if (response && response.message) {
-                console.log("Buyer deleted successfully");
-                fetchBuyersList(); // Refresh list after deletion
+                console.log(response.message);
+                fetchBuyersList(); // Refresh the list after toggling status
             }
         } catch (error) {
-            console.error("Error deleting buyer:", error);
-        } finally {
-            setOpenDeleteDialog(false); // Close the dialog
+            console.error("Error toggling user status:", error);
         }
-    }
+    };
 
     useEffect(() => {
         if (userAuthData.usrType === "admin") {
@@ -159,28 +148,50 @@ function BuyerList() {
                                                 <button
                                                     onClick={() => updateBuyer(buyer._id)}
                                                     className={Styles.editBtn}
-                                                    style={{ color: Config.color.background, backgroundColor:Config.color.success}}
+                                                    style={{ color: Config.color.background,
+                                                        backgroundColor:Config.color.success,
+                                                        marginLeft: '10px',
+                                                        padding: '0.5rem',
+                                                        borderRadius: '5px'}}
                                                 >
                                                     Save
                                                 </button>
                                                 <button
                                                     onClick={() => setEditMode(null)}
                                                     className={Styles.deleteBtn}
-                                                    style={{ color: Config.color.background, backgroundColor:Config.color.primaryColor800}}
+                                                    style={{ color: Config.color.background,
+                                                        backgroundColor:Config.color.primaryColor800,
+                                                        marginLeft: '10px',
+                                                        padding: '0.5rem',
+                                                        borderRadius: '5px'}}
                                                 >
                                                     Cancel
                                                 </button>
                                             </>
                                         ) : (
                                             <>
-                                                <EditIcon
-                                                    style={{ cursor: 'pointer', color: 'blue' }}
-                                                    onClick={() => handleEdit(buyer)}
-                                                />
-                                                <DeleteIcon
-                                                    style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }}
-                                                    onClick={() => handleDeleteClick(buyer)} // Handle delete dialog
-                                                />
+                                               <button style={{ cursor: 'pointer',
+                                                    color: Config.color.background,
+                                                    backgroundColor:Config.color.primary,
+                                                    marginLeft: '10px ',
+                                                    padding: '0.5rem',
+                                                    borderRadius: '5px' }}
+                                                    onClick={() => handleEdit(buyer)}>
+                                                    <EditIcon/>Edit
+                                                </button>
+                                                
+                                                <button
+                                                    onClick={() => toggleUserStatus(buyer._id, buyer.usrStatus)}
+                                                    style={{
+                                                        color: Config.color.background,
+                                                        backgroundColor: buyer.usrStatus ? Config.color.success : Config.color.warning,
+                                                        marginLeft: '10px',
+                                                        padding: '0.5rem',
+                                                        borderRadius: '5px'
+                                                    }}
+                                                >
+                                                    {buyer.usrStatus ? 'Disable' : 'Enable'}
+                                                </button>
                                             </>
                                         )}
                                     </td>
@@ -197,35 +208,7 @@ function BuyerList() {
         
 
             <Footer />
-         
 
-            {/* Dialog for delete confirmation */}
-            <Dialog
-                open={openDeleteDialog}
-                onClose={() => setOpenDeleteDialog(false)}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Are you sure you want to delete the buyer <b>{buyerToDelete?.usrFullName}</b>?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={confirmDeleteBuyer} color="secondary" autoFocus>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
 
         </div>
     );
