@@ -24,6 +24,8 @@ function SIgnUP() {
   });
 
   const [validationErrors, setValidationErrors] = useState({}); // State for validation errors
+  const [otp, setOtp] = useState(""); // Added OTP state
+  const [otpSent, setOtpSent] = useState(false); // Track if OTP is sent
 
   // Toggle password visibility
   const togglePasswordVisibility1 = () => {
@@ -55,28 +57,44 @@ function SIgnUP() {
     checkFormValidity();
   }, [userObj, validationErrors]);
 
+  // Send OTP
+  const sendOtpHandler = async () => {
+    if (!userObj.usrEmail) {
+      toast.error("Enter email first!");
+      return;
+    }
+    const response = await useApi({
+      url: "/send-otp",
+      method: "POST",
+      data: { usrEmail: userObj.usrEmail },
+    });
+
+    if (response.success) {
+      toast.success("OTP sent to email!");
+      setOtpSent(true);
+    } else {
+      toast.error(response.error);
+    }
+  };
+
+  // Signup with OTP verification
   async function signUpHandler(e) {
     e.preventDefault();
-    // if (
-    //   userObj.usrFullName === "" ||
-    //   userObj.usrEmail === "" ||
-    //   userObj.usrMobileNumber === "" ||
-    //   userObj.usrPassword === "" ||
-    //   userObj.usrReptPassword === "" ||
-    //   userObj.usrType === ""
-    // ) {
-    //   toast.error("Please fill all fields.", {
-    //     position: 'bottom-right',
-    //   });
-    // } else if (userObj.usrPassword !== userObj.usrReptPassword) {
-    //   toast.error("Confirm password is not same.", {
-    //     position: 'bottom-right',
-    //   });
-    // } else {
-    //   try {
-    //     // toast notification
+    
+    if (!otpSent) {
+      toast.error("Please verify OTP first!");
+      return;
+    }
 
-    try {
+    const response = await useApi({
+      url: "/verify-otp",
+      method: "POST",
+      data: { usrEmail: userObj.usrEmail, otp: otp },
+    });
+
+    if (response.success) {
+      toast.success("OTP verified, Signing up...");
+
       // Validate the entire object before the API call
       await signupValidationSchema.validate(userObj, { abortEarly: false });
 
@@ -86,11 +104,7 @@ function SIgnUP() {
           url: "/signup",
           method: "POST",
           data: {
-            usrFullName: userObj.usrFullName,
-            usrEmail: userObj.usrEmail,
-            usrMobileNumber: userObj.usrMobileNumber,
-            usrPassword: userObj.usrPassword,
-            usrType: userObj.usrType,
+            ...userObj,
             usrProfileUrl: null,
             userBio: null,
             usrStatus: true
@@ -133,14 +147,8 @@ function SIgnUP() {
         position: 'bottom-right',
       });
 
-    } catch (error) {
-      console.log("Sign up err ---> ", error);
-      // Handle validation errors
-      error.inner.forEach(err => {
-        toast.error(err.message, {
-          position: 'bottom-right',
-        });
-      });
+    } else {
+      toast.error("Invalid OTP!");
     }
   }
 
@@ -215,6 +223,18 @@ function SIgnUP() {
                 }}
               />
               {validationErrors.usrEmail && <p className={Styles.error} style={{color: Config.color.primaryColor900}}>{validationErrors.usrEmail}</p>}
+              
+              <button type="button" onClick={sendOtpHandler} className={Styles.otpButton}>
+                Send OTP
+              </button>
+              {otpSent && (
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+              )}
 
               <input
                 placeholder='Enter your Phone Number'

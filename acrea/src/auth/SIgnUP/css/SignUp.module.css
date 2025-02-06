@@ -34,6 +34,24 @@
     height: 13rem;
 }
 
+.otpButton{
+    background-color:grey;
+    color : black;
+    border-radius: 0.5rem;
+    font-size: 1.2rem;
+    width: 8rem;
+    padding: .5rem;
+    align-self: center ;
+    /* transition-property: "background-color ,color ,transform";
+    transition-duration: ".5s";
+    transition-timing-function: "ease";
+    transform: "scale(1)"; */
+}
+
+.otpButton:hover {
+    background-color:#D74646; 
+    color : white;
+}
 
 
 .screenRightContainerMid {

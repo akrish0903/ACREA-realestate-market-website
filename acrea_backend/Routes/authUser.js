@@ -5,6 +5,22 @@ const UserAuthController = require("../controller/UserAuthController");
 const upload = require("../config/multerStorage");
 const { jwt_verify_token } = require('../utils/jwt_utils');
 const cloudinary = require("../config/cloudinaryConfig")
+const nodemailer = require("nodemailer");
+const redis = require("redis"); // Store OTP temporarily
+require("dotenv").config();
+
+// Setup Redis client
+const redisClient = redis.createClient();
+redisClient.connect().catch(console.error);
+
+// Nodemailer transporter setup
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER, // Your Gmail
+    pass: process.env.EMAIL_PASS, // App Password
+  },
+});
 
 // User authentication routes
 router.post("/signup", UserAuthController.signupUserAuthController);
@@ -55,5 +71,64 @@ router.post ("/show-agent-data", jwt_verify_token, UserAuthController.showAgentD
 
 // Route to Disable/Enable User By admin through AgentList/BuyerList
 router.put('/toggle-user-status/:userId', jwt_verify_token, UserAuthController.toggleUserStatusAuthController);
+
+// **1️⃣ Send OTP Route**
+router.post("/send-otp", async (req, res) => {
+    try {
+      const { usrEmail } = req.body;
+      if (!usrEmail) return res.status(400).json({ error: "Email is required" });
+  
+      const otp = Math.floor(100000 + Math.random() * 900000);
+  
+      // Ensure Redis client is connected before using it
+      if (!redisClient.isReady) {
+        return res.status(500).json({ error: "Redis client not connected" });
+      }
+  
+      await redisClient.setEx(`otp:${usrEmail}`, 300, otp.toString());
+  
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: usrEmail,
+        subject: "Your OTP Code",
+        text: `Your OTP is ${otp}. It is valid for 5 minutes.`,
+      };
+  
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error("Mail error:", err);
+          return res.status(500).json({ error: "Failed to send OTP" });
+        }
+        res.json({ success: true, message: "OTP sent!" });
+      });
+  
+    } catch (error) {
+      console.error("Send OTP Error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+  
+
+// **2️⃣ Verify OTP Route**
+router.post("/verify-otp", async (req, res) => {
+  try {
+    const { usrEmail, otp } = req.body;
+    if (!usrEmail || !otp) return res.status(400).json({ error: "Missing OTP or Email" });
+
+    // Get OTP from Redis
+    const storedOtp = await redisClient.get(`otp:${usrEmail}`);
+    if (!storedOtp) return res.status(400).json({ error: "OTP expired or invalid" });
+
+    if (storedOtp === otp) {
+      await redisClient.del(`otp:${usrEmail}`); // Delete OTP after verification
+      res.json({ success: true, message: "OTP Verified" });
+    } else {
+      res.status(400).json({ error: "Incorrect OTP" });
+    }
+  } catch (error) {
+    console.error("Verify OTP Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 module.exports = router;

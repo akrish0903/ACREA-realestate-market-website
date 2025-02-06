@@ -54,7 +54,6 @@ const signupUserAuthController = async (req, res, next) => {
             res.status(400).json({ message: "Error registering user", error: err });
         }
     }
-
 };
 
 // Get all users
