@@ -9,6 +9,7 @@ const authRoutes = require("./Routes/authUser");
 const userProperties = require("./Routes/userProperties");
 const scheduleRoutes = require("./Routes/scheduleRoutes");
 const questionRoutes = require("./Routes/questionRoutes")
+const reviewRoutes = require('./Routes/reviewRoutes');
 const MongoDBConnector = require("./db/MongoDBConnector");
 require("./utils/init_redis");
 const chartRoutes = require("./Routes/chartRoutes");
@@ -37,6 +38,7 @@ app.use(scheduleRoutes);
 app.use(questionRoutes);
 app.use("/api/users", chartRoutes);
 app.use("/api/properties", chartRoutes);
+app.use('/api', reviewRoutes);
 
 // unknown route
 app.use("*", (req, res, next) => {

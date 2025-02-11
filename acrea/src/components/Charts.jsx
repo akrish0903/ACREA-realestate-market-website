@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { BarChart, Bar, PieChart, Pie, Tooltip, Legend, Cell, XAxis, YAxis, CartesianGrid, LineChart, Line, Area,AreaChart } from "recharts";
-// import { , XAxis, YAxis, CartesianGrid } from 'recharts';
-
 import axios from "axios";
 import { Config } from "../config/Config";
 
@@ -198,7 +196,12 @@ return (
             <Bar dataKey="Apartment" stackId="a" fill="#82ca9d" />
             <Bar dataKey="Villa" stackId="a" fill="#ffc658" />
             </BarChart> */}
-
+ {/* <h2>Real Estate Insights</h2>
+ <iframe style={{background: "#FFFFFF",border: "none",borderRadius: "2px"}}
+  width="640" height="480" 
+  src="https://charts.mongodb.com/charts-project-0-krswttu/embed/charts?id=636647e5-268a-4c9d-b3ed-ac8de8e4db7c&maxDataAge=3600&theme=light&autoRefresh=true"
+  >
+  </iframe> */}
       </div>
     </div>
   );

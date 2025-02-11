@@ -42,10 +42,6 @@
     width: 8rem;
     padding: .5rem;
     align-self: center ;
-    /* transition-property: "background-color ,color ,transform";
-    transition-duration: ".5s";
-    transition-timing-function: "ease";
-    transform: "scale(1)"; */
 }
 
 .otpButton:hover {

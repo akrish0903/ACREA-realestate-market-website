@@ -20,6 +20,7 @@ import useApi from '../../utils/useApi';
 import PropertyMap from '../../components/PropertyMap';
 import PropertyQuestions from '../../components/PropertyQuestions'
 import PropertyImages from '../../components/PropertyImages';
+import StarIcon from '@mui/icons-material/Star';
 
 function PropertyPage() {
     const location = useLocation();
@@ -27,10 +28,16 @@ function PropertyPage() {
     const userAuthData = useSelector(data => data.AuthUserDetailsSlice); // Select auth data from Redux store
     const navigation = useNavigate();
     const agentId = propertyData.agentId;
+    const propertyId= propertyData._id;
 
     const [favoritesCount, setFavoritesCount] = useState(propertyData.usrPropertyFavorites || 0);
 
     const [agentData, setAgentData] = useState();
+    const [rating, setRating] = useState(0);
+    const [review, setReview] = useState('');
+    const [reviews, setReviews] = useState([]);
+    const [averageRating, setAverageRating] = useState(0); // Initialize to 0;
+
     async function fetchAgentData() {
         try {
             const agentDatasFetched = await useApi({
@@ -46,6 +53,32 @@ function PropertyPage() {
             console.error("Failed to fetch agent data", error);
         }
     }
+
+    const fetchReviews = async () => {
+        if (!propertyId) {
+            console.error("Error: propertyId is undefined!");
+            return;
+        }
+        console.log("Sending propertyId:", propertyId);
+        try {
+            const response = await useApi({
+                authRequired: false,
+                url: '/api/get-reviews',
+                method: 'POST',  // Changed to POST
+                data: { propertyId },
+            });
+    
+            console.log("Fetched reviews:", response);
+            if (response.success) {
+                setReviews(response.reviews);
+                setAverageRating(response.averageRating || 0);
+            } else {
+                console.error('Failed to fetch reviews:', response.message);
+            }
+        } catch (error) {
+            console.error('Failed to fetch reviews:', error);
+        }
+    };
 
     const toggleFavorite = async () => {
         try {
@@ -65,12 +98,32 @@ function PropertyPage() {
         }
     };
     
+    const submitReview = async () => {
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: '/api/add-review',
+                method: 'POST',
+                data: { propertyId: propertyData._id, rating, review: review || "" }
+            });
+            console.log("Review submitted:", response);
+            setReview('');
+            fetchReviews();
+        } catch (error) {
+            console.error('Failed to submit review:', error);
+        }
+    };
 
     useEffect(() => {
         // if (userAuthData.usrType === 'admin' || userAuthData.usrType === 'buyer') {
+            if (userAuthData.usrType === 'admin') {
             fetchAgentData();
+            }
+            fetchReviews();
+
         // }
-    }, [agentId, userAuthData]);
+    }, [agentId, userAuthData, propertyData._id]);
 
     // Check if userAuthData is defined to avoid potential errors
     if (!userAuthData) {
@@ -156,6 +209,55 @@ function PropertyPage() {
                         {/*Question Section */}
                         <div className={Styles.questionSection}>
                             <PropertyQuestions propertyData={propertyData} />
+                        </div>
+                        
+
+                        {/* Rating and Review Section */}
+                        <div className={Styles.reviewSection}>
+                            <h4>Average Rating: {typeof averageRating === 'number' ? averageRating.toFixed(1) : 'N/A'} / 5</h4>
+
+                            <h4>Reviews:</h4>
+                            <ul>
+                                {reviews && reviews.length > 0 ? (
+                                    reviews.map((rev) => (
+                                        <li key={rev._id}>
+                                            <strong>{rev.buyerId.usrFullName}</strong> ({rev.rating} stars): {rev.review}
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li>No reviews available.</li>
+                                )}
+                            </ul>
+                        </div>
+
+                        <div className={Styles.reviewSection}>
+                            <h3>Rate this Property</h3>
+                            <div>
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <StarIcon
+                                        key={star}
+                                        onClick={() => setRating(star)}
+                                        style={{ color: star <= rating ? 'gold' : 'gray', cursor: 'pointer' }}
+                                    />
+                                ))}
+                            </div>
+                            <div>
+                            <textarea
+                                placeholder="Write your review here..."
+                                value={review}
+                                onChange={(e) => setReview(e.target.value)}
+                                style={{margin:".5rem"}}
+                            />
+                            <button 
+                                onClick={submitReview}
+                                style={{backgroundColor:Config.color.primary,
+                                    color:Config.color.background,
+                                    borderRadius:"1rem",
+                                    maxHeight:"5.5rem"
+                                    }}
+                                >Submit Review
+                            </button>
+                            </div>
                         </div>
                     </main>
 
