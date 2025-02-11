@@ -28,7 +28,9 @@ function EditProperty() {
       street: propertyData.location.street,
       city: propertyData.location.city,
       state: propertyData.location.state,
-      pinCode: propertyData.location.pinCode
+      pinCode: propertyData.location.pinCode,
+      latitude: propertyData.location.latitude,
+      longitude: propertyData.location.longitude
     },
     usrAmenities: [...propertyData.usrAmenities],
     usrExtraFacilities: {
@@ -71,7 +73,9 @@ function EditProperty() {
                 street: usrProperty.location.street,
                 city: usrProperty.location.city,
                 state: usrProperty.location.state,
-                pinCode: usrProperty.location.pinCode
+                pinCode: usrProperty.location.pinCode,
+                latitude: usrProperty.location.latitude,
+                longitude: usrProperty.location.longitude
               },
               usrAmenities: usrProperty.usrAmenities,
               usrExtraFacilities: {
@@ -306,6 +310,27 @@ function EditProperty() {
                   name="pinCode"
                   placeholder="Pin Code"
                   value={usrProperty.location.pinCode}
+                  onChange={handleLocationChange}
+                />
+              </div>
+              
+              {/* Add Map Location Fields */}
+              <div className={Styles.locationGroup}>
+                <label>Map</label>
+                <input
+                  type="text"
+                  name="latitude"
+                  id="latitude"
+                  placeholder="Latitude"
+                  value={usrProperty.location.latitude}
+                  onChange={handleLocationChange}
+                />
+                <input
+                  type="text"
+                  name="longitude"
+                  id="longitude"
+                  placeholder="Longitude"
+                  value={usrProperty.location.longitude}
                   onChange={handleLocationChange}
                 />
               </div>

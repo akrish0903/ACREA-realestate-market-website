@@ -264,7 +264,7 @@ function AddProperty() {
                 <label>Map</label>
                 <input
                   type="text"
-                  id="latitudet"
+                  id="latitude"
                   {...formik.getFieldProps('location.latitude')}
                   placeholder="Latitude"
                 />
@@ -277,8 +277,8 @@ function AddProperty() {
                   {...formik.getFieldProps('location.longitude')}
                   placeholder="Longitude"
                 />
-                {formik.touched.location?.latitude && formik.errors.location?.latitude ? (
-                  <div className={Styles.errorMessage}>{formik.errors.location.latitude}</div>
+                {formik.touched.location?.longitude && formik.errors.location?.longitude ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.longitude}</div>
                 ) : null}
               </div>
             </div>

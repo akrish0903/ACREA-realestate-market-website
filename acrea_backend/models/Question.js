@@ -6,12 +6,12 @@ const UserAuthModel = require('./UserAuthModel');
 const questionSchema = new Schema({
     propertyId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Property',
+        ref: process.env.MONGO_TABLE_PROPERTIES || 'userproperties',
         required: true,
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: process.env.MONGO_TABLE_USERS || 'users',
+        ref: process.env.MONGO_TABLE_USERS || 'All Users',
         required: true,
     },
     questionText: {

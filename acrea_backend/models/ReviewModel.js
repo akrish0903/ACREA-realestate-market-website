@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const reviewSchema = new mongoose.Schema({
     propertyId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'userproperties',
+        ref: process.env.MONGO_TABLE_PROPERTIES || 'userproperties',
         required: true,
     },
     buyerId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'All User',
+        ref: process.env.MONGO_TABLE_USERS || 'All Users',
         required: true,
     },
     rating: {
