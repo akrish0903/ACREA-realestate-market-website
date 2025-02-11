@@ -8,6 +8,10 @@ const MongoDBConnector = async () => {
       process.env.MONGO_ATLAS_URI
     );
     console.log("======> MongoDB connection successful");
+    
+    // List all collections
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    console.log("Available collections:", collections.map(c => c.name));
   } catch (err) {
     console.error("======> MongoDB connection error:", err);
     process.exit(1); // Exit process if connection fails

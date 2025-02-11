@@ -23,7 +23,8 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^6.10.0",
     "pdfkit": "^0.16.0",
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

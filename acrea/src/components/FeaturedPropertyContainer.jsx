@@ -12,13 +12,12 @@ function FeaturedPropertyContainer({propertiesData}){
     console.log('------ren---', propertiesData)
     var [imgError, setImgError] = useState(false)
 
-    const fallbackImage = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJcO94FOVu_D2UF7B2tfkx77mvataBayP-Ralw4I5HGLkIZGFS1cCJjrPCA56UKSlzmQ0&usqp=CAU';
 
     return(
             <div className={Styles.featuredPropertyContainerCard}>
                 <div className={Styles.featuredPropertyContainerCardLeft}>
                     <img
-                        src={propertiesData.userListingImage && propertiesData.userListingImage.length > 0 && !imgError ? propertiesData.userListingImage[0] : fallbackImage}
+                        src={propertiesData.userListingImage && propertiesData.userListingImage.length > 0 && !imgError ? propertiesData.userListingImage[0] : Config.imagesPaths.property404Image}
                         onError={() => setImgError(true)}
                         style={{
                             width: '100%',

@@ -50,6 +50,8 @@ function SignIn() {
           render({ toastProps, closeToast, data }) {
 
             // Updating details to class
+            dispatch(AuthUserDetailsSliceAction.setUsrID(data.user_details._id));
+            localStorage.setItem("_id",data.user_details._id);
             dispatch(AuthUserDetailsSliceAction.setUsrEmail(data.user_details.usrEmail));
             localStorage.setItem("usrEmail",data.user_details.usrEmail);
             dispatch(AuthUserDetailsSliceAction.setUsrFullName(data.user_details.usrFullName));
@@ -265,7 +267,7 @@ function SignIn() {
                     fontSize: Config.fontSize.small,
                     color: Config.color.primaryColor800,
                     cursor: "pointer"
-                  }}>Don’t Have Account? Sign Up</p>
+                  }}>Don't Have Account? Sign Up</p>
                 </Link>
               </div>
             </div>

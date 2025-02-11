@@ -21,6 +21,7 @@ import PropertyMap from '../../components/PropertyMap';
 import PropertyQuestions from '../../components/PropertyQuestions'
 import PropertyImages from '../../components/PropertyImages';
 import StarIcon from '@mui/icons-material/Star';
+import { toast } from 'react-toastify';
 
 function PropertyPage() {
     const location = useLocation();
@@ -37,6 +38,7 @@ function PropertyPage() {
     const [review, setReview] = useState('');
     const [reviews, setReviews] = useState([]);
     const [averageRating, setAverageRating] = useState(0); // Initialize to 0;
+    const [initialMessage, setInitialMessage] = useState('');
 
     async function fetchAgentData() {
         try {
@@ -112,6 +114,42 @@ function PropertyPage() {
             fetchReviews();
         } catch (error) {
             console.error('Failed to submit review:', error);
+        }
+    };
+
+
+    const handleMessageSubmit = async (e) => {
+        e.preventDefault();
+        if (userAuthData.usrType !== 'buyer') {
+            toast.error('Only buyers can initiate chats');
+            return;
+        }
+        
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: '/api/chats/initiate',
+                method: 'POST',
+                data: {
+                    receiverId: propertyData.agentId,
+                    propertyId: propertyData._id,
+                    message: initialMessage
+                }
+            });
+            
+            if (response.success) {
+                navigation('/chats', { 
+                    state: { 
+                        chatId: response.chatId,
+                        propertyData,
+                        agentData 
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Failed to initiate chat:', error);
+            toast.error('Failed to start chat');
         }
     };
 
@@ -288,7 +326,7 @@ function PropertyPage() {
 
                             <div className={Styles.contactFormSection}>
                                 <h3>Contact Property Agent</h3>
-                                <form>
+                                <form onSubmit={handleMessageSubmit}>
                                     <div className={Styles.inputGroup}>
                                         <label htmlFor="name">Name:</label>
                                         <input type="text" id="name" placeholder="Enter your name" value={userAuthData.usrFullName} disabled required />
@@ -303,11 +341,17 @@ function PropertyPage() {
                                     </div>
                                     <div className={Styles.inputGroup}>
                                         <label htmlFor="message">Message:</label>
-                                        <textarea id="message" placeholder="Enter your message" required></textarea>
+                                        <textarea 
+                                            id="message" 
+                                            placeholder="Enter your message" 
+                                            value={initialMessage}
+                                            onChange={(e) => setInitialMessage(e.target.value)}
+                                            required
+                                        ></textarea>
                                     </div>
                                     <center>
                                         <button type="submit" className={Styles.sendMessageButton}>
-                                            <SendIcon /> Send Message
+                                            <SendIcon /> Start Chat
                                         </button>
                                     </center>
                                 </form>

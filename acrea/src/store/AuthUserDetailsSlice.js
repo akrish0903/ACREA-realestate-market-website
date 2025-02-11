@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 var initialAuthState = {
+    _id: null,
     usrEmail: null,
     usrFullName: null,
     usrMobileNumber: null,
@@ -15,6 +16,9 @@ var AuthUserDetailsSlice = createSlice({
     name: "AuthUserDetailsSlice",
     initialState: initialAuthState,
     reducers: {
+        setUsrID: (state, action) => {
+            state._id = action.payload;
+        },
         setUsrEmail: (state, action) => {
             state.usrEmail = action.payload;
         },

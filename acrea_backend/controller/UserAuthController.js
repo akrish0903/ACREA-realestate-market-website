@@ -79,6 +79,7 @@ const signinUserAuthController = async (req, res, next) => {
                     access_token: accessToken,
                     refresh_token: refreshToken,
                     user_details: {
+                        _id: isEmailFound._id,
                         usrFullName: isEmailFound.usrFullName,
                         usrEmail: isEmailFound.usrEmail,
                         usrMobileNumber: isEmailFound.usrMobileNumber,

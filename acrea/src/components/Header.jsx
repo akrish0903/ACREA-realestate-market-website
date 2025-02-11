@@ -6,6 +6,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Dropdown_Bootstrap from './Dropdown_Bootstrap';
 import HomeIcon from '@mui/icons-material/Home';
+import ChatIcon from '@mui/icons-material/Chat';
 
 function Header() {
     const navigation = useNavigate();
@@ -148,6 +149,17 @@ function Header() {
                         ABOUT US
                     </NavLink>
                 </h6>
+                {userAuthData.usrEmail && (
+                    <h6>
+                        <NavLink
+                            to="/chats"
+                            style={({ isActive }) => (isActive ? activeLinkStyle : { color: Config.color.background, textDecoration: 'none'})}
+                        >
+                            <ChatIcon style={{marginRight: '5px'}} />
+                            CHATS
+                        </NavLink>
+                    </h6>
+                )}
                 </div>
 
                 <div

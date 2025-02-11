@@ -23,6 +23,7 @@ import { AuthUserDetailsSliceAction } from './store/AuthUserDetailsSlice'
 import Schedule from './views/Schedule/Schedule'
 import ScheduleList from './views/ScheduleList/ScheduleList'
 import AgentDetails from './views/AgentDetails/AgentDetails'
+import Chats from './views/Chats/Chats'
 
 function App() {
   var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
@@ -71,6 +72,9 @@ function App() {
         <Route path='/About' element={<About />} />
         <Route path="/logout" element={<Logout />} />
         <Route path='/' element={<Dashboard />} />
+        {authUserDetails.usrEmail && (
+            <Route path='/chats' element={<Chats />} />
+        )}
         <Route path='*' element={<NoPageFound />} />
       </Routes>
     </BrowserRouter>

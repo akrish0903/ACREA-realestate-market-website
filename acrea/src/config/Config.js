@@ -37,6 +37,7 @@ export var Config = {
         logo3: "/assets/logo3.png",
         logo4:"/assets/logo4.png",
         user_null: "/assets/user_null.png",
+        property404Image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJcO94FOVu_D2UF7B2tfkx77mvataBayP-Ralw4I5HGLkIZGFS1cCJjrPCA56UKSlzmQ0&usqp=CAU',
         error404:"/assets/404error.gif",
         loading:"/assets/loading.gif",
 
