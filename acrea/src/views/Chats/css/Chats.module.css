@@ -37,7 +37,16 @@
 }
 
 .conversationItem.active {
-    background-color: #e8e8e8;
+    /* background-color: #e8e8e8; */
+    background-color: #8F0000;
+}
+
+.conversationItem.active .conversationInfo h4 {
+    color: white !important;
+}
+
+.conversationItem.active .conversationInfo p {
+    color: white !important;
 }
 
 .conversationImage {
@@ -81,8 +90,10 @@
     display: flex;
     align-items: center;
     padding: 10px 20px;
-    background: white;
+    /* background: white; */
+    background: #BC0000 ;
     border-bottom: 1px solid #e0e0e0;
+    color: white;
 }
 
 .chatHeader img {
@@ -100,14 +111,15 @@
 .chatHeader p {
     margin: 5px 0 0;
     font-size: 13px;
-    color: #667781;
+    /* color: #667781; */
 }
 
 .messagesList {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background: #efeae2;
+    /* background: #efeae2; */
+    background: #F2F2F2  ;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -125,7 +137,7 @@
     margin: 0;
     font-size: 14px;
     line-height: 1.4;
-    color: #111b21;
+    /* color: #111b21; */
 }
 
 .message .timestamp {
@@ -137,7 +149,7 @@
 /* Sent message styles */
 .message.sent {
     align-self: flex-end !important;
-    background-color: #dcf8c6 !important;
+    background-color: #FFC5C5  !important;
     border-radius: 8px 8px 0 8px !important;
 }
 
@@ -211,7 +223,8 @@
 
 .messageInput button {
     padding: 8px 20px;
-    background: #0a7cff;
+    /* background: #0a7cff; */
+    background: #8F0000;
     color: white;
     border: none;
     border-radius: 5px;
@@ -221,7 +234,8 @@
 }
 
 .messageInput button:hover {
-    background: #0063cc;
+    /* background: #0063cc; */
+    background: #BC0000 ;
 }
 
 .noChatSelected {
