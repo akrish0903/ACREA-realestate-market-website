@@ -1,0 +1,223 @@
+{
+  "hash": "3cfd4364",
+  "configHash": "f1763207",
+  "lockfileHash": "19fb48e0",
+  "browserHash": "96f4baff",
+  "optimized": {
+    "@mui/icons-material/AccountCircle": {
+      "src": "../../node_modules/@mui/icons-material/AccountCircle.js",
+      "file": "@mui_icons-material_AccountCircle.js",
+      "fileHash": "f837f5b7",
+      "needsInterop": true
+    },
+    "@mui/icons-material/ArrowBack": {
+      "src": "../../node_modules/@mui/icons-material/ArrowBack.js",
+      "file": "@mui_icons-material_ArrowBack.js",
+      "fileHash": "27c74070",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Bathtub": {
+      "src": "../../node_modules/@mui/icons-material/Bathtub.js",
+      "file": "@mui_icons-material_Bathtub.js",
+      "fileHash": "157603b1",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Bookmark": {
+      "src": "../../node_modules/@mui/icons-material/Bookmark.js",
+      "file": "@mui_icons-material_Bookmark.js",
+      "fileHash": "70b3405f",
+      "needsInterop": true
+    },
+    "@mui/icons-material/CalendarMonth": {
+      "src": "../../node_modules/@mui/icons-material/CalendarMonth.js",
+      "file": "@mui_icons-material_CalendarMonth.js",
+      "fileHash": "4b28e266",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Cancel": {
+      "src": "../../node_modules/@mui/icons-material/Cancel.js",
+      "file": "@mui_icons-material_Cancel.js",
+      "fileHash": "93d9ddf7",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Chat": {
+      "src": "../../node_modules/@mui/icons-material/Chat.js",
+      "file": "@mui_icons-material_Chat.js",
+      "fileHash": "1433c0e7",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Check": {
+      "src": "../../node_modules/@mui/icons-material/Check.js",
+      "file": "@mui_icons-material_Check.js",
+      "fileHash": "27441e22",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Delete": {
+      "src": "../../node_modules/@mui/icons-material/Delete.js",
+      "file": "@mui_icons-material_Delete.js",
+      "fileHash": "fded8cdd",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Edit": {
+      "src": "../../node_modules/@mui/icons-material/Edit.js",
+      "file": "@mui_icons-material_Edit.js",
+      "fileHash": "3879b0b0",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Home": {
+      "src": "../../node_modules/@mui/icons-material/Home.js",
+      "file": "@mui_icons-material_Home.js",
+      "fileHash": "f0547d19",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Hotel": {
+      "src": "../../node_modules/@mui/icons-material/Hotel.js",
+      "file": "@mui_icons-material_Hotel.js",
+      "fileHash": "1224ae57",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Place": {
+      "src": "../../node_modules/@mui/icons-material/Place.js",
+      "file": "@mui_icons-material_Place.js",
+      "fileHash": "65b08f5c",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Receipt": {
+      "src": "../../node_modules/@mui/icons-material/Receipt.js",
+      "file": "@mui_icons-material_Receipt.js",
+      "fileHash": "b7937283",
+      "needsInterop": true
+    },
+    "@mui/icons-material/RemoveRedEye": {
+      "src": "../../node_modules/@mui/icons-material/RemoveRedEye.js",
+      "file": "@mui_icons-material_RemoveRedEye.js",
+      "fileHash": "0445d092",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Send": {
+      "src": "../../node_modules/@mui/icons-material/Send.js",
+      "file": "@mui_icons-material_Send.js",
+      "fileHash": "2630dc24",
+      "needsInterop": true
+    },
+    "@mui/icons-material/SquareFoot": {
+      "src": "../../node_modules/@mui/icons-material/SquareFoot.js",
+      "file": "@mui_icons-material_SquareFoot.js",
+      "fileHash": "27baea9f",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Star": {
+      "src": "../../node_modules/@mui/icons-material/Star.js",
+      "file": "@mui_icons-material_Star.js",
+      "fileHash": "2f9b6459",
+      "needsInterop": true
+    },
+    "@mui/material": {
+      "src": "../../node_modules/@mui/material/index.js",
+      "file": "@mui_material.js",
+      "fileHash": "29d22c0e",
+      "needsInterop": false
+    },
+    "@reduxjs/toolkit": {
+      "src": "../../node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs",
+      "file": "@reduxjs_toolkit.js",
+      "fileHash": "1b50940a",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "72e10028",
+      "needsInterop": false
+    },
+    "file-saver": {
+      "src": "../../node_modules/file-saver/dist/FileSaver.min.js",
+      "file": "file-saver.js",
+      "fileHash": "52de989d",
+      "needsInterop": true
+    },
+    "formik": {
+      "src": "../../node_modules/formik/dist/formik.esm.js",
+      "file": "formik.js",
+      "fileHash": "8024876f",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "c0093b7b",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "d6af3e81",
+      "needsInterop": true
+    },
+    "react-redux": {
+      "src": "../../node_modules/react-redux/dist/react-redux.mjs",
+      "file": "react-redux.js",
+      "fileHash": "8b55ef5a",
+      "needsInterop": false
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "df57cfbe",
+      "needsInterop": false
+    },
+    "react-toastify": {
+      "src": "../../node_modules/react-toastify/dist/react-toastify.esm.mjs",
+      "file": "react-toastify.js",
+      "fileHash": "3dc08874",
+      "needsInterop": false
+    },
+    "recharts": {
+      "src": "../../node_modules/recharts/es6/index.js",
+      "file": "recharts.js",
+      "fileHash": "7538e642",
+      "needsInterop": false
+    },
+    "socket.io-client": {
+      "src": "../../node_modules/socket.io-client/build/esm/index.js",
+      "file": "socket__io-client.js",
+      "fileHash": "32157b84",
+      "needsInterop": false
+    },
+    "yup": {
+      "src": "../../node_modules/yup/index.esm.js",
+      "file": "yup.js",
+      "fileHash": "cef40ea9",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-WKA2D4IT": {
+      "file": "chunk-WKA2D4IT.js"
+    },
+    "chunk-UHINIFCJ": {
+      "file": "chunk-UHINIFCJ.js"
+    },
+    "chunk-FP4WTLK6": {
+      "file": "chunk-FP4WTLK6.js"
+    },
+    "chunk-LR7ZZSBB": {
+      "file": "chunk-LR7ZZSBB.js"
+    },
+    "chunk-ILGFBWUT": {
+      "file": "chunk-ILGFBWUT.js"
+    },
+    "chunk-MFUCCS4W": {
+      "file": "chunk-MFUCCS4W.js"
+    },
+    "chunk-Q27KEZHG": {
+      "file": "chunk-Q27KEZHG.js"
+    },
+    "chunk-W4EHDCLL": {
+      "file": "chunk-W4EHDCLL.js"
+    },
+    "chunk-EWTE5DHJ": {
+      "file": "chunk-EWTE5DHJ.js"
+    }
+  }
+}

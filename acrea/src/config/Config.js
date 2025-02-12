@@ -43,6 +43,7 @@ export var Config = {
 
     },
     apiBaseUrl: 'http://localhost:4500',
-    // apiBaseUrl: 'https://real-estate-marketplace-1-ojvt.onrender.com', for hosting
+    // apiBaseUrl: 'https://real-estate-marketplace-1-ojvt.onrender.com', 
+    // for hosting
 
 };
