@@ -267,7 +267,7 @@ function SignIn() {
                     fontSize: Config.fontSize.small,
                     color: Config.color.primaryColor800,
                     cursor: "pointer"
-                  }}>Don't Have Account? Sign Up</p>
+                  }}>Don’t Have Account? Sign Up</p>
                 </Link>
               </div>
             </div>

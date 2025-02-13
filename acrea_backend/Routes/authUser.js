@@ -44,7 +44,7 @@ router.post("/uploadProfileImage", upload.single("profileImage"), async (req, re
 router.post("/resetPassword", jwt_verify_token, UserAuthController.resetPasswordAuthController);
 
 // New route to forgot password
-router.post("/forgot-password", jwt_verify_token, UserAuthController.forgotPasswordAuthController);
+router.post("/forgot-password", UserAuthController.forgotPasswordAuthController);
 
 // Route to refresh token
 router.post("/refresh-token", UserAuthController.refreshTokenUserAuthController);

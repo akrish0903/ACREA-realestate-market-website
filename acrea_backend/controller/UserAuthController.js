@@ -157,35 +157,37 @@ const resetPasswordAuthController = async function (req, res, next) {
 }
 
 const forgotPasswordAuthController = async (req, res, next) => {
-
-    console.log("----> ", req.body);
-    const { email, phone, password } = req.body;
-
-    if (!email && !phone) {
-        return next(httpErrors.BadRequest("Email and phone number is required."));
-    }
-
     try {
-        // Find user by email or phone number
-        const user = await UserAuthModel.findOne({
-            $or: [{ usrEmail: email }, { usrMobileNumber: phone }]
-        });
+        const { usrEmail, usrPassword } = req.body;
 
-        if (!user) {
-            return next(httpErrors.NotFound("User not found with this email or phone number."));
+        if (!usrEmail || !usrPassword) {
+            return res.status(400).json({
+                success: false,
+                error: { message: "Email and new password are required" }
+            });
         }
 
-        // Hash the new password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Find user by email
+        const user = await UserAuthModel.findOne({ usrEmail });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: { message: "User not found" }
+            });
+        }
 
-        // Update the password
-        user.usrPassword = hashedPassword;
+        // Update password
+        user.usrPassword = usrPassword; // Will be hashed by pre-save middleware
         await user.save();
 
-        res.status(200).json({ message: "Password has been reset successfully." });
+        res.status(200).json({
+            success: true,
+            message: "Password updated successfully"
+        });
+
     } catch (error) {
-        console.error("Error resetting password:", error);
-        next(httpErrors.InternalServerError("Failed to reset password."));
+        console.error("Forgot password error:", error);
+        next(httpErrors.InternalServerError("Error updating password"));
     }
 };
 

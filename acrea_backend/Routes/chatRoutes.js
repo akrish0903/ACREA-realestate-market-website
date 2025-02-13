@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { verifyAccessToken } = require('../utils/jwt_helper');
-const Chat = require('../models/chatModel');
+const Chat = require('../models/ChatModel');
 const UserAuth = require('../models/UserAuthModel');
 const UserProperties = require('../models/UserPropertiesModel');
 const socketService = require('../services/socket');
