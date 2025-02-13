@@ -34,4 +34,7 @@ router.get('/receipts/:filename', (req, res) => {
     });
 });
 
+// Route to check if transaction is successful or not
+router.get('/get-razorpay-key', jwt_verify_token, ScheduleController.getRazorpayKey);
+
 module.exports = router;

@@ -15,6 +15,8 @@ require("./utils/init_redis");
 const chartRoutes = require("./Routes/chartRoutes");
 const chatRoutes = require('./Routes/chatRoutes');
 const socketService = require('./services/socket');
+const propertyBidsRouter = require('./Routes/propertyBids');
+
 
 
 const app = express();
@@ -45,6 +47,7 @@ app.use("/api/users", chartRoutes);
 app.use("/api/properties", chartRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', chatRoutes);
+app.use('/api', propertyBidsRouter); 
 
 // unknown route
 app.use("*", (req, res, next) => {

@@ -16,17 +16,6 @@ a {
   margin-top: 2rem;
 }
 
-.propertyImageContainer {
-  display: flex;
-  justify-content: center;
-}
-
-.propertyImage {
-  max-width: 100%;
-  height: 400px;
-  object-fit: cover;
-}
-
 /* Go Back */
 .goBackSection {
   padding: 1.5rem;
@@ -225,19 +214,19 @@ a {
   text-align: center;
 }
 
-.inputGroup {
+.inputGroup1 {
   margin-bottom: 1rem;
   text-align: center;
 }
 
-.inputGroup label {
+.inputGroup1 label {
   margin-bottom: 0.5rem;
   font-weight: bold;
   margin-right: 1rem;
 }
 
-.inputGroup input,
-.inputGroup textarea {
+.inputGroup1 input,
+.inputGroup1 textarea {
   padding: 0.75rem;
   width: 100%;
   border-radius: 8px;
@@ -270,6 +259,9 @@ a {
   background-color: #1e3a8a;
    width:21rem;
    font-weight: bold;
+   border-radius: 1rem;
+   margin: 1rem;
+   padding: .5rem;
 }
 .editBtn:hover{
   background-color: #0e2a6b;
@@ -328,5 +320,192 @@ a {
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
   object-fit: fill;
   margin-top: .5rem;
+}
+
+.biddingSection {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.biddingSection h3 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.biddingSection h4 {
+    margin: 1.5rem 0 1rem;
+    color: #374151;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.inputGroup {
+    margin-bottom: 1rem;
+}
+
+.inputGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.inputGroup input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+}
+
+.biddingStatus {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.activeStatus {
+    color: #059669;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.biddingClosed {
+    color: #dc2626;
+    font-weight: 500;
+    text-align: center;
+    padding: 1rem;
+    background-color: #fee2e2;
+    border-radius: 0.5rem;
+}
+
+.noBidding {
+    color: #6b7280;
+    text-align: center;
+    padding: 1rem;
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+}
+
+.startBiddingButton,
+.placeBidButton {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 1rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.startBiddingButton:hover,
+.placeBidButton:hover {
+    background-color: #0e2a6b;
+}
+
+.biddingHistory {
+    margin-top: 1.5rem;
+    background-color: #f9fafb;
+    padding: 1rem;
+    padding-top: .1rem !important;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.biddingHistory h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.biddingHistory ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bidHistoryItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #d1d2ee;
+    padding: .5rem;
+    /* border-radius: 1rem; */
+}
+.bidHistoryItem:hover{
+  background-color: #fbfdff;
+}
+
+.bidAmount {
+    font-weight: bold;
+    color: #1e3a8a;
+    font-size: 1.1rem;
+}
+
+.bidderName {
+    flex: 1;
+    margin: 0 1rem;
+    color: #4b5563;
+}
+
+.bidTime {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.winnerSection {
+    background-color: #f0fdf4;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    border: 1px solid #86efac;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem ;
+}
+
+.winnerSection h4 {
+    color: #059669;
+    margin-bottom: 0.5rem;
+}
+
+.winnerInfo {
+    color: #065f46;
+    gap: 1rem;
+}
+
+.winnerInfo p {
+    margin: 0.25rem 0;
+}
+
+.inputGroup input[type="number"],
+.inputGroup input[type="datetime-local"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+}
+
+.inputGroup input[type="number"]:focus,
+.inputGroup input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.1);
 }
 

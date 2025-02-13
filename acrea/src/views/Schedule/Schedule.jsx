@@ -19,18 +19,76 @@ const Schedule = () => {
   const [contact, setContact] = useState(userAuthData?.usrMobileNumber || '');
   const [notes, setNotes] = useState('');
 
+  // Add error state
+  const [errors, setErrors] = useState({
+    buyerName: '',
+    contact: '',
+    date: '',
+    time: '',
+  });
+
+  // Add validation function
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {};
+
+    // Name validation
+    if (!buyerName.trim()) {
+      newErrors.buyerName = 'Name is required';
+      isValid = false;
+    } else if (buyerName.trim().length < 3) {
+      newErrors.buyerName = 'Name must be at least 3 characters';
+      isValid = false;
+    }
+
+    // Contact validation
+    if (!contact) {
+      newErrors.contact = 'Contact number is required';
+      isValid = false;
+    } else if (!/^[0-9]{10}$/.test(contact)) {
+      newErrors.contact = 'Please enter a valid 10-digit mobile number';
+      isValid = false;
+    }
+
+    // Date validation
+    if (!date) {
+      newErrors.date = 'Date is required';
+      isValid = false;
+    } else {
+      const selectedDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        newErrors.date = 'Please select a future date';
+        isValid = false;
+      }
+    }
+
+    // Time validation
+    if (!time) {
+      newErrors.time = 'Time is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleSchedule = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     const scheduleData = { propertyData, agentData, date, time, buyerName, contact, notes };
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/schedule`, {
-            method: "POST",
+        // First, get the Razorpay key from backend without creating schedule
+        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/get-razorpay-key`, {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${userAuthData.usrAccessToken}`
-            },
-            body: JSON.stringify(scheduleData)
+            }
         });
 
         const result = await response.json();
@@ -39,7 +97,6 @@ const Schedule = () => {
         const { razorpayKeyId } = result;
 
         if (razorpayKeyId) {
-            // Check if Razorpay is loaded
             if (window.Razorpay) {
                 const options = {
                     key: razorpayKeyId,
@@ -47,9 +104,32 @@ const Schedule = () => {
                     currency: "INR",
                     name: "Property Visit",
                     description: "Schedule Payment",
-                    handler: function (response) {
-                        console.log(response);
-                        navigate('/');
+                    handler: async function (paymentResponse) {
+                        try {
+                            // Only create schedule after successful payment
+                            const scheduleResponse = await fetch(`${import.meta.env.VITE_BASE_API_URL}/schedule`, {
+                                method: "POST",
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${userAuthData.usrAccessToken}`
+                                },
+                                body: JSON.stringify({
+                                    ...scheduleData,
+                                    paymentId: paymentResponse.razorpay_payment_id
+                                })
+                            });
+
+                            const scheduleResult = await scheduleResponse.json();
+                            
+                            if (scheduleResult.success) {
+                                navigate('/');
+                            } else {
+                                alert('Failed to schedule visit. Please contact support.');
+                            }
+                        } catch (error) {
+                            console.error('Error creating schedule:', error);
+                            alert('There was an error scheduling the visit.');
+                        }
                     },
                     prefill: {
                         name: buyerName,
@@ -66,15 +146,13 @@ const Schedule = () => {
                 alert('Razorpay SDK not loaded. Please try again later.');
             }
         } else {
-            alert('Payment link not found. Please try again.');
+            alert('Payment initialization failed. Please try again.');
         }      
     } catch (error) {
-        console.error('Failed to schedule visit:', error);
-        alert('There was an error scheduling the visit.');
+        console.error('Failed to initialize payment:', error);
+        alert('There was an error initializing the payment.');
     }
 };
-
-
 
   return (
     <div className={`screen ${Styles.scheduleScreen}`}>
@@ -90,6 +168,7 @@ const Schedule = () => {
               onChange={(e) => setBuyerName(e.target.value)}
               required
             />
+            {errors.buyerName && <span className={Styles.errorText}>{errors.buyerName}</span>}
           </label>
           <label>
             Contact Number:
@@ -99,6 +178,7 @@ const Schedule = () => {
               onChange={(e) => setContact(e.target.value)}
               required
             />
+            {errors.contact && <span className={Styles.errorText}>{errors.contact}</span>}
           </label>
           <label>
             Date:
@@ -108,6 +188,7 @@ const Schedule = () => {
               onChange={(e) => setDate(e.target.value)}
               required
             />
+            {errors.date && <span className={Styles.errorText}>{errors.date}</span>}
           </label>
           <label>
             Time:
@@ -117,6 +198,7 @@ const Schedule = () => {
               onChange={(e) => setTime(e.target.value)}
               required
             />
+            {errors.time && <span className={Styles.errorText}>{errors.time}</span>}
           </label>
           <label>
             Additional Notes:

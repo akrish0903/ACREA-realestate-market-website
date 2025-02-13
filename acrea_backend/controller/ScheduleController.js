@@ -114,19 +114,30 @@ const generateReceipt = async (schedule) => {
 }
 
 exports.scheduleVisit = async (req, res) => {
-    const { propertyData, date, time, buyerName, contact, notes } = req.body;
+    const { propertyData, date, time, buyerName, contact, notes, paymentId } = req.body;
     var userId = req.payload.aud;
 
     try {
+        // Verify that we have a payment ID
+        if (!paymentId) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Payment verification failed' 
+            });
+        }
+
         // Fetch the user data for the buyer
         var fetchedUserData = await UserAuthModel.findById(userId);
         
         // Fetch the agent details using the propertyData
-        const agent = await UserAuthModel.findById(propertyData.agentId); // Fetch agent details
+        const agent = await UserAuthModel.findById(propertyData.agentId);
 
         // Check if agent exists
         if (!agent) {
-            return res.status(404).json({ message: 'Agent not found' });
+            return res.status(404).json({ 
+                success: false,
+                message: 'Agent not found' 
+            });
         }
 
         const newSchedule = new ScheduleModel({
@@ -138,27 +149,30 @@ exports.scheduleVisit = async (req, res) => {
             buyerName,
             contact,
             notes,
-            receipt: null, // Initialize receipt as null
-            agentName: agent.usrFullName, // Save the agent's name
-            agentPhone: agent.usrMobileNumber // Save the agent's phone number
+            paymentId, // Store the payment ID
+            receipt: null,
+            agentName: agent.usrFullName,
+            agentPhone: agent.usrMobileNumber
         });
 
         await newSchedule.save();
 
-        // Generate receipt logic here (e.g., create a PDF and save the path)
-        const receiptFileName = await generateReceipt(newSchedule); // Implement this function
-        newSchedule.receipt = receiptFileName; // Save the receipt path
-        await newSchedule.save(); // Save the updated schedule with receipt
+        // Generate receipt
+        const receiptFileName = await generateReceipt(newSchedule);
+        newSchedule.receipt = receiptFileName;
+        await newSchedule.save();
 
         res.status(200).json({ 
-            razorpayKeyId: process.env.RAZORPAY_KEY_ID,
-            agentName: agent.usrFullName, // Send agent name to frontend
-            agentPhone: agent.usrMobileNumber, // Send agent phone number to frontend
-            receipt: receiptFileName // Send receipt path to frontend
+            success: true,
+            message: 'Schedule created successfully',
+            receipt: receiptFileName
         });
     } catch (error) {
         console.error('Error details:', error.message);
-        res.status(500).json({ message: 'Internal Server Error - Unable to schedule visit.' });
+        res.status(500).json({ 
+            success: false,
+            message: 'Internal Server Error - Unable to schedule visit.' 
+        });
     }
 };
 
@@ -261,5 +275,17 @@ exports.deleteSchedule = async (req, res, next) => {
         res.status(200).json({ message: "Schedule deleted successfully" });
     } catch (error) {
         next(httpErrors(500, "Failed to delete schedule"));
+    }
+};
+
+// Add this new controller method
+exports.getRazorpayKey = async (req, res) => {
+    try {
+        res.status(200).json({ 
+            razorpayKeyId: process.env.RAZORPAY_KEY_ID
+        });
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 };
