@@ -486,6 +486,8 @@ a {
 .winnerInfo {
     color: #065f46;
     gap: 1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .winnerInfo p {
@@ -509,3 +511,212 @@ a {
     box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.1);
 }
 
+.winnerAnnouncement {
+    background-color: #ecfdf5;
+    border: 2px solid #059669;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.winnerAnnouncement h4 {
+    color: #059669;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.winnerDetails {
+    color: #065f46;
+    font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.agentContact {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #10b981;
+    display: flex;
+    flex-direction: column;
+}
+
+.agentContact h5 {
+    color: #059669;
+    margin-bottom: 0.5rem;
+}
+
+.biddingResult {
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.biddingResult h4 {
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.biddingCompleted {
+    animation: fadeIn 0.5s ease-in;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loserAnnouncement {
+    background-color: #f3f4f6;
+    border: 2px solid #6b7280;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.loserAnnouncement h4 {
+    color: #374151;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.finalResults {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.finalResults h4 {
+    color: #1f2937;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+.winnerCard {
+    background-color: #f0fdf4;
+    border: 2px solid #059669;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.winnerHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.trophyIcon {
+    font-size: 1.5rem;
+}
+
+.winnerCard h5 {
+    color: #059669;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.winnerName {
+    color: #065f46;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+
+.winningBid {
+    color: #047857;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.noBids {
+    text-align: center;
+    color: #6b7280;
+    padding: 2rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.agentWinnerSection {
+    background-color: #f0fdf4;
+    border: 2px solid #059669;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.agentWinnerSection h4 {
+    color: #059669;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.winnerDetailsAgent {
+    background-color: white;
+    border-radius: 0.375rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.winnerInfoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.winnerInfoRow:last-child {
+    border-bottom: none;
+}
+
+.winnerInfoRow span:first-child {
+    color: #374151;
+    font-weight: 500;
+}
+
+.winnerInfoRow span:last-child {
+    color: #1f2937;
+}
+
+.winnerInfoRow .winningAmount {
+    color: #059669;
+    font-weight: bold;
+    font-size: 1.1rem;
+}

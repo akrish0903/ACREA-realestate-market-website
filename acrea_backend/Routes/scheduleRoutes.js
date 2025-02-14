@@ -24,15 +24,7 @@ router.put('/update-buyer-schedule/:scheduleId',jwt_verify_token, ScheduleContro
 router.delete('/delete-schedule/:scheduleId',jwt_verify_token, ScheduleController.deleteSchedule);
 
 // Route to serve receipt files
-router.get('/receipts/:filename', (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(__dirname, '../receipts', filename); // Ensure this path is correct
-    res.sendFile(filePath, (err) => {
-        if (err) {
-            res.status(404).send('File not found');
-        }
-    });
-});
+router.get('/receipts/:scheduleId', jwt_verify_token, ScheduleController.downloadReceipt);
 
 // Route to check if transaction is successful or not
 router.get('/get-razorpay-key', jwt_verify_token, ScheduleController.getRazorpayKey);

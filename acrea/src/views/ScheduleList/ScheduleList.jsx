@@ -130,12 +130,9 @@ function ScheduleList() {
     }
 
     // Handle download receipt
-    const handleDownloadReceipt = async (receiptFileName) => {
-        // Construct the URL to fetch the receipt from the backend
-        const downloadUrl = `${import.meta.env.VITE_BASE_API_URL}/receipts/${receiptFileName}`; // Construct the full URL
-
-        // Use file-saver to download the receipt
-        saveAs(downloadUrl, receiptFileName); // This will now fetch the file from the backend
+    const handleDownloadReceipt = async (receiptUrl) => {
+        // Open the receipt URL in a new tab
+        window.open(receiptUrl, '_blank');
     };
 
     useEffect(() => {
@@ -207,7 +204,15 @@ function ScheduleList() {
                                     )}</td>
                                     <td>
                                         {schedule.receipt && (
-                                            <button onClick={() => handleDownloadReceipt(schedule.receipt)} style={{backgroundColor:Config.color.primaryColor900, color:Config.color.secondaryColor100, borderRadius:'0.4rem',padding:'.2rem'}}>
+                                            <button 
+                                                onClick={() => handleDownloadReceipt(schedule.receipt)} 
+                                                style={{
+                                                    backgroundColor: Config.color.primaryColor900, 
+                                                    color: Config.color.secondaryColor100, 
+                                                    borderRadius: '0.4rem',
+                                                    padding: '.2rem'
+                                                }}
+                                            >
                                                 <ReceiptIcon />Download Receipt
                                             </button>
                                         )}
