@@ -48,29 +48,43 @@ function ViewAllProperties() {
         }
     }
    
-    // Fetch properties to show buyer and fillter if needed
+    // Fetch properties to show buyer and filter if needed
     async function fetchBuyerPropertiesByTypeAndSearch(type, searchText) {
         try {
             console.log("Requesting buyer properties with type:", type, "and searchText:", searchText);
             
+            if (!userAuthData?.usrAccessToken) {
+                throw new Error("Authentication token not found");
+            }
+
             const fetchedProperties = await useApi({
                 authRequired: true,
                 authToken: userAuthData.usrAccessToken,
                 url: "/show-by-type-buyer-properties",
                 method: "POST",
-                data: { type, searchText }
+                data: { 
+                    type: type || 'All',
+                    searchText: searchText || ''
+                }
             });
-            console.log("Fetched buyer properties:", fetchedProperties);
-    
-            if (fetchedProperties?.user_property_arr) {
-                setProperties(fetchedProperties.user_property_arr);
-            } else {
-                throw new Error("Failed to fetch buyer properties");
+
+            console.log("API Response:", fetchedProperties);
+
+            if (fetchedProperties?.error) {
+                throw new Error(fetchedProperties.error.message);
             }
+
+            if (!fetchedProperties?.user_property_arr) {
+                throw new Error("No property data received from server");
+            }
+
+            setProperties(fetchedProperties.user_property_arr);
+            setError(null); // Clear any previous errors
+
         } catch (err) {
-            console.error("Error fetching buyer properties: ", err);
+            console.error("Error fetching buyer properties:", err);
             setError(err.message);
-            toast.error("Failed to load properties. Please try again.");
+            toast.error(err.message || "Failed to load properties. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -136,19 +150,19 @@ function ViewAllProperties() {
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const propertyType = searchParams.get('propertyType') || 'All';
-        const searchText = searchParams.get('searchText') || ''; // Capture the search text
+        const searchText = searchParams.get('searchText') || ''; // Get the location search text
 
         // Fetch properties based on user type
-        if (userAuthData?.usrType === "agent" || userAuthData?.usrType==='owner') {
+        if (userAuthData?.usrType === "agent" || userAuthData?.usrType === 'owner') {
             fetchAgentPropertiesByTypeAndSearch(propertyType, searchText);
         }
-        if (userAuthData?.usrType === "buyer") {
+        else if (userAuthData?.usrType === "buyer") {
             fetchBuyerPropertiesByTypeAndSearch(propertyType, searchText);
         }
-        if (userAuthData?.usrType === "admin") {
+        else if (userAuthData?.usrType === "admin") {
             fetchAdminPropertiesByTypeAndSearch(propertyType, searchText);
         }
-        if (userAuthData.usrType === null) {
+        else {
             fetchAllUserPropertiesByTypeAndSearch(propertyType, searchText);
         }
     }, [location.search, userAuthData]);

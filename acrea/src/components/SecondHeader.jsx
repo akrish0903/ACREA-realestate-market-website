@@ -11,8 +11,8 @@ function SecondHeader() {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // Navigate to /viewAllProperties with the selected property type as a query parameter
-        navigate(`/viewAllProperties?propertyType=${propertyType}&location=${locationInput}`);
+        // Navigate with both propertyType and location parameters
+        navigate(`/viewAllProperties?propertyType=${propertyType}&searchText=${locationInput}`);
     };
 
     return (

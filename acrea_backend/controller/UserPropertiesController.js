@@ -146,132 +146,201 @@ const showAgentRecentPropertyController = async (req, res, next) => {//done
     }
 };
 
-const showByTypeAgentPropertyController = async (req, res, next) => {//done
-    const userId = req.payload.aud;
-    const { type, searchText } = req.body; // Capture both type and searchText
-    const fetchedUserData = await UserAuthModel.findById(userId);
-
+const showByTypeAgentPropertyController = async (req, res, next) => {
     try {
-        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType==='owner') {
-            let query = { agentId: userId };
-
-            // Add filtering by type
-            if (type && type !== 'All') {
-                query.userListingType = type;
-            }
-
-            // Add filtering by searchText (if provided)
-            if (searchText) {
-                query = {
-                    ...query,
-                    $or: [
-                        { usrListingName: { $regex: searchText, $options: 'i' } }, // Case-insensitive match for name
-                        { "location.street": { $regex: searchText, $options: 'i' } },
-                        { "location.city": { $regex: searchText, $options: 'i' } },
-                        { "location.state": { $regex: searchText, $options: 'i' } },
-                        { "location.pinCode": { $regex: searchText, $options: 'i' } }
-                    ]
-                };
-            }
-
-            const usrPropertiesArr = await UserPropertiesModel.find(query).sort({ usrPropertyTime: -1 });
-
-            res.status(200).json({
-                message: "Properties fetched successfully based on the type and search.",
-                user_property_arr: usrPropertiesArr
-            });
-        } else {
-            return next(httpErrors.Unauthorized("Unauthorized access."));
+        const userId = req.payload.aud;
+        if (!userId) {
+            return next(httpErrors.Unauthorized("No user ID found in token"));
         }
+
+        const { type, searchText } = req.body;
+        console.log("Received search params:", { type, searchText, userId });
+
+        const fetchedUserData = await UserAuthModel.findById(userId);
+        if (!fetchedUserData) {
+            return next(httpErrors.NotFound("User not found"));
+        }
+
+        if (fetchedUserData.usrType !== "agent" && fetchedUserData.usrType !== "owner") {
+            return next(httpErrors.Unauthorized("Only agents/owners can access this endpoint"));
+        }
+
+        let query = { agentId: userId };
+
+        // Add type filter only if it's not 'All'
+        if (type && type !== 'All') {
+            query.userListingType = type;
+        }
+
+        // Add location search if searchText is provided
+        if (searchText && searchText.trim()) {
+            const searchRegex = new RegExp(searchText.trim(), 'i');
+            
+            // Create a query that handles both string and number fields
+            query = {
+                ...query,
+                $or: [
+                    { "location.street": searchRegex },
+                    { "location.city": searchRegex },
+                    { "location.state": searchRegex },
+                    { "usrListingName": searchRegex },
+                    { "usrListingDescription": searchRegex }
+                ]
+            };
+
+            // Only add pinCode to search if searchText is a number
+            if (!isNaN(searchText)) {
+                query.$or.push({ "location.pinCode": parseInt(searchText) });
+            }
+        }
+
+        console.log("MongoDB query:", JSON.stringify(query, null, 2));
+
+        const usrPropertiesArr = await UserPropertiesModel.find(query)
+            .sort({ usrPropertyTime: -1 });
+
+        console.log(`Found ${usrPropertiesArr.length} properties`);
+
+        return res.status(200).json({
+            message: "Properties fetched successfully",
+            user_property_arr: usrPropertiesArr
+        });
+
     } catch (error) {
-        console.error("Error fetching agent properties:", error); // Add logging
-        next(httpErrors.BadRequest("Failed to fetch properties"));
+        console.error("Error in showByTypeAgentPropertyController:", error);
+        return next(httpErrors.InternalServerError(error.message || "Failed to fetch properties"));
     }
 };
 
 const showByTypeBuyerPropertyController = async (req, res, next) => {
-    const userId = req.payload.aud;
-    const { type, searchText } = req.body; // Capture both type and searchText
-    const fetchedUserData = await UserAuthModel.findById(userId);
-
     try {
-        if (fetchedUserData.usrType === "buyer") {
-            let query = {}; // Remove buyerId filter
-
-            // Add filtering by type
-            if (type && type !== 'All') {
-                query.userListingType = type;
-            }
-
-            // Add filtering by searchText (if provided)
-            if (searchText) {
-                query = {
-                    ...query,
-                    $or: [
-                        { usrListingName: { $regex: searchText, $options: 'i' } }, // Case-insensitive match for name
-                        { "location.street": { $regex: searchText, $options: 'i' } },
-                        { "location.city": { $regex: searchText, $options: 'i' } },
-                        { "location.state": { $regex: searchText, $options: 'i' } },
-                        { "location.pinCode": { $regex: searchText, $options: 'i' } }
-                    ]
-                };
-            }
-
-            const usrPropertiesArr = await UserPropertiesModel.find(query).sort({ usrPropertyTime: -1 });
-
-            res.status(200).json({
-                message: "Properties fetched successfully based on the type and search.",
-                user_property_arr: usrPropertiesArr
-            });
-        } else {
-            return next(httpErrors.Unauthorized("Unauthorized access."));
+        const userId = req.payload.aud;
+        if (!userId) {
+            return next(httpErrors.Unauthorized("No user ID found in token"));
         }
+
+        const { type, searchText } = req.body;
+        console.log("Received search params:", { type, searchText, userId });
+
+        const fetchedUserData = await UserAuthModel.findById(userId);
+        if (!fetchedUserData) {
+            return next(httpErrors.NotFound("User not found"));
+        }
+
+        if (fetchedUserData.usrType !== "buyer") {
+            return next(httpErrors.Unauthorized("Only buyers can access this endpoint"));
+        }
+
+        let query = {};
+
+        // Add type filter only if it's not 'All'
+        if (type && type !== 'All') {
+            query.userListingType = type;
+        }
+
+        // Add location search if searchText is provided
+        if (searchText && searchText.trim()) {
+            const searchRegex = new RegExp(searchText.trim(), 'i');
+            
+            // Create a query that handles both string and number fields
+            query = {
+                ...query,
+                $or: [
+                    { "location.street": searchRegex },
+                    { "location.city": searchRegex },
+                    { "location.state": searchRegex },
+                    { "usrListingName": searchRegex },
+                    { "usrListingDescription": searchRegex }
+                ]
+            };
+
+            // Only add pinCode to search if searchText is a number
+            if (!isNaN(searchText)) {
+                query.$or.push({ "location.pinCode": parseInt(searchText) });
+            }
+        }
+
+        console.log("MongoDB query:", JSON.stringify(query, null, 2));
+
+        const usrPropertiesArr = await UserPropertiesModel.find(query)
+            .sort({ usrPropertyTime: -1 });
+
+        console.log(`Found ${usrPropertiesArr.length} properties`);
+
+        return res.status(200).json({
+            message: "Properties fetched successfully",
+            user_property_arr: usrPropertiesArr
+        });
+
     } catch (error) {
-        console.error("Error fetching buyer properties:", error); // Add logging
-        next(httpErrors.BadRequest("Failed to fetch properties"));
+        console.error("Error in showByTypeBuyerPropertyController:", error);
+        return next(httpErrors.InternalServerError(error.message || "Failed to fetch properties"));
     }
 };
 
 const showByTypeAdminPropertyController = async (req, res, next) => {
-    const userId = req.payload.aud;
-    const { type, searchText } = req.body; // Capture both type and searchText
-    const fetchedUserData = await UserAuthModel.findById(userId);
-
     try {
-        if (fetchedUserData.usrType === "admin") {
-            let query = {}; // Remove adminId filter
-
-            // Add filtering by type
-            if (type && type !== 'All') {
-                query.userListingType = type;
-            }
-
-            // Add filtering by searchText (if provided)
-            if (searchText) {
-                query = {
-                    ...query,
-                    $or: [
-                        { usrListingName: { $regex: searchText, $options: 'i' } }, // Case-insensitive match for name
-                        { "location.street": { $regex: searchText, $options: 'i' } },
-                        { "location.city": { $regex: searchText, $options: 'i' } },
-                        { "location.state": { $regex: searchText, $options: 'i' } },
-                        { "location.pinCode": { $regex: searchText, $options: 'i' } }
-                    ]
-                };
-            }
-
-            const usrPropertiesArr = await UserPropertiesModel.find(query).sort({ usrPropertyTime: -1 });
-
-            res.status(200).json({
-                message: "Properties fetched successfully based on the type and search.",
-                user_property_arr: usrPropertiesArr
-            });
-        } else {
-            return next(httpErrors.Unauthorized("Unauthorized access."));
+        const userId = req.payload.aud;
+        if (!userId) {
+            return next(httpErrors.Unauthorized("No user ID found in token"));
         }
+
+        const { type, searchText } = req.body;
+        console.log("Received search params:", { type, searchText, userId });
+
+        const fetchedUserData = await UserAuthModel.findById(userId);
+        if (!fetchedUserData) {
+            return next(httpErrors.NotFound("User not found"));
+        }
+
+        if (fetchedUserData.usrType !== "admin") {
+            return next(httpErrors.Unauthorized("Only admins can access this endpoint"));
+        }
+
+        let query = {};
+
+        // Add type filter only if it's not 'All'
+        if (type && type !== 'All') {
+            query.userListingType = type;
+        }
+
+        // Add location search if searchText is provided
+        if (searchText && searchText.trim()) {
+            const searchRegex = new RegExp(searchText.trim(), 'i');
+            
+            // Create a query that handles both string and number fields
+            query = {
+                ...query,
+                $or: [
+                    { "location.street": searchRegex },
+                    { "location.city": searchRegex },
+                    { "location.state": searchRegex },
+                    { "usrListingName": searchRegex },
+                    { "usrListingDescription": searchRegex }
+                ]
+            };
+
+            // Only add pinCode to search if searchText is a number
+            if (!isNaN(searchText)) {
+                query.$or.push({ "location.pinCode": parseInt(searchText) });
+            }
+        }
+
+        console.log("MongoDB query:", JSON.stringify(query, null, 2));
+
+        const usrPropertiesArr = await UserPropertiesModel.find(query)
+            .sort({ usrPropertyTime: -1 });
+
+        console.log(`Found ${usrPropertiesArr.length} properties`);
+
+        return res.status(200).json({
+            message: "Properties fetched successfully",
+            user_property_arr: usrPropertiesArr
+        });
+
     } catch (error) {
-        console.error("Error fetching admin properties:", error); // Add logging
-        next(httpErrors.BadRequest("Failed to fetch properties"));
+        console.error("Error in showByTypeAdminPropertyController:", error);
+        return next(httpErrors.InternalServerError(error.message || "Failed to fetch properties"));
     }
 };
 
@@ -372,33 +441,55 @@ const showAllUsersTwoFeaturesPropertyController = async (req, res, next) => {
 };
 
 const showByTypeAllUserPropertyController = async (req, res, next) => {
-    const { type, searchText } = req.body; // Capture both type and searchText
-   try {
-       let query = {};
-       if (type && type !== 'All') {
-           query.userListingType = type;
-       }
-       if (searchText) {
-           query = {
-               ...query,
-               $or: [
-                   { usrListingName: { $regex: searchText, $options: 'i' } },
-                   { "location.street": { $regex: searchText, $options: 'i' } },
-                   { "location.city": { $regex: searchText, $options: 'i' } },
-                   { "location.state": { $regex: searchText, $options: 'i' } },
-                   { "location.pinCode": { $regex: searchText, $options: 'i' } }
-               ]
-           };
-       }
-       const usrPropertiesArr = await UserPropertiesModel.find(query).sort({ usrPropertyTime: -1 });
-       res.status(200).json({
-           message: "Properties fetched successfully based on the type and search.",
-           user_property_arr: usrPropertiesArr
-       });
-   } catch (error) {
-       console.error("Error fetching properties:", error);
-       next(httpErrors.BadRequest("Failed to fetch properties"));
-   }
+    try {
+        const { type, searchText } = req.body;
+        console.log("Received search params:", { type, searchText });
+
+        let query = {};
+
+        // Add type filter only if it's not 'All'
+        if (type && type !== 'All') {
+            query.userListingType = type;
+        }
+
+        // Add location search if searchText is provided
+        if (searchText && searchText.trim()) {
+            const searchRegex = new RegExp(searchText.trim(), 'i');
+            
+            // Create a query that handles both string and number fields
+            query = {
+                ...query,
+                $or: [
+                    { "location.street": searchRegex },
+                    { "location.city": searchRegex },
+                    { "location.state": searchRegex },
+                    { "usrListingName": searchRegex },
+                    { "usrListingDescription": searchRegex }
+                ]
+            };
+
+            // Only add pinCode to search if searchText is a number
+            if (!isNaN(searchText)) {
+                query.$or.push({ "location.pinCode": parseInt(searchText) });
+            }
+        }
+
+        console.log("MongoDB query:", JSON.stringify(query, null, 2));
+
+        const usrPropertiesArr = await UserPropertiesModel.find(query)
+            .sort({ usrPropertyTime: -1 });
+
+        console.log(`Found ${usrPropertiesArr.length} properties`);
+
+        return res.status(200).json({
+            message: "Properties fetched successfully",
+            user_property_arr: usrPropertiesArr
+        });
+
+    } catch (error) {
+        console.error("Error in showByTypeAllUserPropertyController:", error);
+        return next(httpErrors.InternalServerError(error.message || "Failed to fetch properties"));
+    }
 };
 
 const toggleFavoriteController = async (req, res, next) => {
