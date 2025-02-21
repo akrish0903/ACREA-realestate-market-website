@@ -1,0 +1,31 @@
+property_type,square_feet,city,state,beds,baths,amenities_count,age_years,floor_level,parking_spots,distance_to_metro_km,commercial_zone,gated_community,price
+Land,1200,Mumbai,Maharashtra,0,0,0,0,0,0,2.5,1,0,2500000
+Apartment,850,Mumbai,Maharashtra,2,2,4,5,12,1,0.5,1,1,9000000
+House,2400,Mumbai,Maharashtra,4,3,6,8,0,2,1.8,0,1,15000000
+Apartment,750,Delhi,Delhi,2,1,3,3,8,1,0.3,1,1,6500000
+House,3200,Delhi,Delhi,5,4,8,12,0,3,2.5,0,1,22000000
+Land,1800,Delhi,Delhi,0,0,0,0,0,0,3.0,1,0,3500000
+Apartment,1100,Bangalore,Karnataka,3,2,5,2,15,1,1.0,1,1,8500000
+House,2800,Bangalore,Karnataka,4,3,7,6,0,2,2.5,0,1,18000000
+Land,1500,Bangalore,Karnataka,0,0,0,0,0,0,4.0,1,0,2800000
+Apartment,900,Chennai,Tamil Nadu,2,2,4,4,10,1,0.8,1,1,5500000
+House,2600,Chennai,Tamil Nadu,4,3,6,10,0,2,3.0,0,1,14000000
+Land,1300,Chennai,Tamil Nadu,0,0,0,0,0,0,5.0,0,0,2000000
+Apartment,800,Pune,Maharashtra,2,1,3,1,6,1,1.2,1,1,4500000
+House,2200,Pune,Maharashtra,3,3,5,7,0,2,2.8,0,1,12000000
+Land,1600,Pune,Maharashtra,0,0,0,0,0,0,3.5,1,0,2200000
+Apartment,950,Hyderabad,Telangana,2,2,4,3,9,1,0.7,1,1,5800000
+House,2500,Hyderabad,Telangana,4,3,6,5,0,2,2.0,0,1,13500000
+Land,1400,Hyderabad,Telangana,0,0,0,0,0,0,4.5,1,0,2300000
+Apartment,700,Kolkata,West Bengal,1,1,2,8,4,1,1.5,1,1,3500000
+House,2000,Kolkata,West Bengal,3,2,5,15,0,1,3.2,0,1,9500000
+Land,1100,Kolkata,West Bengal,0,0,0,0,0,0,5.5,0,0,1800000
+Apartment,1200,Ahmedabad,Gujarat,3,2,5,2,11,1,1.8,1,1,6500000
+House,2700,Ahmedabad,Gujarat,4,3,7,9,0,2,2.2,0,1,11000000
+Land,1700,Ahmedabad,Gujarat,0,0,0,0,0,0,4.2,1,0,2100000
+Apartment,850,Chandigarh,Chandigarh,2,2,4,4,7,1,1.0,1,1,5200000
+House,2300,Chandigarh,Chandigarh,4,3,6,6,0,2,2.5,0,1,12500000
+Land,1250,Chandigarh,Chandigarh,0,0,0,0,0,0,3.8,0,0,1900000
+Apartment,950,Jaipur,Rajasthan,2,2,4,3,5,1,1.2,1,1,4800000
+House,2400,Jaipur,Rajasthan,4,3,6,8,0,2,2.8,0,1,10500000
+Land,1450,Jaipur,Rajasthan,0,0,0,0,0,0,4.8,0,0,1700000

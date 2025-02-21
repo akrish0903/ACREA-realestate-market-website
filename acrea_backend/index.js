@@ -16,8 +16,7 @@ const chartRoutes = require("./Routes/chartRoutes");
 const chatRoutes = require('./Routes/chatRoutes');
 const socketService = require('./services/socket');
 const propertyBidsRouter = require('./Routes/propertyBids');
-
-
+const aiRouter = require('./Routes/ai');
 
 const app = express();
 const server = http.createServer(app);
@@ -26,10 +25,10 @@ const server = http.createServer(app);
 MongoDBConnector();
 // cors setting 
 // Enable CORS for all routes
-app.use(cors());
-// Or specify the frontend origin (for more security)
 app.use(cors({
-    origin: process.env.CORS_URL // Replace with the URL where your React app is running
+    origin: process.env.CORS_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
 }));
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -47,7 +46,8 @@ app.use("/api/users", chartRoutes);
 app.use("/api/properties", chartRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', chatRoutes);
-app.use('/api', propertyBidsRouter); 
+app.use('/api', propertyBidsRouter);
+app.use('/ai', aiRouter); 
 
 // unknown route
 app.use("*", (req, res, next) => {

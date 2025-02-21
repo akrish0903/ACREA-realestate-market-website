@@ -24,6 +24,7 @@ import Schedule from './views/Schedule/Schedule'
 import ScheduleList from './views/ScheduleList/ScheduleList'
 import AgentDetails from './views/AgentDetails/AgentDetails'
 import Chats from './views/Chats/Chats'
+import HelpCenter from './views/HelpCenter/HelpCenter'
 
 function App() {
   var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
@@ -75,6 +76,7 @@ function App() {
         {authUserDetails.usrEmail && (
             <Route path='/chats' element={<Chats />} />
         )}
+        <Route path='/help-center' element={<HelpCenter />} />
         <Route path='*' element={<NoPageFound />} />
       </Routes>
     </BrowserRouter>

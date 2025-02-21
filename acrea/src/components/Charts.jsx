@@ -13,6 +13,7 @@ const [propertyCityData, setPropertyCityData] = useState([]);
 //   const [userTrendData, setUserTrendData] = useState([]);
 const [priceDistributionData, setPriceDistributionData] = useState([]);
 const [favoritePropertiesData, setFavoritePropertiesData] = useState([]);
+const [insights, setInsights] = useState("");
 
 
 //   const fetchUserTrendData = async () => {
@@ -42,12 +43,22 @@ const fetchFavoriteProperties = async () => {
     }
 };
 
+const fetchInsights = async () => {
+    try {
+      const response = await axios.get("http://localhost:4500/api/properties/insights");
+      setInsights(response.data.insights);
+    } catch (error) {
+      console.error("Error fetching insights:", error);
+    }
+};
+
 useEffect(() => {
     fetchUserData();
     fetchPropertyData();
     // fetchUserTrendData();
     fetchPriceDistribution();
     fetchFavoriteProperties();
+    fetchInsights();
 }, []);
 
 const fetchUserData = async () => {
@@ -151,6 +162,28 @@ return (
                 <Bar dataKey="favoriteCount" fill="#ffc658" />
 
             </BarChart>
+        </div>
+        <div style={{
+            width: "100%",
+            maxWidth: "1200px",
+            padding: "20px",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "8px",
+            marginBottom: "20px",
+            display:"flex",
+            flexDirection:"column"
+        }}>
+            <h2 style={{ color: Config.color.primaryColor900, marginBottom: "15px" }}>
+                AI-Generated Market Insights
+            </h2>
+            <div style={{
+                whiteSpace: "pre-line",
+                lineHeight: "1.6",
+                color: "#333"
+            }}>
+                {insights ? insights : "Loading insights..."}
+            </div>
+        </div>
 
             {/* <h2>User Registrations Over Time</h2>
             <LineChart width={600} height={300} data={userRegistrationData}>
@@ -202,7 +235,6 @@ return (
   src="https://charts.mongodb.com/charts-project-0-krswttu/embed/charts?id=636647e5-268a-4c9d-b3ed-ac8de8e4db7c&maxDataAge=3600&theme=light&autoRefresh=true"
   >
   </iframe> */}
-      </div>
     </div>
   );
 };

@@ -1,0 +1,61 @@
+property_type,square_feet,city,state,beds,baths,amenities_count,age_years,floor_level,parking_spots,distance_to_metro_km,commercial_zone,gated_community,price,age_of_property
+Land,3262,Mumbai,Maharashtra,5,0,0,14,4,2,2.8,0,1,13404756,39
+Apartment,2465,Delhi,Delhi,4,4,7,15,4,1,1.4,1,0,4317845,29
+House,3068,Bangalore,Karnataka,0,2,4,19,2,1,1.1,1,0,14011656,15
+Land,2560,Chennai,Tamil Nadu,1,2,6,3,0,2,1.3,1,1,20656737,43
+Apartment,2789,Pune,Maharashtra,0,2,1,4,4,0,3.0,1,0,11417703,8
+House,1490,Hyderabad,Telangana,2,3,9,13,0,0,2.9,1,1,12280705,21
+Land,2026,Kolkata,West Bengal,5,3,5,3,4,0,1.5,1,0,22275437,39
+Apartment,2246,Ahmedabad,Gujarat,3,3,9,10,0,0,1.1,0,1,2771482,19
+House,2855,Chandigarh,Chandigarh,5,1,4,4,2,0,1.7,1,1,20587767,23
+Land,3111,Jaipur,Rajasthan,5,4,1,1,3,1,2.1,1,1,17005313,11
+Apartment,1002,Mumbai,Maharashtra,2,4,3,15,2,2,1.6,0,1,17464068,11
+House,2485,Delhi,Delhi,3,3,6,11,3,2,4.9,1,1,16189223,24
+Land,785,Bangalore,Karnataka,4,3,7,11,2,2,1.0,1,0,17249216,36
+Apartment,1282,Chennai,Tamil Nadu,3,1,4,10,0,1,3.7,1,0,10542311,40
+House,927,Pune,Maharashtra,5,3,3,0,1,0,2.7,1,1,8562310,24
+Land,2069,Hyderabad,Telangana,3,0,6,16,1,2,1.7,0,0,9280327,3
+Apartment,1533,Kolkata,West Bengal,1,2,5,0,1,1,4.5,0,0,2040610,22
+House,3047,Ahmedabad,Gujarat,1,1,6,4,2,2,4.0,1,0,16867542,2
+Land,1187,Chandigarh,Chandigarh,4,4,2,0,2,2,4.5,1,0,18796263,24
+Apartment,1278,Jaipur,Rajasthan,0,1,4,3,1,0,4.3,0,1,19565074,44
+House,2291,Mumbai,Maharashtra,2,3,0,4,4,1,3.6,0,1,18067516,30
+Land,2993,Delhi,Delhi,0,3,0,15,0,2,1.6,0,0,6758118,38
+Apartment,2339,Bangalore,Karnataka,4,2,7,19,2,1,1.4,1,1,18982333,2
+House,3112,Chennai,Tamil Nadu,3,1,7,13,3,1,1.3,0,1,20978114,21
+Land,3298,Pune,Maharashtra,0,1,2,4,3,0,1.9,1,0,7599757,33
+Apartment,1903,Hyderabad,Telangana,2,1,3,13,4,2,2.1,0,0,19527473,12
+House,1534,Kolkata,West Bengal,5,0,1,10,0,0,0.9,0,1,6774490,22
+Land,1680,Ahmedabad,Gujarat,5,0,5,13,0,0,5.5,1,1,13600609,44
+Apartment,3189,Chandigarh,Chandigarh,4,2,9,17,3,2,1.8,1,1,10500397,25
+House,2003,Jaipur,Rajasthan,3,1,9,2,1,0,0.6,1,0,8573643,49
+Land,2993,Mumbai,Maharashtra,1,2,3,11,2,0,3.1,0,0,24066940,27
+Apartment,3112,Delhi,Delhi,2,2,1,1,4,0,1.7,0,0,12315551,42
+House,831,Bangalore,Karnataka,5,0,4,16,1,0,2.1,0,0,16876937,28
+Land,2685,Chennai,Tamil Nadu,1,2,8,6,1,2,1.2,0,1,24039486,16
+Apartment,2283,Pune,Maharashtra,0,2,0,11,1,1,1.4,1,1,8180107,15
+House,1519,Hyderabad,Telangana,5,1,1,16,3,2,0.7,1,0,7848465,47
+Land,3137,Kolkata,West Bengal,4,1,1,5,2,0,1.8,1,1,5074704,44
+Apartment,3148,Ahmedabad,Gujarat,0,1,1,3,0,2,5.4,1,1,7467066,3
+House,1612,Chandigarh,Chandigarh,0,2,4,10,3,0,4.8,0,1,2670793,37
+Land,1169,Jaipur,Rajasthan,1,3,1,15,4,0,3.3,1,1,14754720,7
+Apartment,1932,Mumbai,Maharashtra,2,0,4,6,3,1,2.1,0,0,24875823,21
+House,1713,Delhi,Delhi,2,1,4,8,2,2,3.8,0,1,20892508,9
+Land,3210,Bangalore,Karnataka,1,2,9,10,4,2,2.3,0,1,4645831,39
+Apartment,3035,Chennai,Tamil Nadu,4,2,8,2,4,2,4.5,0,1,6170089,18
+House,2823,Pune,Maharashtra,2,1,6,2,1,1,3.7,0,0,21881814,4
+Land,3475,Hyderabad,Telangana,3,2,1,3,2,0,3.7,1,0,15062317,25
+Apartment,2458,Kolkata,West Bengal,0,1,0,6,3,1,4.1,1,0,9956177,14
+House,1566,Ahmedabad,Gujarat,0,1,4,7,3,2,3.8,1,1,22665741,50
+Land,1586,Chandigarh,Chandigarh,0,4,9,0,1,2,2.0,1,0,23207755,9
+Apartment,2640,Jaipur,Rajasthan,5,3,4,18,2,1,3.4,1,0,15302667,26
+House,2056,Mumbai,Maharashtra,2,1,4,4,0,1,3.6,1,1,14021867,2
+Land,1845,Delhi,Delhi,4,4,3,18,0,2,5.1,0,0,19986710,20
+Apartment,3232,Bangalore,Karnataka,0,2,5,0,0,2,3.6,1,0,16678831,28
+House,2135,Chennai,Tamil Nadu,4,3,8,10,2,0,1.4,1,1,15498398,47
+Land,2372,Pune,Maharashtra,4,4,2,6,0,0,4.0,0,0,1072542,7
+Apartment,970,Hyderabad,Telangana,1,1,5,5,4,0,0.6,1,0,23272140,44
+House,2667,Kolkata,West Bengal,0,1,1,12,2,1,0.9,1,0,13619496,8
+Land,723,Ahmedabad,Gujarat,3,4,6,10,4,1,1.7,1,1,15150370,47
+Apartment,1857,Chandigarh,Chandigarh,3,4,0,18,1,2,1.1,0,1,23149542,35
+House,3095,Jaipur,Rajasthan,2,2,9,12,4,1,1.0,1,0,18642777,14

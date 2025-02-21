@@ -4,7 +4,8 @@ const { getUserTypeCount,
     getPropertyTypeAndCityCount,
     // getUserRegistrationTrend,
     getPriceDistribution,
-    getTopFavoriteProperties } = require("../controller/chartController");
+    getTopFavoriteProperties,
+    getPropertyInsights } = require("../controller/chartController");
 
 
 
@@ -14,5 +15,6 @@ router.get("/topFavoriteProperties", getTopFavoriteProperties);
 
 router.get("/userTypeCount", getUserTypeCount);
 router.get("/propertyTypeCount", getPropertyTypeAndCityCount);
+router.get("/insights", getPropertyInsights);
 
 module.exports = router;

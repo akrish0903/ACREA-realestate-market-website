@@ -1,6 +1,7 @@
 const UserAuthModel = require("../models/UserAuthModel");
 const UserPropertiesModel = require("../models/UserPropertiesModel");
 const UserFavoritePropertiesModel = require("../models/UserFavoritePropertiesModel");
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 
 const getUserTypeCount = async (req, res) => {
@@ -114,7 +115,91 @@ const getUserRegistrations = async (req, res) => {
     }
   };
   
+const getPropertyInsights = async (req, res) => {
+  try {
+    // Get user type distribution
+    const userTypeCount = await UserAuthModel.aggregate([
+      { $group: { _id: "$usrType", count: { $sum: 1 } } }
+    ]);
+
+    // Get property statistics with more detailed analysis
+    const propertyData = await UserPropertiesModel.aggregate([
+      {
+        $group: {
+          _id: "$userListingType",
+          count: { $sum: 1 },
+          avgPrice: { $avg: "$usrPrice" },
+          minPrice: { $min: "$usrPrice" },
+          maxPrice: { $max: "$usrPrice" },
+          properties: { $push: "$$ROOT" }
+        }
+      }
+    ]);
+
+    // Format data for analysis
+    const formattedData = {
+      userTypes: userTypeCount.map(item => ({ type: item._id, count: item.count })),
+      propertyStats: propertyData.map(type => ({
+        type: type._id,
+        count: type.count,
+        avgPrice: type.avgPrice,
+        priceRange: {
+          min: type.minPrice,
+          max: type.maxPrice
+        }
+      }))
+    };
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const prompt = `Analyze this real estate market data and provide key business insights.
+      ${JSON.stringify(formattedData, null, 2)}
+      
+      Generate insights in the following format, using bullet points (•) and Indian Rupees (₹):
+
+      User Distribution Trends
+      • Focus on user type ratios and their implications
+      • Highlight any significant user type patterns
+      
+      Property Pricing Patterns
+      • Analyze average prices by property type
+      • Compare price ranges across different property types
+      • Format all prices in ₹ with commas (e.g., ₹1,50,000)
+      
+      Market Opportunities
+      • Identify underserved segments
+      • Suggest potential market strategies
+      
+      Notable Statistics
+      • Highlight key numbers and trends
+      • Include price-related insights with ₹ symbol
+      
+      Requirements:
+      - Use bullet points (•) not asterisks
+      - Format all prices as ₹XX,XX,XXX
+      - Keep insights actionable and specific
+      - Focus on patterns and opportunities`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    
+    // Format the response text to ensure proper line breaks
+    const formattedResponse = response.text()
+      .replace(/\n\n/g, '\n')
+      .replace(/\*\*/g, '')
+      .replace(/\*/g, '•');
+    
+    res.json({ insights: formattedResponse });
+  } catch (error) {
+    console.error('Error generating insights:', error);
+    res.status(500).json({ 
+      error: "Failed to generate insights",
+      details: error.message 
+    });
+  }
+};
 
 module.exports = { getUserTypeCount, getPropertyTypeAndCityCount,getUserRegistrations,
                 // getUserRegistrationTrend,
-                 getPriceDistribution, getTopFavoriteProperties };
+                 getPriceDistribution, getTopFavoriteProperties, getPropertyInsights };

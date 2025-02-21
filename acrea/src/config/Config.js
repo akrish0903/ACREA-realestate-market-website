@@ -46,4 +46,6 @@ export var Config = {
     // apiBaseUrl: 'https://real-estate-marketplace-1-ojvt.onrender.com', 
     // for hosting
 
+    backendUrl: 'http://localhost:4500', // Make sure this matches your backend port
+
 };
