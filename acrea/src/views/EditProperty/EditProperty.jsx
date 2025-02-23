@@ -442,7 +442,7 @@ function EditProperty() {
 
             {/* Submit Button */}
             <div className={Styles.formGroup}>
-              <button className={Styles.submitBtn} type="submit">Update Property</button>
+              <button id="submit" className={Styles.submitBtn} type="submit">Update Property</button>
             </div>
           </form>
         </div>

@@ -157,7 +157,7 @@ const Schedule = () => {
   return (
     <div className={`screen ${Styles.scheduleScreen}`}>
       <Header />
-      <div className={Styles.scheduleContainer}>
+      <div className={Styles.scheduleContainer} id="scheduleContainer">
         <h2>Schedule a Property Visit</h2>
         <form className={Styles.formContainer}>
           <label>
@@ -184,6 +184,7 @@ const Schedule = () => {
             Date:
             <input
               type="date"
+              id="visitDate"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
@@ -194,6 +195,7 @@ const Schedule = () => {
             Time:
             <input
               type="time"
+              id="visitTime"
               value={time}
               onChange={(e) => setTime(e.target.value)}
               required
@@ -203,12 +205,14 @@ const Schedule = () => {
           <label>
             Additional Notes:
             <textarea
+              id="visitNotes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             ></textarea>
           </label>
           <button
             type="button"
+            id="proceedToPayBtn"
             className={Styles.scheduleButton}
             onClick={handleSchedule}
           >
