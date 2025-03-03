@@ -31,11 +31,23 @@ const propertyValidationSchema = Yup.object().shape({
   usrPrice: Yup.number()
     .positive('Price must be a positive number.')
     .required('Price is required.'),
-  userListingImage: Yup.array()
-  // userlistingimage: Yup.mixed()
-  //     .required("Image is required")
-  //     .test("fileSize", "File too large", value => value && value.size <= 5 * 1024 * 1024)  // Optional: Size limit (e.g., 5MB)
-  //     .test("fileType", "Unsupported file format", value => value && ["image/jpeg", "image/png", "image/jpg"].includes(value.type)),
+  userListingImage: Yup.array(),
+  ageOfProperty: Yup.number()
+    .min(0, 'Age of property cannot be negative')
+    .required('Age of property is required'),
+  commercialZone: Yup.boolean()
+    .required('Commercial zone status is required'),
+  gatedCommunity: Yup.boolean()
+    .required('Gated community status is required'),
+  floorNumber: Yup.number()
+    .when('userListingType', {
+      is: (val) => val === 'Apartment',
+      then: () => Yup.number()
+        .required('Floor number is required for apartments')
+        .min(0, 'Floor number cannot be negative')
+        .max(100, 'Floor number seems too high'),
+      otherwise: () => Yup.number().notRequired()
+    })
 });
 
 export default propertyValidationSchema;

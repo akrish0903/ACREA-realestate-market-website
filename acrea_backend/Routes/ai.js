@@ -121,7 +121,7 @@ router.post('/chat', async (req, res) => {
 
     // Initialize the model with more specific configuration
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-pro",
+      model: "gemini-1.5-pro",
       generationConfig: {
         maxOutputTokens: 1000,
         temperature: 0.7,

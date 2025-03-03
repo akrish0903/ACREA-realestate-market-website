@@ -23,7 +23,7 @@ function HelpCenter() {
     setIsTyping(true);
 
     try {
-      const response = await fetch(`${Config.backendUrl}/ai/chat`, {
+      const response = await fetch(`${Config.apiBaseUrl}/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

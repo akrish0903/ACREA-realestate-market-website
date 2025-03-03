@@ -151,7 +151,7 @@ const getPropertyInsights = async (req, res) => {
     };
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
     const prompt = `Analyze this real estate market data and provide key business insights.
       ${JSON.stringify(formattedData, null, 2)}

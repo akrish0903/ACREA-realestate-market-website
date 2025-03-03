@@ -78,7 +78,23 @@ const userPropertySchema = new mongoose.Schema({
     userListingImage: {
         type: [String],
     },
-    
+    ageOfProperty: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    commercialZone: {
+        type: Boolean,
+        default: false,
+    },
+    gatedCommunity: {
+        type: Boolean,
+        default: false,
+    },
+    floorNumber: {
+        type: Number,
+        default: 0,
+    }
 });
 
 

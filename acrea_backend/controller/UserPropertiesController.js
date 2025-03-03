@@ -14,7 +14,11 @@ const addPropertyController = async (req, res, next) => {//done
         usrAmenities,
         usrExtraFacilities,
         usrPrice,
-        userListingImage
+        userListingImage,
+        ageOfProperty,
+        commercialZone,
+        gatedCommunity,
+        floorNumber
     } = req.body;
 
     try {
@@ -31,6 +35,10 @@ const addPropertyController = async (req, res, next) => {//done
                 usrExtraFacilities,
                 usrPrice,
                 userListingImage,
+                ageOfProperty,
+                commercialZone,
+                gatedCommunity,
+                floorNumber,
                 usrPropertyTime: new Date(),
                 usrPropertyFavorites: 0,
                 usrPropertyLiveStatus: true,

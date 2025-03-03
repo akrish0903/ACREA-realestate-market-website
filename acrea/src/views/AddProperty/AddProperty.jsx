@@ -35,7 +35,11 @@ function AddProperty() {
         bath: 0
       },
       usrPrice: 0,
-      userListingImage: [] // This should be an array to hold multiple images
+      userListingImage: [],
+      ageOfProperty: 0,
+      commercialZone: false,
+      gatedCommunity: false,
+      floorNumber: 0
     },
     validationSchema: propertyValidationSchema,
     onSubmit: addPropertyHandler
@@ -283,6 +287,20 @@ function AddProperty() {
               </div>
             </div>
 
+            <div className={Styles.ageOfPropertyGroup}>
+              <div className={Styles.formGroup}>
+                <label htmlFor="ageOfProperty">Age of Property (in years)</label>
+                <input
+                  type="number"
+                  id="ageOfProperty"
+                  {...formik.getFieldProps('ageOfProperty')}
+                />
+                {formik.touched.ageOfProperty && formik.errors.ageOfProperty ? (
+                  <div className={Styles.errorMessage}>{formik.errors.ageOfProperty}</div>
+                ) : null}
+              </div>
+            </div>
+            
             <div className={Styles.amenitiesSection}>
               <label>Amenities</label>
               <div className={Styles.selectAllContainer}>
@@ -346,6 +364,60 @@ function AddProperty() {
                 </div>
               </div>
             </div>
+
+            <div className={Styles.CHECK}>
+              <h3 className={Styles.checkboxTitle}>Property Features</h3>
+              <div className={Styles.checkboxGroupGrid}>
+                <div className={Styles.checkboxGroup}>
+                  <input
+                    type="checkbox"
+                    id="commercialZone"
+                    {...formik.getFieldProps('commercialZone')}
+                    checked={formik.values.commercialZone}
+                  />
+                  <label htmlFor="commercialZone">Located in Commercial Zone</label>
+                </div>
+                {formik.touched.commercialZone && formik.errors.commercialZone ? (
+                  <div className={Styles.errorMessage}>{formik.errors.commercialZone}</div>
+                ) : null}
+
+                <div className={Styles.checkboxGroup}>
+                  <input
+                    type="checkbox"
+                    id="gatedCommunity"
+                    {...formik.getFieldProps('gatedCommunity')}
+                    checked={formik.values.gatedCommunity}
+                  />
+                  <label htmlFor="gatedCommunity">
+                    Gated Community
+                    <span 
+                      className={Styles.infoIcon} 
+                      title="A residential community with controlled entrances and surrounded by walls or fences"
+                    >
+                      ⓘ
+                    </span>
+                  </label>
+                </div>
+                {formik.touched.gatedCommunity && formik.errors.gatedCommunity ? (
+                  <div className={Styles.errorMessage}>{formik.errors.gatedCommunity}</div>
+                ) : null}
+              </div>
+            </div>
+
+            {formik.values.userListingType === 'Apartment' && (
+              <div className={Styles.formGroup}>
+                <label htmlFor="floorNumber">Floor Number</label>
+                <input
+                  type="number"
+                  id="floorNumber"
+                  {...formik.getFieldProps('floorNumber')}
+                  placeholder="Enter the floor number"
+                />
+                {formik.touched.floorNumber && formik.errors.floorNumber ? (
+                  <div className={Styles.errorMessage}>{formik.errors.floorNumber}</div>
+                ) : null}
+              </div>
+            )}
 
             <div className={`${Styles.formGroup}  ${formik.touched.usrPrice && formik.errors.usrPrice ? Styles.hasError : ''}`}>
               <label htmlFor="usrPrice">Price</label>
