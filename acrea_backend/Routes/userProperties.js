@@ -76,4 +76,8 @@ router.post("/upload-photos", jwt_verify_token, upload.array('userListingImage',
     }
 });
 
+router.post('/update-property-status', jwt_verify_token, UserPropertiesController.updatePropertyStatusController);
+
+router.post('/check-favorite', jwt_verify_token, UserPropertiesController.checkFavoriteController);
+
 module.exports = router;

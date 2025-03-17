@@ -1,0 +1,11 @@
+.logoutScreen {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+.logoutContainer {
+    margin-top: 30vh;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}

@@ -43,6 +43,17 @@ var AuthUserDetailsSlice = createSlice({
         setAccessToken: (state, action) => {
             state.usrAccessToken = action.payload;
         },
+        clearUserData: (state) => {
+            state._id = null;
+            state.usrEmail = null;
+            state.usrFullName = null;
+            state.usrMobileNumber = null;
+            state.usrType = null;
+            state.usrRefreshToken = null;
+            state.usrAccessToken = null;
+            state.usrProfileUrl = null;
+            state.userBio = null;
+        },
     }
 })
 

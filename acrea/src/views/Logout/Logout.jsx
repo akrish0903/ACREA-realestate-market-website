@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Config } from '../../config/Config';
 import { AuthUserDetailsSliceAction } from '../../store/AuthUserDetailsSlice';
 import { useDispatch } from 'react-redux';
+import Styles from './css/Logout.module.css';
+
 
 
 const Logout = () => {
@@ -10,6 +12,13 @@ const Logout = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        // Clear the auto logout timer
+        const timerId = localStorage.getItem('logoutTimer');
+        if (timerId) {
+            clearTimeout(Number(timerId));
+            localStorage.removeItem('logoutTimer');
+        }
+        
         // Simulate logout by clearing user data (if any)
         dispatch(AuthUserDetailsSliceAction.setUsrEmail(null));
         dispatch(AuthUserDetailsSliceAction.setUsrFullName(null));
@@ -30,11 +39,10 @@ const Logout = () => {
     }, [navigate]);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
-            <div style={{ textAlign: 'center', marginTop: '20vh' }}>
-                <h1 style={{ color: Config.color.primaryColor900 }}>You have been logged out successfully!</h1>
-            </div>
-            <div style={{ textAlign: 'center' }}>
+        <div  className={`screen ${Styles.logoutScreen}`}>
+            <div className={Styles.logoutContainer}>
+                <h1 style={{ color: Config.color.primaryColor900, fontSize: '3rem', fontWeight: 'bold' }}>You have been logged out successfully!</h1>
+                <p style={{fontSize: '1.5rem', fontWeight: 'bold' }}>Redirecting to the dashboard...</p>
                 <p>Redirecting to the dashboard...</p>
             </div>
         </div>

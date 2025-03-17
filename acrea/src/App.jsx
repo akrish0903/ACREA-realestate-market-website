@@ -25,6 +25,7 @@ import ScheduleList from './views/ScheduleList/ScheduleList'
 import AgentDetails from './views/AgentDetails/AgentDetails'
 import Chats from './views/Chats/Chats'
 import HelpCenter from './views/HelpCenter/HelpCenter'
+import Meeting from './views/Meeting/Meeting'
 
 function App() {
   var authUserDetails = useSelector(data => data.AuthUserDetailsSlice)
@@ -33,6 +34,7 @@ function App() {
   function importOldUserData() {
     //if user is logged in already make him logged in 
     if (localStorage.getItem("access_token") && authUserDetails.usrAccessToken === null) {
+      dispatch(AuthUserDetailsSliceAction.setUsrID(localStorage.getItem("_id")));
       dispatch(AuthUserDetailsSliceAction.setUsrEmail(localStorage.getItem("usrEmail")));
       dispatch(AuthUserDetailsSliceAction.setUsrFullName(localStorage.getItem("usrFullName")));
       dispatch(AuthUserDetailsSliceAction.setUsrMobileNumber(localStorage.getItem("usrMobileNumber")));
@@ -54,29 +56,28 @@ function App() {
         <Route path='/ForgotPassword' element={<ForgotPassword />} />
         {authUserDetails.usrEmail && (<Route path='/editProfile' element={<EditProfile />} />)}
 
-        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "owner" )&& (<Route path='/AddProperty' element={<AddProperty />} />)}
-        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "owner" )&& (<Route path='/EditProperty' element={<EditProperty /> }/>)}
-        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "buyer" || authUserDetails.usrType === "owner" )&& (<Route path='/ScheduleList' element={<ScheduleList /> }/>)}
+        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "owner")&& (<Route path='/AddProperty' element={<AddProperty />} />)}
+        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "owner")&& (<Route path='/EditProperty' element={<EditProperty /> }/>)}
+        
+        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "buyer" || authUserDetails.usrType === "owner")&& (<Route path='/ScheduleList' element={<ScheduleList /> }/>)}
+        {(authUserDetails.usrType === "agent" || authUserDetails.usrType === "buyer" || authUserDetails.usrType === "owner") && (<Route path='/chats' element={<Chats />} />)}
 
         {authUserDetails.usrType === "admin" && (<Route path='/BuyerList' element={<BuyerList />} />)}
         {(authUserDetails.usrType === "admin" || authUserDetails.usrType === "buyer")&& (<Route path='/AgentList' element={<AgentList />} />)}
         {authUserDetails.usrType === "admin" && (<Route path='/EditProperty' element={<EditProperty /> }/>)}
 
-        <Route path='/Schedule' element={<Schedule/>} />
-        <Route path='/AgentDetails' element={<AgentDetails />} />
-
+        {authUserDetails.usrEmail && (<Route path='/Schedule' element={<Schedule/>} />)}
+        {authUserDetails.usrEmail && (<Route path='/AgentDetails' element={<AgentDetails />} />)}
         
-        
-        <Route path='/FavoritedProperties' element={<FavoritedProperties />} />
+        {authUserDetails.usrEmail && (<Route path='/FavoritedProperties' element={<FavoritedProperties />} />)}
         <Route path='/PropertyPage' element={<PropertyPage />} />
         <Route path='/viewAllProperties' element={<ViewAllProperties />} />
         <Route path='/About' element={<About />} />
         <Route path="/logout" element={<Logout />} />
         <Route path='/' element={<Dashboard />} />
-        {authUserDetails.usrEmail && (
-            <Route path='/chats' element={<Chats />} />
-        )}
+        
         <Route path='/help-center' element={<HelpCenter />} />
+        <Route path="/meeting" element={<Meeting />} />
         <Route path='*' element={<NoPageFound />} />
       </Routes>
     </BrowserRouter>

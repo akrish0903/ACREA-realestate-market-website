@@ -51,4 +51,4 @@ const propertyBidSchema = new mongoose.Schema({
 });
 
 const PropertyBidModel = mongoose.model('propertybids', propertyBidSchema);
-module.exports = PropertyBidModel; 
+module.exports = PropertyBidModel;

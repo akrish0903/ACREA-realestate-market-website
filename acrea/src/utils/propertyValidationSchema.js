@@ -25,8 +25,22 @@ const propertyValidationSchema = Yup.object().shape({
   }),
   usrAmenities: Yup.array().of(Yup.string()),
   usrExtraFacilities: Yup.object().shape({
-    beds: Yup.number().min(0, 'Number of beds cannot be negative.'),
-    bath: Yup.number().min(0, 'Number of baths cannot be negative.'),
+    beds: Yup.number()
+      .min(0, 'Number of beds cannot be negative.')
+      .max(10, 'Number of beds seems unreasonably high.')
+      .when('userListingType', {
+        is: 'Land',
+        then: () => Yup.number().equals([0], 'Land properties cannot have beds'),
+        otherwise: () => Yup.number().required('Number of beds is required')
+      }),
+    bath: Yup.number()
+      .min(0, 'Number of baths cannot be negative.')
+      .max(8, 'Number of baths seems unreasonably high.')
+      .when('userListingType', {
+        is: 'Land',
+        then: () => Yup.number().equals([0], 'Land properties cannot have baths'),
+        otherwise: () => Yup.number().required('Number of baths is required')
+      }),
   }),
   usrPrice: Yup.number()
     .positive('Price must be a positive number.')

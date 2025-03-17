@@ -18,7 +18,7 @@ const [insights, setInsights] = useState("");
 
 //   const fetchUserTrendData = async () => {
 //     try {
-//       const response = await axios.get("http://localhost:4500/api/users/registrationTrend");
+//       const response = await axios.get(`${Config.apiBaseUrl}/api/users/registrationTrend`);
 //       setUserTrendData(response.data);
 //     } catch (error) {
 //       console.error("Error fetching user trend data:", error);
@@ -27,7 +27,8 @@ const [insights, setInsights] = useState("");
 
 const fetchPriceDistribution = async () => {
     try {
-        const response = await axios.get("http://localhost:4500/api/properties/priceDistribution");
+        // const response = await fetch(`${Config.apiBaseUrl}/ai/predict-price`, {
+        const response = await axios.get(`${Config.apiBaseUrl}/api/properties/priceDistribution`);
         setPriceDistributionData(response.data);
     } catch (error) {
         console.error("Error fetching price distribution data:", error);
@@ -36,7 +37,7 @@ const fetchPriceDistribution = async () => {
 
 const fetchFavoriteProperties = async () => {
     try {
-      const response = await axios.get("http://localhost:4500/api/properties/topFavoriteProperties");
+      const response = await axios.get(`${Config.apiBaseUrl}/api/properties/topFavoriteProperties`);
       setFavoritePropertiesData(response.data);
     } catch (error) {
       console.error("Error fetching favorite properties:", error);
@@ -45,7 +46,7 @@ const fetchFavoriteProperties = async () => {
 
 const fetchInsights = async () => {
     try {
-      const response = await axios.get("http://localhost:4500/api/properties/insights");
+      const response = await axios.get(`${Config.apiBaseUrl}/api/properties/insights`);
       setInsights(response.data.insights);
     } catch (error) {
       console.error("Error fetching insights:", error);
@@ -63,7 +64,7 @@ useEffect(() => {
 
 const fetchUserData = async () => {
     try {
-      const response = await axios.get("http://localhost:4500/api/users/userTypeCount");
+      const response = await axios.get(`${Config.apiBaseUrl}/api/users/userTypeCount`);
       setUserTypeData(response.data);
     } catch (error) {
       console.error("Error fetching user type data:", error);
@@ -72,7 +73,7 @@ const fetchUserData = async () => {
 
 const fetchPropertyData = async () => {
     try {
-      const response = await axios.get("http://localhost:4500/api/properties/propertyTypeCount");
+      const response = await axios.get(`${Config.apiBaseUrl}/api/properties/propertyTypeCount`);
       setPropertyTypeData(response.data.propertyTypes);
       setPropertyCityData(response.data.propertyCities);
     } catch (error) {
@@ -91,77 +92,79 @@ return (
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",paddingTop: "1rem",
             paddingBottom: "1rem"}}>
-            <h2>User Types Distribution</h2>
-            <PieChart width={400} height={300}>
-                <Pie data={userTypeData} dataKey="count" nameKey="usrType" cx="50%" cy="50%" outerRadius={100}>
-                {userTypeData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-            </PieChart>
+            {/* <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"20px"}}> */}
+                <h2>User Types Distribution</h2>
+                <PieChart width={400} height={300}>
+                    <Pie data={userTypeData} dataKey="count" nameKey="usrType" cx="50%" cy="50%" outerRadius={100}>
+                    {userTypeData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                </PieChart>
 
-            <h2>Property Types Distribution</h2>
-            <BarChart width={600} height={300} data={propertyTypeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="userListingType" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" fill="#8884d8" />
-            </BarChart>
-
-            <h2>Properties by City</h2>
-            <BarChart width={600} height={300} data={propertyCityData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="city" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" fill="#82ca9d" />
-            </BarChart>
-
-
-            {/* <h2>User Registration Trend (Monthly)</h2>
-                <LineChart width={600} height={300} data={userTrendData}>
+                <h2>Property Types Distribution</h2>
+                <BarChart width={600} height={300} data={propertyTypeData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
+                    <XAxis dataKey="userListingType" />
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="count" stroke="#8884d8" />
-                </LineChart> */}
+                    <Bar dataKey="count" fill="#8884d8" />
+                </BarChart>
 
-            <h2>Property Price Distribution</h2>
-            <BarChart width={600} height={300} data={priceDistributionData}>
+                <h2>Properties by City</h2>
+                <BarChart width={600} height={300} data={propertyCityData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="city" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="count" fill="#82ca9d" />
+                </BarChart>
+
+
+                {/* <h2>User Registration Trend (Monthly)</h2>
+                    <LineChart width={600} height={300} data={userTrendData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="count" stroke="#8884d8" />
+                    </LineChart> */}
+
+                <h2>Property Price Distribution</h2>
+                <BarChart width={600} height={300} data={priceDistributionData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="range" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="count" fill="#82ca9d" />
+                </BarChart>
+
+                <h2>Property Price Range Distribution</h2>
+                <AreaChart width={600} height={300} data={priceDistributionData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="range" />
                 <YAxis />
                 <Tooltip />
-                <Legend />
-                <Bar dataKey="count" fill="#82ca9d" />
-            </BarChart>
+                <Area type="monotone" dataKey="count" stroke="#82ca9d" fill="#82ca9d" />
+                </AreaChart>
 
-            <h2>Property Price Range Distribution</h2>
-            <AreaChart width={600} height={300} data={priceDistributionData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="range" />
-            <YAxis />
-            <Tooltip />
-            <Area type="monotone" dataKey="count" stroke="#82ca9d" fill="#82ca9d" />
-            </AreaChart>
+                <h2>Top 5 Most Favorited Properties</h2>
+                <BarChart width={600} height={300} data={favoritePropertiesData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="usrListingName" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="favoriteCount" fill="#ffc658" />
 
-            <h2>Top 5 Most Favorited Properties</h2>
-            <BarChart width={600} height={300} data={favoritePropertiesData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="usrListingName" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="favoriteCount" fill="#ffc658" />
-
-            </BarChart>
+                </BarChart>
+            {/* </div> */}
         </div>
         <div style={{
             width: "100%",

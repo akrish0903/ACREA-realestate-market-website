@@ -25,7 +25,7 @@ function Chats() {
 
     useEffect(() => {
         // Initialize socket connection
-        socketRef.current = io(import.meta.env.VITE_BASE_API_URL || 'http://localhost:4500');
+        socketRef.current = io(import.meta.env.VITE_BASE_API_URL || (Config.apiBaseUrl));
 
         // Clean up on unmount
         return () => {
@@ -72,19 +72,35 @@ function Chats() {
     }, [messages]);
 
     useEffect(() => {
-        // Try to get ID from localStorage if not in Redux
-        if (!userAuthData._id) {
-            const storedId = localStorage.getItem("_id");
-            console.log("storedId",storedId);
-            if (storedId) {
-                dispatch(AuthUserDetailsSliceAction.setUsrID(storedId));
-            }
+        const storedId = localStorage.getItem("_id");
+        const storedToken = localStorage.getItem("usrAccessToken");
+        
+        if (!userAuthData._id && storedId) {
+            dispatch(AuthUserDetailsSliceAction.setUsrID(storedId));
         }
-    }, []);
+        
+        if (!userAuthData.usrAccessToken && storedToken) {
+            dispatch(AuthUserDetailsSliceAction.setUsrAccessToken(storedToken));
+        }
+        
+        // Only fetch conversations if we have authentication
+        if ((userAuthData._id || storedId) && (userAuthData.usrAccessToken || storedToken)) {
+            fetchConversations();
+        }
+    }, [userAuthData._id, userAuthData.usrAccessToken]);
 
     const fetchConversations = async () => {
         try {
             setLoading(true);
+            setError(null);
+            
+            // Get user ID from Redux or localStorage
+            const userId = userAuthData._id || localStorage.getItem("_id");
+            if (!userId) {
+                setError('User authentication required');
+                return;
+            }
+
             const response = await useApi({
                 authRequired: true,
                 authToken: userAuthData.usrAccessToken,
@@ -95,11 +111,11 @@ function Chats() {
             if (response.success) {
                 setConversations(response.conversations || []);
             } else {
-                setError('Failed to fetch conversations');
+                setError(response.message || 'Failed to fetch conversations');
             }
         } catch (error) {
             console.error('Error fetching conversations:', error);
-            setError('Failed to load conversations');
+            setError(error.message || 'Failed to load conversations');
         } finally {
             setLoading(false);
         }
@@ -253,8 +269,9 @@ function Chats() {
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                                    id="messageInput"
                                 />
-                                <button onClick={sendMessage}>Send</button>
+                                <button onClick={sendMessage} id="sendMessageButton">Send</button>
                             </div>
                         </>
                     ) : (

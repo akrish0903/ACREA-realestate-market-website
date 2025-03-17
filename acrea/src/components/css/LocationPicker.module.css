@@ -1,0 +1,28 @@
+.mapContainer {
+    margin: 1rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.instructions {
+    text-align: center;
+    color: #666;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.mapContainer :global(.leaflet-container) {
+    z-index: 1;
+    position: relative;
+}
+
+.mapContainer :global(.leaflet-popup) {
+    z-index: 2;
+} 

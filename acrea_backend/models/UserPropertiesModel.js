@@ -41,6 +41,9 @@ const userPropertySchema = new mongoose.Schema({
         street: {
             type: String,
         },
+        district: {
+            type: String,
+        },
         city: {
             type: String,
         },
@@ -94,6 +97,11 @@ const userPropertySchema = new mongoose.Schema({
     floorNumber: {
         type: Number,
         default: 0,
+    },
+    status: {
+        type: String,
+        enum: ['active', 'unlisted', 'disabled', 'bidding', 'sold'],
+        default: 'active'
     }
 });
 

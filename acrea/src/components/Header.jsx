@@ -149,7 +149,7 @@ function Header() {
                         ABOUT US
                     </NavLink>
                 </h6>
-                {userAuthData.usrEmail && (
+                {userAuthData.usrEmail && userAuthData.usrType!=='admin' && (
                     <h6>
                         <NavLink
                             to="/chats"

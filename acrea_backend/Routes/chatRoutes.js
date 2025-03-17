@@ -55,6 +55,15 @@ router.post('/chats/initiate', verifyAccessToken, async (req, res) => {
 router.get('/chats/conversations', verifyAccessToken, async (req, res) => {
     try {
         const userId = req.payload.aud;
+        
+        // Add error checking for userId
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'User ID is required'
+            });
+        }
+
         const chats = await Chat.find({
             $or: [{ senderId: userId }, { receiverId: userId }]
         })
@@ -63,16 +72,23 @@ router.get('/chats/conversations', verifyAccessToken, async (req, res) => {
         .populate('receiverId', 'usrFullName')
         .sort({ updatedAt: -1 });
 
-        const conversations = chats.map(chat => ({
-            _id: chat._id,
-            propertyName: chat.propertyId.usrListingName,
-            propertyImage: chat.propertyId.userListingImage[0],
-            lastMessage: chat.lastMessage,
-            otherPartyName: chat.senderId._id.toString() === userId ? 
-                chat.receiverId.usrFullName : 
-                chat.senderId.usrFullName,
-            updatedAt: chat.updatedAt
-        }));
+        // Handle case where propertyId might be null
+        const conversations = chats.map(chat => {
+            if (!chat.propertyId) {
+                return null;
+            }
+            
+            return {
+                _id: chat._id,
+                propertyName: chat.propertyId.usrListingName,
+                propertyImage: chat.propertyId.userListingImage?.[0],
+                lastMessage: chat.lastMessage,
+                otherPartyName: chat.senderId._id.toString() === userId ? 
+                    chat.receiverId?.usrFullName : 
+                    chat.senderId?.usrFullName,
+                updatedAt: chat.updatedAt
+            };
+        }).filter(Boolean); // Remove null entries
 
         res.json({
             success: true,
@@ -82,7 +98,8 @@ router.get('/chats/conversations', verifyAccessToken, async (req, res) => {
         console.error('Get conversations error:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to fetch conversations'
+            message: 'Failed to fetch conversations',
+            error: error.message
         });
     }
 });

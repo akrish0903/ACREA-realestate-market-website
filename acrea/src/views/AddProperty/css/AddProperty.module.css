@@ -6,154 +6,186 @@
   /* align-items: center; */
   margin:auto;
 }
-  .formContainer {
-    margin: 5rem; /**/
-    justify-content: center;
-    background-color: #ffffff;
-    padding: 4rem; /**/
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    width: 40rem;
-  }
-  .formTitle {
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
+.formContainer {
+  margin: 5rem; /**/
+  justify-content: center;
+  background-color: #ffffff;
+  padding: 4rem; /**/
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 40rem;
+}
+.formTitle {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
 
-  .formGroup {
-    margin-bottom: 20px;
-    flex-direction: column;
-  }
-  .formGroup label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  .formGroup input,
-  .formGroup select,
-  .formGroup textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 14px;
-  }
-  .locationGroup  {
-    background-color: #f0f8ff;
-    padding: 15px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    border: 1px solid #cccccc;
-    display: block;
-    width: 100%;
-  }
-  .locationGroup  input {
-    margin-bottom: 10px;
-  }
-  .stateOption{
-    margin-bottom: 10px;
-  }
-  .flexRow {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-  }
-  .flexRow .formGroup {
-    flex: 1;
-    min-width: 100px;
-  }
-  .formFooter {
-    margin-bottom: 20px;
-    font-weight: bold;
-    display: block;
-  }
-  .formFooter input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 14px;
-    background-color: #f9f9f9;
-    cursor: pointer;
-  }
-  .submitBtn {
-    display: inline-block;
-    background-color: white;
-    color: #000;
-    text-align: center;
-    padding: 10px 20px;
-    border: 3px solid black;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    width: 100%;
-    transition: background-color 0.3s;
-  }
-  .submitBtn:hover {
-    background-color: #bc0000;
-    color: #ffffff;
-  }
-  .submitBtn:disabled {
+.formGroup {
+  margin-bottom: 20px;
+  flex-direction: column;
+}
+.formGroup label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.locationGroup  {
+  background-color: #f0f8ff;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #cccccc;
+  display: block;
+  width: 100%;
+}
+.locationGroup input,
+.locationGroup select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.locationGroup input.hasError,
+.locationGroup select.hasError {
+  border-color: #d32f2f;
+  background-color: #fff5f5;
+}
+.locationGroup input:focus,
+.locationGroup select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+}
+.locationGroup input.hasError:focus,
+.locationGroup select.hasError:focus {
+  border-color: #d32f2f;
+  box-shadow: 0 0 0 2px rgba(211,47,47,.25);
+}
+.stateOption{
+  margin-bottom: 10px;
+}
+.flexRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+.flexRow .formGroup {
+  flex: 1;
+  min-width: 100px;
+}
+.formFooter {
+  margin-bottom: 20px;
+  font-weight: bold;
+  display: block;
+}
+.formFooter input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+.submitBtn {
+  display: inline-block;
+  background-color: white;
+  color: #000;
+  text-align: center;
+  padding: 10px 20px;
+  border: 3px solid black;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+.submitBtn:hover {
+  background-color: #bc0000;
+  color: #ffffff;
+}
+.submitBtn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
   color: black;
 }
-  .textSmall {
-    font-size: 12px;
-    color: grey;
-  }
-  .amenitiesSection {
-    margin: 20px 0;
-    display: block;
-  }
-  .amenitiesSection label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  .amenitiesGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-  .amenitiesGrid div {
-    display: flex;
-    align-items: center;
-  }
-  .amenitiesGrid input {
-    margin-right: 8px;
-  }
-
-  .selectAllContainer {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .selectAllLabel {
-    margin-left: 1px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-  
-  .errorMessage {
-  color: #d32f2f;
-  font-size: 0.875rem;
-  margin-top: 3px;
-  text-align: left;
-  font-weight: 400;
-  line-height: 1.66;
-  letter-spacing: 0.03333em;
-  padding-left: 14px;
-  animation: fadeIn 0.3s ease-in-out;
+.textSmall {
+  font-size: 12px;
+  color: grey;
+}
+.amenitiesSection {
+  margin: 20px 0;
+  display: block;
+}
+.amenitiesSection label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.amenitiesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.amenitiesGrid div {
+  display: flex;
+  align-items: center;
+}
+.amenitiesGrid input {
+  margin-right: 8px;
 }
 
+.selectAllContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.selectAllLabel {
+  margin-left: 10px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.errorMessage {
+  font-size: 0.8rem;
+  margin: 0;
+  padding: 0;
+  color: #d32f2f;
+  text-align: right;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Update focus states */
 .formGroup input:focus,
 .formGroup select:focus,
 .formGroup textarea:focus {
@@ -161,13 +193,116 @@
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0,123,255,.25);
 }
+
 .formGroup.hasError input,
 .formGroup.hasError select,
 .formGroup.hasError textarea {
   border-color: #d32f2f;
+  background-color: #fff5f5;
 }
+
 .formGroup.hasError input:focus,
 .formGroup.hasError select:focus,
 .formGroup.hasError textarea:focus {
+  border-color: #d32f2f;
   box-shadow: 0 0 0 2px rgba(211,47,47,.25);
+}
+
+.ageOfPropertyGroup {
+  background-color: #f0f8ff;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #cccccc;
+  display: block;
+  width: 100%;
+}
+
+.CHECK{
+  background-color: whitesmoke;
+  /* #f0f8ff; */
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #cccccc;
+  display: block;
+  width: 100%;
+}
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 0;
+} 
+.checkboxGroup label {
+  font-weight: 500 !important;
+}
+
+.checkboxGroupGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.checkboxGroup div {
+  display: flex;
+  align-items: center;
+}
+.checkboxGroup input {
+  margin-right: 2px;
+}
+
+.checkboxTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.infoIcon {
+  display: inline-block;
+  margin-left: 5px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.infoIcon:hover {
+  color: #007bff;
+}
+
+/* Style for floor number input when it appears */
+.formGroup input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+.formGroup input[type="number"]::-webkit-outer-spin-button,
+.formGroup input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.predictedPrice {
+  background-color: #e3f2fd;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.predictedPrice p {
+  margin: 0;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.pincodeInput {
+  width: 100%;
+  position: relative;
+}
+
+.pincodeLoader {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }

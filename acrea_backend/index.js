@@ -17,6 +17,7 @@ const chatRoutes = require('./Routes/chatRoutes');
 const socketService = require('./services/socket');
 const propertyBidsRouter = require('./Routes/propertyBids');
 const aiRouter = require('./Routes/ai');
+const meetingRoutes = require('./Routes/meetingRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -47,7 +48,8 @@ app.use("/api/properties", chartRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', chatRoutes);
 app.use('/api', propertyBidsRouter);
-app.use('/ai', aiRouter); 
+app.use('/ai', aiRouter);
+app.use('/api', meetingRoutes);
 
 // unknown route
 app.use("*", (req, res, next) => {

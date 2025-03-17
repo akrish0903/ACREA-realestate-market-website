@@ -79,3 +79,8 @@
 .inactiveLink {
     border-bottom: none;
 }
+
+.header {
+    position: relative;
+    z-index: 1000;
+}

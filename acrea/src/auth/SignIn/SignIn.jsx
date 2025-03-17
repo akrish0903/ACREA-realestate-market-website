@@ -48,7 +48,8 @@ function SignIn() {
         pending: "Signing in user..!!",
         success: {
           render({ toastProps, closeToast, data }) {
-
+            console.log("User details from API:", data.user_details);
+            
             // Updating details to class
             dispatch(AuthUserDetailsSliceAction.setUsrID(data.user_details._id));
             localStorage.setItem("_id",data.user_details._id);
@@ -71,16 +72,22 @@ function SignIn() {
 
             formicHelpers.resetForm();
 
-
-            // logout 
-
-            setTimeout(() => {
-
-              toast.info("Session Expired", {
+            // Set up auto logout timer
+            const logoutTimer = setTimeout(() => {
+              // Clear local storage
+              localStorage.clear();
+              
+              // Clear Redux state
+              dispatch(AuthUserDetailsSliceAction.clearUserData());
+              
+              toast.info("Session expired. Please login again.", {
                 position: 'bottom-left',
               });
               navigate("/signin");
             }, 60 * 60 * 1000);
+
+            // Store timer ID in localStorage to clear it on manual logout
+            localStorage.setItem('logoutTimer', logoutTimer);
 
             // Redirecting back to dashboard
             setTimeout(() => {
@@ -267,7 +274,7 @@ function SignIn() {
                     fontSize: Config.fontSize.small,
                     color: Config.color.primaryColor800,
                     cursor: "pointer"
-                  }}>Don’t Have Account? Sign Up</p>
+                  }}>Don't Have Account? Sign Up</p>
                 </Link>
               </div>
             </div>

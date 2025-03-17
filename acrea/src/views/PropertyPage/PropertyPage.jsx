@@ -21,7 +21,14 @@ import PropertyMap from '../../components/PropertyMap';
 import PropertyQuestions from '../../components/PropertyQuestions'
 import PropertyImages from '../../components/PropertyImages';
 import StarIcon from '@mui/icons-material/Star';
+import ApartmentIcon from '@mui/icons-material/Apartment';
 import { toast } from 'react-toastify';
+import BusinessIcon from '@mui/icons-material/Business';
+import SecurityIcon from '@mui/icons-material/Security';
+import { JitsiMeeting } from '@jitsi/react-sdk';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import { FormControl, InputLabel } from '@mui/material';
 
 function PropertyPage() {
     const location = useLocation();
@@ -32,6 +39,7 @@ function PropertyPage() {
     const propertyId= propertyData._id;
 
     const [favoritesCount, setFavoritesCount] = useState(propertyData.usrPropertyFavorites || 0);
+    const [isFavorited, setIsFavorited] = useState(false);
 
     const [agentData, setAgentData] = useState();
     const [rating, setRating] = useState(0);
@@ -44,6 +52,11 @@ function PropertyPage() {
     const [currentHighestBid, setCurrentHighestBid] = useState(0);
     const [bidAmount, setBidAmount] = useState('');
     const [bidding, setBidding] = useState(null);
+    const [showMeeting, setShowMeeting] = useState(false);
+    const [meetingId, setMeetingId] = useState(null);
+    const [meeting, setMeeting] = useState(null);
+    const [propertyStatus, setPropertyStatus] = useState(propertyData.status || 'active');
+    const [tempStatus, setTempStatus] = useState(propertyData.status || 'active');
 
     async function fetchAgentData() {
         try {
@@ -87,7 +100,29 @@ function PropertyPage() {
         }
     };
 
+    const checkIfFavorited = async () => {
+        if (userAuthData.usrType !== 'buyer') return;
+        
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: '/check-favorite',
+                method: 'POST',
+                data: { propertyId: propertyData._id }
+            });
+            setIsFavorited(response.isFavorited);
+        } catch (error) {
+            console.error('Error checking favorite status:', error);
+        }
+    };
+
     const toggleFavorite = async () => {
+        if (!userAuthData.usrType === 'buyer') {
+            toast.error('Only buyers can favorite properties');
+            return;
+        }
+
         try {
             const response = await useApi({
                 authRequired: true,
@@ -96,12 +131,12 @@ function PropertyPage() {
                 method: 'POST',
                 data: { propertyId: propertyData._id }
             });
-            
-            if (response && response.favoritesCount !== undefined) {
-                setFavoritesCount(response.favoritesCount);
-            }
+
+            setIsFavorited(!isFavorited);
+            setFavoritesCount(response.favoriteCount);
+            toast.success(response.message);
         } catch (error) {
-            console.error('Failed to toggle favorite:', error);
+            toast.error('Failed to update favorite status');
         }
     };
     
@@ -263,6 +298,183 @@ function PropertyPage() {
         }
     };
 
+    const fetchMeetingData = async () => {
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: '/api/get-meetings',
+                method: 'GET'
+            });
+            
+            if (response.success) {
+                // Find meeting for current property and bidding
+                const propertyMeeting = response.meetings.find(m => 
+                    m.propertyId._id === propertyData._id && 
+                    m.biddingId === bidding?._id
+                );
+                
+                if (propertyMeeting) {
+                    setMeeting(propertyMeeting);
+                    setMeetingId(propertyMeeting.meetingId);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch meeting data:', error);
+        }
+    };
+
+    const handleRequestMeeting = async () => {
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: '/api/request-meeting',
+                method: 'POST',
+                data: {
+                    propertyId: propertyData._id,
+                    biddingId: bidding._id
+                }
+            });
+
+            if (response.success) {
+                setMeetingId(response.meetingId);
+                setMeeting({
+                    meetingId: response.meetingId,
+                    status: 'pending'
+                });
+                toast.success('Meeting request sent to agent');
+            }
+        } catch (error) {
+            toast.error('Failed to request meeting');
+        }
+    };
+
+    const handleStatusChange = async (event) => {
+        const newStatus = event.target.value;
+        setTempStatus(newStatus);
+        
+        // If property is in bidding, don't allow status change
+        if (bidding && bidding.status === 'active') {
+            toast.error("Cannot change status while property is in active bidding");
+            setTempStatus(propertyStatus);
+            return;
+        }
+
+        // If trying to unlist, calculate commission
+        if (newStatus === 'unlisted') {
+            const commission = propertyData.usrPrice * 0.10; // 10% commission
+            
+            // Create custom toast for confirmation
+            toast.info(
+                <div style={{ 
+                    padding: '1rem',
+                    borderRadius: '0.5rem',
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    minWidth: '300px'
+                }}>
+                    <p style={{
+                        fontSize: '1rem',
+                        lineHeight: '1.5',
+                        marginBottom: '1rem',
+                        color: '#1F2937'
+                    }}>
+                        Unlisting this property will incur a commission fee of<br/>
+                        <span style={{ fontWeight: 'bold', fontSize: '1.2rem', color: '#059669' }}>
+                            ₹{commission.toLocaleString()}
+                        </span>
+                    </p>
+                    <div style={{ 
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: '1rem'
+                    }}>
+                        <button
+                            onClick={() => {
+                                updatePropertyStatus(newStatus);
+                                toast.dismiss();
+                            }}
+                            style={{
+                                padding: '0.5rem 1rem',
+                                backgroundColor: '#10B981',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                                minWidth: '100px'
+                            }}
+                        >
+                            Confirm
+                        </button>
+                        <button
+                            onClick={() => {
+                                setTempStatus(propertyStatus);
+                                toast.dismiss();
+                            }}
+                            style={{
+                                padding: '0.5rem 1rem',
+                                backgroundColor: '#EF4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                                minWidth: '100px'
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>,
+                {
+                    autoClose: false,
+                    closeOnClick: false,
+                    draggable: false,
+                    closeButton: false,
+                    position: "top-center",
+                    style: {
+                        maxWidth: '400px',
+                        width: '100%'
+                    },
+                    toastId: 'status-change-confirmation',
+                    className: Styles.customToast
+                }
+            );
+            return;
+        }
+
+        // If not unlisting, proceed with status update directly
+        updatePropertyStatus(newStatus);
+    };
+
+    // Separate function to handle the actual status update
+    const updatePropertyStatus = async (newStatus) => {
+        try {
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: '/update-property-status',
+                method: 'POST',
+                data: {
+                    propertyId: propertyData._id,
+                    status: newStatus
+                }
+            });
+
+            if (response.success) {
+                setPropertyStatus(newStatus);
+                toast.success('Property status updated successfully');
+            }
+        } catch (error) {
+            toast.error('Failed to update property status');
+            setPropertyStatus(propertyData.status); // Reset to previous status on error
+        }
+    };
+
     useEffect(() => {
         if (bidding) {
             console.log('Current bidding state:', bidding);
@@ -283,6 +495,18 @@ function PropertyPage() {
     useEffect(() => {
         fetchBiddingData();
     }, [propertyData._id]);
+
+    useEffect(() => {
+        if (bidding && bidding.status === 'completed') {
+            fetchMeetingData();
+        }
+    }, [bidding]);
+
+    useEffect(() => {
+        if (userAuthData.usrType === 'buyer') {
+            checkIfFavorited();
+        }
+    }, [userAuthData]);
 
     // Check if userAuthData is defined to avoid potential errors
     if (!userAuthData) {
@@ -330,7 +554,7 @@ function PropertyPage() {
                             <h1>{propertyData.usrListingName}</h1>
                             <div className={Styles.propertyAddress} style={{ color: Config.color.primaryColor800 }}>
                                 <PlaceIcon />
-                                <p>{propertyData.location.street}, {propertyData.location.city}, {propertyData.location.state} {propertyData.location.pinCode}</p>
+                                <p>{propertyData.location.street}, {propertyData.location.city}, {propertyData.location.district}, {propertyData.location.state} {propertyData.location.pinCode}</p>
                             </div>
                         </div>
 
@@ -340,6 +564,23 @@ function PropertyPage() {
                                 <p><HotelIcon /> {propertyData.usrExtraFacilities.beds} Beds</p>
                                 <p><BathtubIcon /> {propertyData.usrExtraFacilities.bath} Baths</p>
                                 <p><SquareFootIcon /> {propertyData.usrListingSquareFeet} sqft</p>
+                                {(propertyData.userListingType === 'Apartment' || propertyData.userListingType === 'House') &&
+                                    <p><ApartmentIcon /> {propertyData.floorNumber} floors</p>
+                                }
+                            </div>
+                            <div className={Styles.propertyDetailsGrid} style={{ color: Config.color.primaryColor900 }}>
+                                <p><img
+                                    src={Config.imagesPaths.ageIcon}
+                                    className={Styles.screenRightContainerImg}
+                                    style={{
+                                        objectFit: 'contain',
+                                        width: "2rem",
+                                        height: "2rem",
+                                        filter: 'invert(15%) sepia(83%) saturate(2500%) hue-rotate(345deg) brightness(87%) contrast(122%)'
+                                    }}
+                                /> {propertyData.ageOfProperty} years</p>
+                                {propertyData.commercialZone && <p><BusinessIcon /> Commercial Zone</p>}
+                                {propertyData.gatedCommunity && <p><SecurityIcon /> Gated Community</p>}
                             </div>
                             <p>{propertyData.usrListingDescription}</p>
                         </div>
@@ -425,11 +666,13 @@ function PropertyPage() {
                     {userAuthData.usrType === 'buyer' && (
                         <aside className={Styles.sidebar}>
                             <button
-                                className={Styles.favoriteButton}
                                 onClick={toggleFavorite}
-                                style={{ color: Config.color.background }}
+                                className={`${Styles.favoriteButton} ${isFavorited ? Styles.favorited : ''}`}
                             >
-                                <BookmarkIcon /> Favorite Property {/*({favoritesCount})*/}
+                                <BookmarkIcon />
+                                <span>
+                                    {isFavorited ? 'Favorited' : 'Favorite'} ({favoritesCount})
+                                </span>
                             </button>
 
                             <button
@@ -535,7 +778,7 @@ function PropertyPage() {
                                                 {bidding.winner ? (
                                                     <>
                                                         {/* Winner View */}
-                                                        {bidding.winner.buyerId._id === userAuthData._id ? (
+                                                        {bidding.winner.buyerId._id === userAuthData._id && (
                                                             <div className={Styles.winnerAnnouncement}>
                                                                 <h4>🎉 Congratulations! You Won!</h4>
                                                                 <div className={Styles.winnerDetails}>
@@ -548,22 +791,49 @@ function PropertyPage() {
                                                                         <p>Phone: {bidding.agentId.usrMobileNumber}</p>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        ) : (
-                                                            /* Other Participants View */
-                                                            bidding.bids.some(bid => bid.buyerId._id === userAuthData._id) ? (
-                                                                <div className={Styles.loserAnnouncement}>
-                                                                    <h4>Bidding Ended</h4>
-                                                                    <p>Unfortunately, you didn't win this bidding.</p>
-                                                                    <div className={Styles.winnerInfo}>
-                                                                        <p>Winner: {bidding.winner.buyerId.usrFullName}</p>
-                                                                        <p>Winning Bid: ₹{bidding.winner.bidAmount.toLocaleString()}</p>
+                                                                    {!meeting ? (
+                                                                        <button 
+                                                                            className={Styles.meetingButton}
+                                                                            onClick={handleRequestMeeting}
+                                                                    >
+                                                                        Request Meeting with Agent
+                                                                    </button>
+                                                                ) : meeting.status === 'pending' ? (
+                                                                    <div className={Styles.meetingStatus}>
+                                                                        <p>Meeting request pending</p>
+                                                                        {meetingId && (
+                                                                            <button 
+                                                                                className={Styles.joinMeetingButton}
+                                                                                onClick={() => navigation('/meeting', { 
+                                                                                    state: { 
+                                                                                        meetingId,
+                                                                                        userName: userAuthData.usrFullName 
+                                                                                    }
+                                                                                })}
+                                                                            >
+                                                                                Join Meeting
+                                                                            </button>
+                                                                        )}
                                                                     </div>
-                                                                </div>
-                                                            ) : (
-                                                                /* Non-Participants View */
-                                                                <p className={Styles.biddingClosed}>This bidding cycle has ended.</p>
-                                                            )
+                                                                ) : (
+                                                                    <div className={Styles.meetingStatus}>
+                                                                        <p>Meeting {meeting.status}</p>
+                                                                        {meetingId && (
+                                                                            <button 
+                                                                                className={Styles.joinMeetingButton}
+                                                                                onClick={() => navigation('/meeting', { 
+                                                                                    state: { 
+                                                                                        meetingId,
+                                                                                        userName: userAuthData.usrFullName 
+                                                                                    }
+                                                                                })}
+                                                                            >
+                                                                                Join Meeting
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         )}
 
                                                         {/* Show Final Results to Everyone */}
@@ -628,6 +898,21 @@ function PropertyPage() {
                     {/* Only render if the user is an agent, owner or admin */}
                     {(userAuthData.usrType === 'agent' || userAuthData.usrType === 'admin' || userAuthData.usrType==='owner') && (
                         <aside className={Styles.sidebar}>
+                            {(userAuthData.usrType === 'agent' || userAuthData.usrType === 'owner') && (
+                                <FormControl fullWidth style={{ marginTop: '1rem', backgroundColor: 'white' }}>
+                                    <InputLabel style={{color: 'black', fontWeight: 'bold', fontSize: '1.5rem'}}>Property Status</InputLabel>
+                                    <Select
+                                        value={tempStatus}
+                                        label="Property Status"
+                                        onChange={handleStatusChange}
+                                        disabled={bidding && bidding.status === 'active'}
+                                    >
+                                        <MenuItem value="active">Active</MenuItem>
+                                        <MenuItem value="unlisted">Unlisted</MenuItem>
+                                        <MenuItem value="disabled">Disabled</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )}
                             <button
                                 className={Styles.editBtn}
                                 style={{ color: Config.color.background }}
@@ -654,6 +939,7 @@ function PropertyPage() {
                                     </div>
                                 </div>
                             )}
+                            {(userAuthData.usrType === 'agent' || userAuthData.usrType==='owner') && (
                             <div className={Styles.biddingSection}>
                                 <h3>Property Bidding</h3>
                                 {!bidding ? (
@@ -723,6 +1009,17 @@ function PropertyPage() {
                                                         <span>{new Date(bidding.winner.bidTime).toLocaleString()}</span>
                                                     </div>
                                                 </div>
+                                                <button 
+                                                    className={Styles.joinMeetingButton}
+                                                    onClick={() => navigation('/meeting', { 
+                                                        state: { 
+                                                            meetingId,
+                                                            userName: userAuthData.usrFullName 
+                                                        }
+                                                    })}
+                                                >
+                                                    Join Meeting with Winner
+                                                </button>
                                             </div>
                                         )}
                                         
@@ -753,11 +1050,11 @@ function PropertyPage() {
                                     </>
                                 )}
                             </div>
+                            )}
                         </aside>
                     )}
                 </div>
             </div>
-
             <Footer />
         </div>
     );

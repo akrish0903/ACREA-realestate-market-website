@@ -9,11 +9,17 @@ import Styles from "./css/AddProperty.module.css";
 import { Config } from '../../config/Config';
 import useApi from '../../utils/useApi';
 import propertyValidationSchema from '../../utils/propertyValidationSchema';
+import { Button, CircularProgress } from '@mui/material';
+import LocationPicker from '../../components/LocationPicker';
 
 function AddProperty() {
   const authUserDetails = useSelector(data => data.AuthUserDetailsSlice);
   const navigate = useNavigate();
   const [imageUrls, setImageUrls] = useState([]);
+  const [predictedPrice, setPredictedPrice] = useState(null);
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
+  const [isLoadingPincode, setIsLoadingPincode] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -23,6 +29,7 @@ function AddProperty() {
       usrListingSquareFeet: 0,
       location: {
         street: "",
+        district: "",
         city: "",
         state: "",
         pinCode: 0,
@@ -42,7 +49,10 @@ function AddProperty() {
       floorNumber: 0
     },
     validationSchema: propertyValidationSchema,
-    onSubmit: addPropertyHandler
+    onSubmit: addPropertyHandler,
+    validateOnMount: true,
+    validateOnChange: true,
+    validateOnBlur: true,
   });
 
   const handleImageUpload = async (e) => {
@@ -120,6 +130,123 @@ function AddProperty() {
     formik.setFieldValue('usrAmenities', updatedAmenities);
   };
 
+  const handlePredictPrice = async () => {
+    setIsPredicting(true);
+    try {
+      const response = await fetch(`${Config.apiBaseUrl}/ai/predict-price`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authUserDetails.usrAccessToken}`,
+        },
+        body: JSON.stringify(formik.values),
+      });
+
+      const data = await response.json();
+      if (data.predictedPrice) {
+        setPredictedPrice(data.predictedPrice);
+        toast.success('Price prediction successful!');
+      } else {
+        toast.error('Failed to predict price');
+      }
+    } catch (error) {
+      console.error('Price prediction error:', error);
+      toast.error('Error predicting price');
+    } finally {
+      setIsPredicting(false);
+    }
+  };
+
+  const areRequiredFieldsFilled = () => {
+    const requiredFields = [
+      'userListingType',
+      'usrListingName',
+      'usrListingSquareFeet',
+      'location.street',
+      'location.city',
+      'location.state',
+      'location.pinCode',
+      'ageOfProperty'
+    ];
+    
+    return requiredFields.every(field => {
+      const value = field.includes('.')
+        ? formik.values[field.split('.')[0]][field.split('.')[1]]
+        : formik.values[field];
+      return value !== '' && value !== 0 && value !== null && value !== undefined;
+    });
+  };
+
+  // Add validation function
+  async function validateField(name, value) {
+    try {
+      // For nested objects like location and usrExtraFacilities
+      if (name.includes('.')) {
+        const [parent, child] = name.split('.');
+        await propertyValidationSchema.validateAt(name, {
+          ...formik.values,
+          [parent]: { ...formik.values[parent], [child]: value }
+        });
+      } else {
+        await propertyValidationSchema.validateAt(name, { ...formik.values, [name]: value });
+      }
+      setValidationErrors(prev => ({ ...prev, [name]: undefined }));
+    } catch (err) {
+      setValidationErrors(prev => ({ ...prev, [name]: err.message }));
+    }
+  }
+
+  // Example of a reusable input component with live validation
+  const ValidatedInput = ({ label, name, type = 'text', ...props }) => (
+    <div className={`${Styles.formGroup} ${validationErrors[name] ? Styles.hasError : ''}`}>
+      <label htmlFor={name}>{label}</label>
+      <input
+        type={type}
+        id={name}
+        name={name}
+        {...props}
+        onChange={(e) => {
+          const value = type === 'number' ? Number(e.target.value) : e.target.value;
+          formik.setFieldValue(name, value);
+          validateField(name, value);
+        }}
+        onBlur={(e) => {
+          formik.handleBlur(e);
+          validateField(name, e.target.value);
+        }}
+        value={formik.values[name]}
+      />
+      {validationErrors[name] && (
+        <div className={Styles.errorMessage}>{validationErrors[name]}</div>
+      )}
+    </div>
+  );
+
+  const handlePinCodeChange = async (e) => {
+    const pincode = e.target.value;
+    formik.setFieldValue('location.pinCode', pincode);
+
+    if (pincode.length === 6) {
+      try {
+        const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+        const [data] = await response.json();
+
+        if (data.Status === "Success") {
+          const postOffice = data.PostOffice[0];
+          formik.setFieldValue('location.district', postOffice.District);
+          formik.setFieldValue('location.state', postOffice.State);
+          validateField('location.district', postOffice.District);
+          validateField('location.state', postOffice.State);
+        } else {
+          toast.error("Invalid PIN Code");
+        }
+      } catch (error) {
+        console.error("Error fetching location data:", error);
+        toast.error("Error fetching location data");
+      }
+    }
+  };
+
   return (
     <div className={`screen ${Styles.addPropertyScreen}`} style={{ backgroundColor: Config.color.secondaryColor200 }}>
       <Header />
@@ -177,6 +304,7 @@ function AddProperty() {
               <input
                 type="number"
                 id="usrListingSquareFeet"
+                min="0"
                 {...formik.getFieldProps('usrListingSquareFeet')}
               />
               {formik.touched.usrListingSquareFeet && formik.errors.usrListingSquareFeet ? (
@@ -192,27 +320,58 @@ function AddProperty() {
                   id="street"
                   {...formik.getFieldProps('location.street')}
                   placeholder="Street"
+                  className={formik.touched.location?.street && formik.errors.location?.street ? Styles.hasError : ''}
                 />
                 {formik.touched.location?.street && formik.errors.location?.street ? (
                   <div className={Styles.errorMessage}>{formik.errors.location.street}</div>
                 ) : null}
               
                 <input
+                  type="number"
+                  id="pinCode"
+                  placeholder="PIN Code"
+                  className={`${formik.touched.location?.pinCode && formik.errors.location?.pinCode ? Styles.hasError : ''} ${Styles.pincodeInput}`}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 6) {
+                      handlePinCodeChange(e);
+                    }
+                  }}
+                  value={formik.values.location.pinCode || ''}
+                />
+                {isLoadingPincode && <CircularProgress size={20} className={Styles.pincodeLoader} />}
+                {formik.touched.location?.pinCode && formik.errors.location?.pinCode ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.pinCode}</div>
+                ) : null}
+
+                <input
+                  type="text"
+                  id="district"
+                  {...formik.getFieldProps('location.district')}
+                  placeholder="District"
+                  className={formik.touched.location?.district && formik.errors.location?.district ? Styles.hasError : ''}
+                  readOnly  // Make district field read-only
+                />
+                {formik.touched.location?.district && formik.errors.location?.district ? (
+                  <div className={Styles.errorMessage}>{formik.errors.location.district}</div>
+                ) : null}
+
+                <input
                   type="text"
                   id="city"
                   {...formik.getFieldProps('location.city')}
-                  placeholder="City"
+                  placeholder="City/Town/Village"
+                  className={formik.touched.location?.city && formik.errors.location?.city ? Styles.hasError : ''}
                 />
                 {formik.touched.location?.city && formik.errors.location?.city ? (
                   <div className={Styles.errorMessage}>{formik.errors.location.city}</div>
                 ) : null}
               
                 <select
-                  className={Styles.stateOption}
                   id="state"
                   {...formik.getFieldProps('location.state')}
+                  className={formik.touched.location?.state && formik.errors.location?.state ? Styles.hasError : ''}
                 >
-                  <option value="" disabled>Select State</option>
+                  <option value="">Select State</option>
                   <option value="Andhra Pradesh">Andhra Pradesh</option>
                   <option value="Arunachal Pradesh">Arunachal Pradesh</option>
                   <option value="Assam">Assam</option>
@@ -253,51 +412,54 @@ function AddProperty() {
                 {formik.touched.location?.state && formik.errors.location?.state ? (
                   <div className={Styles.errorMessage}>{formik.errors.location.state}</div>
                 ) : null}
-                <input
-                  type="number"
-                  id="pinCode"
-                  {...formik.getFieldProps('location.pinCode')}
-                  placeholder="Pin Code"
+              </div>
+              <div className={Styles.locationGroup}> 
+                <label>Map Location</label>
+                <LocationPicker 
+                    onLocationSelect={(position) => {
+                        if (position && position.lat && position.lng) {
+                            formik.setFieldValue('location.latitude', position.lat, false);
+                            formik.setFieldValue('location.longitude', position.lng, false);
+                        }
+                    }}
+                    initialPosition={
+                        formik.values.location.latitude && formik.values.location.longitude
+                            ? { 
+                                lat: formik.values.location.latitude, 
+                                lng: formik.values.location.longitude 
+                            }
+                            : null
+                    }
                 />
-                {formik.touched.location?.pinCode && formik.errors.location?.pinCode ? (
-                  <div className={Styles.errorMessage}>{formik.errors.location.pinCode}</div>
-                ) : null}
-
-                </div>
-                <div className={Styles.locationGroup}> 
-                <label>Map</label>
-                <input
-                  type="text"
-                  id="latitude"
-                  {...formik.getFieldProps('location.latitude')}
-                  placeholder="Latitude"
-                />
-                {formik.touched.location?.latitude && formik.errors.location?.latitude ? (
-                  <div className={Styles.errorMessage}>{formik.errors.location.latitude}</div>
-                ) : null}
-                <input
-                  type="text"
-                  id="longitude"
-                  {...formik.getFieldProps('location.longitude')}
-                  placeholder="Longitude"
-                />
-                {formik.touched.location?.longitude && formik.errors.location?.longitude ? (
-                  <div className={Styles.errorMessage}>{formik.errors.location.longitude}</div>
-                ) : null}
+                {((formik.touched.location?.latitude && formik.errors.location?.latitude) ||
+                  (formik.touched.location?.longitude && formik.errors.location?.longitude)) && (
+                    <div className={Styles.errorMessage}>Please select a location on the map</div>
+                )}
               </div>
             </div>
 
             <div className={Styles.ageOfPropertyGroup}>
-              <div className={Styles.formGroup}>
+              <div className={`${Styles.formGroup} ${(formik.touched.ageOfProperty || formik.values.ageOfProperty < 0) && formik.errors.ageOfProperty ? Styles.hasError : ''}`}>
                 <label htmlFor="ageOfProperty">Age of Property (in years)</label>
                 <input
                   type="number"
                   id="ageOfProperty"
-                  {...formik.getFieldProps('ageOfProperty')}
+                  name="ageOfProperty"
+                  min="0"
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    formik.setFieldTouched('ageOfProperty', true, true);
+                    formik.setFieldValue('ageOfProperty', value);
+                    formik.validateField('ageOfProperty');
+                  }}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.ageOfProperty}
                 />
-                {formik.touched.ageOfProperty && formik.errors.ageOfProperty ? (
-                  <div className={Styles.errorMessage}>{formik.errors.ageOfProperty}</div>
-                ) : null}
+                {((formik.touched.ageOfProperty || formik.values.ageOfProperty < 0) && formik.errors.ageOfProperty) && (
+                  <div className={Styles.errorMessage}>
+                    {formik.errors.ageOfProperty}
+                  </div>
+                )}
               </div>
             </div>
             
@@ -339,27 +501,56 @@ function AddProperty() {
               <div className={Styles.locationGroup}>
                 <label>Number of (Leave blank if not applicable)</label>
                 <div className={Styles.flexRow}>
-                  <div className={`${Styles.formGroup}  ${formik.touched.usrExtraFacilities?.beds && formik.errors.usrExtraFacilities?.beds ? Styles.hasError : ''}`}>
+                  <div className={`${Styles.formGroup} ${(formik.touched.usrExtraFacilities?.beds || formik.values.usrExtraFacilities?.beds < 0) && formik.errors.usrExtraFacilities?.beds ? Styles.hasError : ''}`}>
                     <label htmlFor="beds">Beds</label>
                     <input
                       type="number"
                       id="beds"
-                      {...formik.getFieldProps('usrExtraFacilities.beds')}
+                      name="usrExtraFacilities.beds"
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        formik.setFieldTouched('usrExtraFacilities.beds', true, true);
+                        formik.setFieldValue('usrExtraFacilities.beds', value);
+                        formik.validateField('usrExtraFacilities');  // Validate the entire usrExtraFacilities object
+                      }}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.usrExtraFacilities.beds}
+                      disabled={formik.values.userListingType === 'Land'}
+                      min="0"
+                      max="10"
                     />
-                  {formik.touched.usrExtraFacilities?.beds && formik.errors.usrExtraFacilities?.beds ? (
-                    <div className={Styles.errorMessage}>{formik.errors.usrExtraFacilities.beds}</div>
-                  ) : null}
+                    {(formik.touched.usrExtraFacilities?.beds || formik.values.usrExtraFacilities?.beds < 0) && 
+                     formik.errors.usrExtraFacilities?.beds && (
+                      <div className={Styles.errorMessage}>
+                        {formik.errors.usrExtraFacilities.beds}
+                      </div>
+                    )}
                   </div>
-                  <div className={`${Styles.formGroup}  ${formik.touched.usrExtraFacilities?.bath && formik.errors.usrExtraFacilities?.bath ? Styles.hasError : ''}`}>
+                  
+                  <div className={`${Styles.formGroup} ${(formik.touched.usrExtraFacilities?.bath || formik.values.usrExtraFacilities?.bath < 0) && formik.errors.usrExtraFacilities?.bath ? Styles.hasError : ''}`}>
                     <label htmlFor="baths">Baths</label>
                     <input
                       type="number"
                       id="baths"
-                      {...formik.getFieldProps('usrExtraFacilities.bath')}
+                      name="usrExtraFacilities.bath"
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        formik.setFieldTouched('usrExtraFacilities.bath', true, true);
+                        formik.setFieldValue('usrExtraFacilities.bath', value);
+                        formik.validateField('usrExtraFacilities');  // Validate the entire usrExtraFacilities object
+                      }}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.usrExtraFacilities.bath}
+                      disabled={formik.values.userListingType === 'Land'}
+                      min="0"
+                      max="8"
                     />
-              {formik.touched.usrExtraFacilities?.bath && formik.errors.usrExtraFacilities?.bath ? (
-                <div className={Styles.errorMessage}>{formik.errors.usrExtraFacilities.bath}</div>
-              ) : null}
+                    {(formik.touched.usrExtraFacilities?.bath || formik.values.usrExtraFacilities?.bath < 0) && 
+                     formik.errors.usrExtraFacilities?.bath && (
+                      <div className={Styles.errorMessage}>
+                        {formik.errors.usrExtraFacilities.bath}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -404,7 +595,7 @@ function AddProperty() {
               </div>
             </div>
 
-            {formik.values.userListingType === 'Apartment' && (
+            {formik.values.userListingType === 'Apartment' || formik.values.userListingType === 'House' && (
               <div className={Styles.formGroup}>
                 <label htmlFor="floorNumber">Floor Number</label>
                 <input
@@ -419,11 +610,28 @@ function AddProperty() {
               </div>
             )}
 
-            <div className={`${Styles.formGroup}  ${formik.touched.usrPrice && formik.errors.usrPrice ? Styles.hasError : ''}`}>
+            <div className={Styles.formGroup}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handlePredictPrice}
+                disabled={isPredicting || !areRequiredFieldsFilled()}
+                style={{ marginBottom: '1rem' }}
+              >
+                {isPredicting ? <CircularProgress size={24} /> : 'Predict Price'}
+              </Button>
+              
+              {predictedPrice && (
+                <div className={Styles.predictedPrice}>
+                  <p>Suggested Price: ₹{predictedPrice.toLocaleString()}</p>
+                </div>
+              )}
+
               <label htmlFor="usrPrice">Price</label>
               <input
                 type="number"
                 id="usrPrice"
+                min="0"
                 {...formik.getFieldProps('usrPrice')}
                 placeholder="Enter the price of the property"
               />

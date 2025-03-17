@@ -2,6 +2,7 @@ const UserAuthModel = require("../models/UserAuthModel");
 const UserPropertiesModel = require("../models/UserPropertiesModel");
 const UserFavoritePropertiesModel = require("../models/UserFavoritePropertiesModel");
 const httpErrors = require("http-errors");
+const PropertyBidModel = require("../models/PropertyBidModel");
 
 const addPropertyController = async (req, res, next) => {//done
     var userId = req.payload.aud;
@@ -23,7 +24,8 @@ const addPropertyController = async (req, res, next) => {//done
 
     try {
         var fetchedUserData = await UserAuthModel.findById(userId);
-        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType ==='owner') {
+        if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType === 'owner') {
+            console.log('Adding property with location:', location);  // Add logging
             const newPropertySetup = new UserPropertiesModel({
                 agentId: userId,
                 userListingType,
@@ -54,6 +56,7 @@ const addPropertyController = async (req, res, next) => {//done
         }
 
     } catch (error) {
+        console.error('Error adding property:', error);  // Add error logging
         next(httpErrors.BadRequest())
     }
 }
@@ -501,28 +504,41 @@ const showByTypeAllUserPropertyController = async (req, res, next) => {
 };
 
 const toggleFavoriteController = async (req, res, next) => {
-    const userId = req.payload.aud;  // Assuming JWT payload contains the user ID
+    const userId = req.payload.aud;
     const { propertyId } = req.body;
 
     try {
-        // Fetch user data
-        const fetchedUserData = await UserAuthModel.findById(userId);
-        if (fetchedUserData.usrType !== "buyer") {
-            return next(httpErrors.Unauthorized("Only buyers can favorite properties"));
-        }
-
-        // Check if the property is already favorited
+        // Find if user has already favorited this property
         const favorite = await UserFavoritePropertiesModel.findOne({ buyerId: userId, propertyId });
 
+        // Find the property to update its favorite count
+        const property = await UserPropertiesModel.findById(propertyId);
+        if (!property) {
+            return next(httpErrors.NotFound('Property not found'));
+        }
+
         if (favorite) {
-            // If found, remove it from favorites
+            // If found, remove it from favorites and decrease count
             await UserFavoritePropertiesModel.deleteOne({ buyerId: userId, propertyId });
-            res.status(200).json({ message: "Property removed from favorites" });
+            property.usrPropertyFavorites = Math.max(0, (property.usrPropertyFavorites || 0) - 1);
+            await property.save();
+            
+            res.status(200).json({ 
+                message: "Property removed from favorites",
+                favoriteCount: property.usrPropertyFavorites
+            });
         } else {
-            // Otherwise, add it to favorites
+            // Otherwise, add it to favorites and increase count
             const newFavorite = new UserFavoritePropertiesModel({ buyerId: userId, propertyId });
             await newFavorite.save();
-            res.status(200).json({ message: "Property added to favorites" });
+            
+            property.usrPropertyFavorites = (property.usrPropertyFavorites || 0) + 1;
+            await property.save();
+
+            res.status(200).json({ 
+                message: "Property added to favorites",
+                favoriteCount: property.usrPropertyFavorites
+            });
         }
     } catch (error) {
         next(httpErrors.InternalServerError("Error toggling favorite property"));
@@ -585,14 +601,74 @@ const showAgentPropertytoOthersController = async (req, res, next) => {
     }
 };
 
+const updatePropertyStatusController = async (req, res, next) => {
+    try {
+        const userId = req.payload.aud;
+        const { propertyId, status } = req.body;
 
+        // Verify user is agent/owner
+        const user = await UserAuthModel.findById(userId);
+        if (!['agent', 'owner', 'admin'].includes(user.usrType)) {
+            return next(httpErrors.Unauthorized('Only agents/owners/admin can update property status'));
+        }
 
+        // Find the property
+        const property = await UserPropertiesModel.findOne({ _id: propertyId, agentId: userId });
+        if (!property) {
+            return next(httpErrors.NotFound('Property not found'));
+        }
 
+        // Check if property is in active bidding
+        const activeBidding = await PropertyBidModel.findOne({ 
+            propertyId, 
+            status: 'active' 
+        });
+
+        if (activeBidding) {
+            return next(httpErrors.BadRequest('Cannot update status while property is in active bidding'));
+        }
+
+        // Update property status
+        property.status = status;
+        await property.save();
+
+        // If property is unlisted/disabled, remove from non-winning buyers' favorites
+        if (status === 'unlisted' || status === 'disabled') {
+            await UserFavoritePropertiesModel.deleteMany({
+                propertyId,
+                buyerId: { 
+                    $ne: property.winner?.buyerId 
+                }
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Property status updated successfully'
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+const checkFavoriteController = async (req, res, next) => {
+    const userId = req.payload.aud;
+    const { propertyId } = req.body;
+
+    try {
+        const favorite = await UserFavoritePropertiesModel.findOne({ buyerId: userId, propertyId });
+        res.status(200).json({ isFavorited: !!favorite });
+    } catch (error) {
+        next(httpErrors.InternalServerError("Error checking favorite status"));
+    }
+};
 
 module.exports = {
     addPropertyController, showBuyerFourRecentPropertyController, showBuyerTwoFeaturesPropertyController,
     showAdimFourRecentPropertyController, showAgentRecentPropertyController, showByTypeAgentPropertyController,
     showByTypeBuyerPropertyController, showByTypeAdminPropertyController, editPropertyController,
     showAllUsersFourRecentPropertyController, showAllUsersTwoFeaturesPropertyController, showByTypeAllUserPropertyController,
-    toggleFavoriteController, showFavoriteController, showAgentPropertytoOthersController
+    toggleFavoriteController, showFavoriteController, showAgentPropertytoOthersController, updatePropertyStatusController,
+    checkFavoriteController
 }
