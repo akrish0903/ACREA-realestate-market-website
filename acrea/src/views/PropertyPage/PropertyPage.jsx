@@ -361,9 +361,9 @@ function PropertyPage() {
             return;
         }
 
-        // If trying to unlist, calculate commission
-        if (newStatus === 'unlisted') {
-            const commission = propertyData.usrPrice * 0.10; // 10% commission
+        // If trying to mark as sold, show confirmation dialog first
+        if (newStatus === 'sold') {
+            const commission = propertyData.usrPrice * 0.05; // 5% commission
             
             // Create custom toast for confirmation
             toast.info(
@@ -382,7 +382,8 @@ function PropertyPage() {
                         marginBottom: '1rem',
                         color: '#1F2937'
                     }}>
-                        Unlisting this property will incur a commission fee of<br/>
+                        Are you sure you want to mark this property as sold?<br/>
+                        This will incur a commission fee of<br/>
                         <span style={{ fontWeight: 'bold', fontSize: '1.2rem', color: '#059669' }}>
                             ₹{commission.toLocaleString()}
                         </span>
@@ -394,8 +395,8 @@ function PropertyPage() {
                     }}>
                         <button
                             onClick={() => {
-                                updatePropertyStatus(newStatus);
                                 toast.dismiss();
+                                processSoldPayment(newStatus, commission);
                             }}
                             style={{
                                 padding: '0.5rem 1rem',
@@ -447,12 +448,70 @@ function PropertyPage() {
             return;
         }
 
-        // If not unlisting, proceed with status update directly
+        // For all other statuses, update directly
         updatePropertyStatus(newStatus);
     };
 
-    // Separate function to handle the actual status update
-    const updatePropertyStatus = async (newStatus) => {
+    // New function to process payment after confirmation
+    const processSoldPayment = async (newStatus, commission) => {
+        try {
+            // First, get the Razorpay key from backend
+            const response = await useApi({
+                authRequired: true,
+                authToken: userAuthData.usrAccessToken,
+                url: '/get-razorpay-key',
+                method: 'GET'
+            });
+            
+            const { razorpayKeyId } = response;
+            
+            if (razorpayKeyId && window.Razorpay) {
+                const options = {
+                    key: razorpayKeyId,
+                    amount: commission * 100, // Razorpay amount is in paise
+                    currency: "INR",
+                    name: "Property Sale Commission",
+                    description: `Commission for property: ${propertyData.usrListingName}`,
+                    handler: async function(paymentResponse) {
+                        try {
+                            await updatePropertyStatus(newStatus, paymentResponse.razorpay_payment_id);
+                        } catch (error) {
+                            console.error('Error updating property status after payment:', error);
+                            toast.error('There was an error updating the property status.');
+                            setTempStatus(propertyStatus);
+                        }
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            // If payment modal is dismissed, revert to previous status
+                            toast.info('Payment canceled. Property status not changed.');
+                            setTempStatus(propertyStatus);
+                        }
+                    },
+                    prefill: {
+                        name: userAuthData.usrFullName,
+                        contact: userAuthData.usrMobileNumber,
+                        email: userAuthData.usrEmail
+                    },
+                    theme: {
+                        color: "#F37254"
+                    }
+                };
+                const paymentWindow = new window.Razorpay(options);
+                paymentWindow.open();
+            } else {
+                toast.error('Payment service unavailable. Please try again later.');
+                setTempStatus(propertyStatus);
+            }
+        } catch (error) {
+            console.error('Failed to initialize payment:', error);
+            toast.error('There was an error initializing the payment.');
+            setTempStatus(propertyStatus);
+        }
+    };
+
+    // Update the function to accept paymentId
+    const updatePropertyStatus = async (newStatus, paymentId = null) => {
         try {
             const response = await useApi({
                 authRequired: true,
@@ -461,7 +520,8 @@ function PropertyPage() {
                 method: 'POST',
                 data: {
                     propertyId: propertyData._id,
-                    status: newStatus
+                    status: newStatus,
+                    paymentId: paymentId
                 }
             });
 
@@ -471,7 +531,7 @@ function PropertyPage() {
             }
         } catch (error) {
             toast.error('Failed to update property status');
-            setPropertyStatus(propertyData.status); // Reset to previous status on error
+            setTempStatus(propertyStatus); // Reset to previous status on error
         }
     };
 
@@ -910,6 +970,7 @@ function PropertyPage() {
                                         <MenuItem value="active">Active</MenuItem>
                                         <MenuItem value="unlisted">Unlisted</MenuItem>
                                         <MenuItem value="disabled">Disabled</MenuItem>
+                                        <MenuItem value="sold">Sold</MenuItem>
                                     </Select>
                                 </FormControl>
                             )}

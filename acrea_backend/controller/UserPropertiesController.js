@@ -19,10 +19,18 @@ const addPropertyController = async (req, res, next) => {//done
         ageOfProperty,
         commercialZone,
         gatedCommunity,
-        floorNumber
+        floorNumber,
+        paymentId
     } = req.body;
 
     try {
+        if (!paymentId) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Payment verification failed. Property cannot be added without payment.' 
+            });
+        }
+
         var fetchedUserData = await UserAuthModel.findById(userId);
         if (fetchedUserData.usrType === "agent" || fetchedUserData.usrType === 'owner') {
             console.log('Adding property with location:', location);  // Add logging
@@ -44,7 +52,8 @@ const addPropertyController = async (req, res, next) => {//done
                 usrPropertyTime: new Date(),
                 usrPropertyFavorites: 0,
                 usrPropertyLiveStatus: true,
-                usrPropertySoldTime: null
+                usrPropertySoldTime: null,
+                paymentId
             });
             var savedUserDetails = await newPropertySetup.save();
             res.status(200).json({
@@ -604,7 +613,7 @@ const showAgentPropertytoOthersController = async (req, res, next) => {
 const updatePropertyStatusController = async (req, res, next) => {
     try {
         const userId = req.payload.aud;
-        const { propertyId, status } = req.body;
+        const { propertyId, status, paymentId } = req.body;
 
         // Verify user is agent/owner
         const user = await UserAuthModel.findById(userId);
@@ -628,12 +637,20 @@ const updatePropertyStatusController = async (req, res, next) => {
             return next(httpErrors.BadRequest('Cannot update status while property is in active bidding'));
         }
 
+        // Validate payment ID for 'sold' status
+        if (status === 'sold' && !paymentId) {
+            return next(httpErrors.BadRequest('Payment required to mark property as sold'));
+        }
+
         // Update property status
         property.status = status;
+        if (status === 'sold') {
+            property.usrPropertySoldTime = new Date();
+        }
         await property.save();
 
-        // If property is unlisted/disabled, remove from non-winning buyers' favorites
-        if (status === 'unlisted' || status === 'disabled') {
+        // If property is unlisted/disabled/sold, remove from non-winning buyers' favorites
+        if (status === 'unlisted' || status === 'disabled' || status === 'sold') {
             await UserFavoritePropertiesModel.deleteMany({
                 propertyId,
                 buyerId: { 

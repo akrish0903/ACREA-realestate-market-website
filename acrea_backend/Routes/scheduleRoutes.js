@@ -27,6 +27,6 @@ router.delete('/delete-schedule/:scheduleId',jwt_verify_token, ScheduleControlle
 router.get('/receipts/:scheduleId', jwt_verify_token, ScheduleController.downloadReceipt);
 
 // Route to check if transaction is successful or not
-router.get('/get-razorpay-key', jwt_verify_token, ScheduleController.getRazorpayKey);
+router.get('/get-razorpay-key', ScheduleController.getRazorpayKey);
 
 module.exports = router;

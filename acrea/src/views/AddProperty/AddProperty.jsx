@@ -88,33 +88,78 @@ function AddProperty() {
   };
 
   async function addPropertyHandler(values) {
-    const propertyData = {
-        ...values,
-        userListingImage: imageUrls // Ensure this is set to the array of image URLs
-    };
-
+    // Begin the payment flow first instead of immediately saving the property
     try {
-        const apiResponse = await useApi({
-            url: "/add-properties",
-            method: "POST",
-            authRequired: true,
-            authToken: authUserDetails.usrAccessToken,
-            data: propertyData,
+        // First, get the Razorpay key from backend
+        const keyResponse = await fetch(`${Config.apiBaseUrl}/get-razorpay-key`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${authUserDetails.usrAccessToken}`
+            }
         });
 
-        // Check if the response indicates success
-        if (apiResponse && apiResponse.message === "Property added Success.") {
-            // Handle success case
-            formik.resetForm();
-            navigate(-1);
-            toast.success(apiResponse.message); // Show success message
+        const keyResult = await keyResponse.json();
+        const { razorpayKeyId } = keyResult;
+
+        if (!razorpayKeyId) {
+            throw new Error('Failed to initialize payment. Please try again.');
+        }
+
+        // Prepare property data with images
+        const propertyData = {
+            ...values,
+            userListingImage: imageUrls
+        };
+
+        if (window.Razorpay) {
+            const options = {
+                key: razorpayKeyId,
+                amount: 100000, // 1000 INR in paise
+                currency: "INR",
+                name: "Acrea Property Listing",
+                description: "Property Listing Commission",
+                handler: async function (paymentResponse) {
+                    try {
+                        // Only after successful payment, add the property
+                        const apiResponse = await useApi({
+                            url: "/add-properties",
+                            method: "POST",
+                            authRequired: true,
+                            authToken: authUserDetails.usrAccessToken,
+                            data: {
+                                ...propertyData,
+                                paymentId: paymentResponse.razorpay_payment_id
+                            },
+                        });
+
+                        if (apiResponse && apiResponse.message === "Property added Success.") {
+                            formik.resetForm();
+                            navigate(-1);
+                            toast.success("Payment successful and property added!");
+                        } else {
+                            throw new Error(apiResponse.message || 'Failed to add property');
+                        }
+                    } catch (error) {
+                        console.error('Error adding property after payment:', error);
+                        toast.error(error.message || 'An error occurred while adding the property.');
+                    }
+                },
+                prefill: {
+                    name: authUserDetails.usrFullName || '',
+                    contact: authUserDetails.usrMobileNumber || '',
+                },
+                theme: {
+                    color: "#3399ff"
+                }
+            };
+            const paymentWindow = new window.Razorpay(options);
+            paymentWindow.open();
         } else {
-            // Handle error case
-            throw new Error(apiResponse.message || 'Failed to add property');
+            toast.error("Razorpay SDK not loaded. Please try again later.");
         }
     } catch (error) {
-        console.error('Error adding property:', error);
-        toast.error(error.message || 'An error occurred while adding the property.');
+        console.error('Error in payment process:', error);
+        toast.error(error.message || 'An error occurred during the payment process.');
     }
 }
 
@@ -656,9 +701,13 @@ function AddProperty() {
               type="submit"
               className={Styles.submitBtn}
               id='submit'
-  disabled={!(formik.isValid && formik.dirty)}
-            >Add Property</button>
-            <p className={Styles.textSmallall}>By adding a property, you agree to our terms and conditions.</p>
+              disabled={!(formik.isValid && formik.dirty)}
+            >
+              Pay ₹1000 & Add Property
+            </button>
+            <p className={Styles.textSmallall}>
+              By adding a property, you agree to our terms and conditions. A commission of ₹1000 will be charged.
+            </p>
           </form>
         </div>
       </div>

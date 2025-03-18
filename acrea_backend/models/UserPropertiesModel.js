@@ -102,7 +102,11 @@ const userPropertySchema = new mongoose.Schema({
         type: String,
         enum: ['active', 'unlisted', 'disabled', 'bidding', 'sold'],
         default: 'active'
-    }
+    },
+    paymentId: {
+        type: String,
+        required: true,
+    },
 });
 
 

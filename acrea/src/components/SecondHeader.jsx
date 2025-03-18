@@ -42,11 +42,13 @@ function SecondHeader() {
                     placeholder="Enter Location (City, State, Zip, etc)"
                     value={locationInput}
                     onChange={(e) => setLocationInput(e.target.value)}
+                    id="locationInput"
                 />
                 <select
                     style={{ backgroundColor: Config.color.background }}
                     value={propertyType}
                     onChange={(e) => setPropertyType(e.target.value)}
+                    id="propertyType"
                 >
                     <option value="All">All</option>
                     <option value="Land">Land</option>
@@ -57,6 +59,7 @@ function SecondHeader() {
                 </select>
                 <button
                     type="submit"
+                    id="searchButton"
                     style={{ backgroundColor: Config.color.primaryColor600, fontSize: Config.fontSize.small, color: Config.color.background }}
                 >Search</button>
             </form>
