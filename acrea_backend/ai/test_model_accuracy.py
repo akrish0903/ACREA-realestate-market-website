@@ -1,31 +1,20 @@
+import os
+import sys
+from price_predictor import PricePredictor
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.svm import SVR
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.metrics import mean_squared_error, r2_score
-import pickle
-import os
+from sklearn.model_selection import cross_val_score, KFold
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
-class PricePredictor:
-    def __init__(self):
-        self.model_path = os.path.join(os.path.dirname(__file__), 'price_prediction_model.pkl')
-        self.model = None
-        self.load_model()
-
-    def load_model(self):
-        try:
-            with open(self.model_path, 'rb') as f:
-                self.model = pickle.load(f)
-        except FileNotFoundError:
-            print("Model file not found. Training new model...")
-            self.train_model()
-
-    def train_model(self):
-        # Use the provided data instead of loading from CSV
-        data = [
+def main():
+    print("Testing Price Prediction Model Accuracy")
+    print("=======================================")
+    
+    # Initialize the predictor (this will train the model if it doesn't exist)
+    predictor = PricePredictor()
+    
+    # Get the data used for training
+    data = [
             {"property_type": "Apartment", "square_feet": 1200, "city": "Kochi", "state": "Kerala", "beds": 3, "baths": 2, "amenities_count": 5, "age_of_property": 10, "floor_level": 4, "commercial_zone": 1, "gated_community": 1, "price": 7500000},
             {"property_type": "House", "square_feet": 2000, "city": "Thiruvananthapuram", "state": "Kerala", "beds": 4, "baths": 3, "amenities_count": 7, "age_of_property": 15, "floor_level": 0, "commercial_zone": 0, "gated_community": 1, "price": 12000000},
             {"property_type": "Land", "square_feet": 3000, "city": "Kozhikode", "state": "Kerala", "beds": 0, "baths": 0, "amenities_count": 0, "age_of_property": 0, "floor_level": 0, "commercial_zone": 1, "gated_community": 0, "price": 4500000},
@@ -46,106 +35,125 @@ class PricePredictor:
             {"property_type": "Land", "square_feet": 2000, "city": "Thrissur", "state": "Kerala", "beds": 0, "baths": 0, "amenities_count": 0, "age_of_property": 0, "floor_level": 0, "commercial_zone": 1, "gated_community": 0, "price": 3200000},
             {"property_type": "Room", "square_feet": 250, "city": "Alappuzha", "state": "Kerala", "beds": 1, "baths": 1, "amenities_count": 1, "age_of_property": 3, "floor_level": 1, "commercial_zone": 0, "gated_community": 1, "price": 900000}
         ]
-        
-        # Convert to DataFrame
-        df = pd.DataFrame(data)
+    
+    # Convert to DataFrame
+    df = pd.DataFrame(data)
+    
+    # Define features and target
+    X = df.drop(columns=["price"])
+    y = df["price"]
+    
+    # 1. Test with the existing model
+    print("\n1. Testing with existing trained model:")
+    test_existing_model(predictor, X, y)
+    
+    # 2. Perform cross-validation
+    print("\n2. Performing 5-fold cross-validation:")
+    perform_cross_validation(predictor.model, X, y)
+    
+    # 3. Test with some sample properties
+    print("\n3. Testing with sample properties:")
+    test_sample_properties(predictor)
 
-        # Define features and target
-        X = df.drop(columns=["price"])
-        y = df["price"]
+def test_existing_model(predictor, X, y):
+    """Test the accuracy of the existing model"""
+    # Make predictions for all properties in the dataset
+    predictions = []
+    for _, row in X.iterrows():
+        input_data = row.to_dict()
+        predicted_price = predictor.predict_price(input_data)
+        predictions.append(predicted_price)
+    
+    # Calculate metrics
+    mse = mean_squared_error(y, predictions)
+    rmse = np.sqrt(mse)
+    mae = mean_absolute_error(y, predictions)
+    r2 = r2_score(y, predictions)
+    
+    print(f"Mean Squared Error: {mse:.2f}")
+    print(f"Root Mean Squared Error: {rmse:.2f}")
+    print(f"Mean Absolute Error: {mae:.2f}")
+    print(f"R² Score: {r2:.2f}")
+    
+    # Calculate percentage error
+    percentage_errors = [abs(pred - actual) / actual * 100 for pred, actual in zip(predictions, y)]
+    mean_percentage_error = np.mean(percentage_errors)
+    print(f"Mean Percentage Error: {mean_percentage_error:.2f}%")
 
-        # Define columns
-        categorical_cols = ["property_type", "city", "state"]
-        numerical_cols = ["square_feet", "beds", "baths", "amenities_count", 
-                         "age_of_property", "floor_level", "commercial_zone", "gated_community"]
+def perform_cross_validation(model, X, y):
+    """Perform cross-validation to get a better estimate of model performance"""
+    # Define cross-validation strategy
+    cv = KFold(n_splits=5, shuffle=True, random_state=42)
+    
+    # Perform cross-validation for R²
+    r2_scores = cross_val_score(model, X, y, cv=cv, scoring='r2')
+    print(f"Cross-validated R² scores: {r2_scores}")
+    print(f"Mean R² score: {np.mean(r2_scores):.2f}")
+    
+    # Perform cross-validation for negative MSE (scikit-learn minimizes)
+    mse_scores = -cross_val_score(model, X, y, cv=cv, scoring='neg_mean_squared_error')
+    print(f"Cross-validated MSE scores: {mse_scores}")
+    print(f"Mean MSE score: {np.mean(mse_scores):.2f}")
+    
+    # Calculate RMSE from MSE
+    rmse_scores = np.sqrt(mse_scores)
+    print(f"Cross-validated RMSE scores: {rmse_scores}")
+    print(f"Mean RMSE score: {np.mean(rmse_scores):.2f}")
 
-        # Create preprocessing pipeline
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ('num', StandardScaler(), numerical_cols),
-                ('cat', OneHotEncoder(drop='first', sparse=False), categorical_cols)
-            ])
+def test_sample_properties(predictor):
+    """Test the model with some sample properties"""
+    # Define some test properties
+    test_properties = [
+        {
+            "property_type": "Apartment", 
+            "square_feet": 1100, 
+            "city": "Kochi", 
+            "state": "Kerala", 
+            "beds": 2, 
+            "baths": 2, 
+            "amenities_count": 4, 
+            "age_of_property": 5, 
+            "floor_level": 3, 
+            "commercial_zone": 0, 
+            "gated_community": 1
+        },
+        {
+            "property_type": "House", 
+            "square_feet": 1800, 
+            "city": "Thrissur", 
+            "state": "Kerala", 
+            "beds": 3, 
+            "baths": 3, 
+            "amenities_count": 6, 
+            "age_of_property": 10, 
+            "floor_level": 0, 
+            "commercial_zone": 0, 
+            "gated_community": 1
+        },
+        {
+            "property_type": "Land", 
+            "square_feet": 2500, 
+            "city": "Kollam", 
+            "state": "Kerala", 
+            "beds": 0, 
+            "baths": 0, 
+            "amenities_count": 0, 
+            "age_of_property": 0, 
+            "floor_level": 0, 
+            "commercial_zone": 1, 
+            "gated_community": 0
+        }
+    ]
+    
+    # Make predictions
+    for i, prop in enumerate(test_properties):
+        predicted_price = predictor.predict_price(prop)
+        print(f"Test Property {i+1}:")
+        print(f"  Type: {prop['property_type']}")
+        print(f"  Location: {prop['city']}, {prop['state']}")
+        print(f"  Size: {prop['square_feet']} sq ft, {prop['beds']} beds, {prop['baths']} baths")
+        print(f"  Predicted Price: ₹{predicted_price:,}")
+        print()
 
-        # Create SVM model with RBF kernel
-        svm_model = SVR(
-            kernel='rbf',           # Radial Basis Function kernel
-            C=100,                  # Regularization parameter
-            gamma='scale',          # Kernel coefficient
-            epsilon=0.1,            # Epsilon in the epsilon-SVR model
-        )
-
-        # Create full pipeline
-        self.model = Pipeline([
-            ('preprocessor', preprocessor),
-            ('regressor', svm_model)
-        ])
-
-        # Split data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
-
-        # Train model
-        self.model.fit(X_train, y_train)
-
-        # Evaluate model
-        y_pred = self.model.predict(X_test)
-        mse = mean_squared_error(y_test, y_pred)
-        r2 = r2_score(y_test, y_pred)
-        
-        print(f"Model Performance Metrics:")
-        print(f"Mean Squared Error: {mse:.2f}")
-        print(f"R² Score: {r2:.2f}")
-
-        # Save model
-        with open(self.model_path, 'wb') as f:
-            pickle.dump(self.model, f)
-
-    def predict_price(self, input_data):
-        """
-        Predict property price based on input features
-        
-        Args:
-            input_data (dict): Dictionary containing property features
-            
-        Returns:
-            float: Predicted price
-        """
-        if self.model is None:
-            raise Exception("Model not loaded")
-
-        # Convert input data to DataFrame
-        input_df = pd.DataFrame([input_data])
-        
-        # Make prediction
-        predicted_price = self.model.predict(input_df)[0]
-        
-        # Round to nearest thousand
-        predicted_price = round(predicted_price / 1000) * 1000
-        
-        return predicted_price
-
-    def get_feature_importance(self):
-        """
-        Get feature coefficients from the SVM model
-        
-        Returns:
-            dict: Feature names and their coefficient values (for linear kernel)
-            or None for non-linear kernels
-        """
-        if not hasattr(self.model, 'named_steps'):
-            raise Exception("Model not properly initialized")
-            
-        # Note: SVR with non-linear kernels doesn't provide direct feature importance
-        # This method will return None for RBF kernel
-        if self.model.named_steps['regressor'].kernel == 'linear':
-            feature_names = (
-                self.model.named_steps['preprocessor']
-                .get_feature_names_out()
-            )
-            
-            coefficients = self.model.named_steps['regressor'].coef_[0]
-            
-            return dict(zip(feature_names, coefficients))
-        else:
-            return None 
+if __name__ == "__main__":
+    main() 
